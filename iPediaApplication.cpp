@@ -1,7 +1,7 @@
 #include <iPediaApplication.hpp>
 #include <LookupManager.hpp>
 #include <LookupHistory.hpp>
-#include <PrefsStore.hpp>
+#include <WinPrefsStore.hpp>
 #include <SocketConnection.hpp>
 #include <SysUtils.hpp>
 #include <DeviceInfo.hpp>
@@ -224,16 +224,11 @@ namespace {
         
         next=renderingPrefsFirstPrefId+RenderingPreferences::reservedPrefIdCount
     };
-
-    // These globals will be removed by dead code elimination.
-    //ArsLexis::StaticAssert<(sizeof(uint_t) == sizeof(ushort_t))> uint_t_the_same_size_as_UInt16;
-    //ArsLexis::StaticAssert<(sizeof(bool) == sizeof(Boolean))> bool_the_same_size_as_Boolean;
-    
 }
 
 void iPediaApplication::loadPreferences()
 {
-    std::auto_ptr<PrefsStoreReader> reader(new PrefsStoreReader(appPrefDatabase, appFileCreator, 0));
+    std::auto_ptr<PrefsStoreReader> reader(new PrefsStoreReader(appPrefDatabase));
 
     Preferences     prefs;
     status_t        error;
@@ -271,7 +266,7 @@ OnError:
 void iPediaApplication::savePreferences()
 {
     status_t error;
-    std::auto_ptr<PrefsStoreWriter> writer(new PrefsStoreWriter(appPrefDatabase, appFileCreator, 0));
+    std::auto_ptr<PrefsStoreWriter> writer(new PrefsStoreWriter(appPrefDatabase));
 
     if (errNone!=(error=writer->ErrSetStr(cookiePrefId, preferences_.cookie.c_str())))
         goto OnError;

@@ -1,7 +1,7 @@
 #include "RenderingPreferences.hpp"
 #include "sm_ipedia.h"
 #include "iPediaApplication.hpp"
-#include <PrefsStore.hpp>
+#include <WinPrefsStore.hpp>
 #include <BaseTypes.hpp>
 
 using ArsLexis::FontEffects;

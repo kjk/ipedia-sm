@@ -4,7 +4,7 @@
 #include <Debug.hpp>
 #include <BaseTypes.hpp>
 #include <Graphics.hpp>
-#include <PrefsStore.hpp>
+#include <WinPrefsStore.hpp>
 
 
 enum HyperlinkType
