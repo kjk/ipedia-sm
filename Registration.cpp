@@ -4,6 +4,7 @@
 #include <iPediaApplication.hpp>
 
 ArsLexis::String g_newRegCode;
+static HWND    g_hRegistrationDlg  = NULL;
 
 BOOL CALLBACK RegistrationDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -21,8 +22,34 @@ BOOL CALLBACK RegistrationDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
             int fntHeight = GetSystemMetrics(SM_CYCAPTION);
             MoveWindow(ctrlRegCodeText, 0, (height-fntHeight*2)/2, width, fntHeight, TRUE);
             MoveWindow(ctrlRegCodeEdit, 4, (height-fntHeight*2)/2 + fntHeight, width-8, fntHeight, TRUE);
+#ifdef WIN32_PLATFORM_PSPC
+            HWND ctrlRegButton =  GetDlgItem(hDlg, IDM_REGISTER);
+            HWND ctrlLaterButton =  GetDlgItem(hDlg, ID_CANCEL);
+            MoveWindow(ctrlRegButton, width/2-59, (height-fntHeight*2)/2 + 2*fntHeight+5, 59, fntHeight, TRUE);
+            MoveWindow(ctrlLaterButton, width/2+3, (height-fntHeight*2)/2 + 2*fntHeight+5, 59, fntHeight, TRUE);
+#endif            
             break;
         }
+        
+        case WM_SETTINGCHANGE:
+        {
+            SHACTIVATEINFO sai;
+            if (SPI_SETSIPINFO == wp){
+                memset(&sai, 0, sizeof(SHACTIVATEINFO));
+                SHHandleWMSettingChange(g_hRegistrationDlg, -1 , 0, &sai);
+            }
+            break;
+        }
+        case WM_ACTIVATE:
+        {
+            SHACTIVATEINFO sai;
+            if (SPI_SETSIPINFO == wp){
+                memset(&sai, 0, sizeof(SHACTIVATEINFO));
+                SHHandleWMActivate(g_hRegistrationDlg, wp, lp, &sai, 0);
+            }
+            break;
+        }
+
         case WM_COMMAND:
         {
             switch (wp)
@@ -53,19 +80,25 @@ bool InitRegistrationDlg(HWND hDlg)
     SHINITDLGINFO shidi;
     ZeroMemory(&shidi, sizeof(shidi));
     shidi.dwMask   = SHIDIM_FLAGS;
+#ifdef WIN32_PLATFORM_PSPC
+    shidi.dwFlags  = SHIDIF_SIZEDLG | SHIDIF_EMPTYMENU;
+#else
     shidi.dwFlags  = SHIDIF_SIZEDLGFULLSCREEN;
+#endif
     shidi.hDlg     = hDlg;
 
+
+    if (!SHInitDialog(&shidi))
+        return false;
+
     // Set up the menu bar
+#ifndef WIN32_PLATFORM_PSPC
     SHMENUBARINFO shmbi;
     ZeroMemory(&shmbi, sizeof(shmbi));
     shmbi.cbSize      = sizeof(shmbi);
     shmbi.hwndParent  = hDlg;
     shmbi.nToolBarId  = IDR_REGISTER_MENUBAR;
     shmbi.hInstRes    = g_hInst;
-
-    if (!SHInitDialog(&shidi))
-        return false;
     
     if (!SHCreateMenuBar(&shmbi))
         return false;
@@ -73,6 +106,7 @@ bool InitRegistrationDlg(HWND hDlg)
     (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
         MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
         SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
+#endif
 
     HWND hwndEdit = GetDlgItem(hDlg,IDC_EDIT_REGCODE);
     SendMessage(hwndEdit, EM_SETINPUTMODE, 0, EIM_NUMBERS);
@@ -82,7 +116,9 @@ bool InitRegistrationDlg(HWND hDlg)
     //if(!prefs.regCode.empty())
         //SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)prefs.regCode.c_str());
     //else
+    g_hRegistrationDlg = hDlg;
     SetFocus(hwndEdit);
-
+    SHSipPreference(g_hRegistrationDlg, SIP_UP);
+    
     return true;
 }

@@ -263,7 +263,7 @@ static bool fInitConnection()
 #ifdef WIN32_PLATFORM_PSPC
     return true; // not needed on Pocket PC
 #endif
-    if (NULL!=g_hConnection)
+    //if (NULL!=g_hConnection)
         return true;
 
     CONNMGR_CONNECTIONINFO ccInfo;
@@ -1163,33 +1163,51 @@ void RenderingProgressReporter::reportProgress(uint_t percent)
     Graphics gr(GetDC(hwndMain_), hwndMain_);
     
     ArsLexis::Rectangle bounds(g_progressRect);
-    DrawProgressRect(gr.handle(),bounds);
+    HDC offscreenDc=::CreateCompatibleDC(gr.handle());
+    if (offscreenDc)
+    {
+        HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
+        if (bitmap) 
+        {
+            HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+            {
+                Graphics offscreen(offscreenDc, NULL);
+                ArsLexis::Rectangle zeroBasedBounds = bounds;
+                zeroBasedBounds.x() = 0;
+                zeroBasedBounds.y() = 0;
 
-    DrawProgressBar(gr, percent, bounds);
-
-    ArsLexis::Rectangle progressArea(bounds);    
-    int h = progressArea.height();
-    progressArea.explode(6, h - 20, -12, -h + 15);
-
-    gr.setFont(WinFont());
-    String str(_T("Formatting article..."));
-    uint_t length=str.length();
-    uint_t width=bounds.width();
-    gr.charsInWidth(str.c_str(), length, width);
-    uint_t height=gr.fontHeight();
-    ArsLexis::Point p(progressArea.topLeft);
-    gr.drawText(str.c_str(), length, p);
-    //gr.drawText(str.c_str(), length,progressArea.topLeft);
-
-    char_t buffer[16];
-    //assert(support.percentProgress()<=100);
-    length=tprintf(buffer, _T(" %hu%%"), percent);
-
-    
-    p.x+=width+2;
-    width=bounds.width()-width;
-    gr.charsInWidth(buffer, length, width);
-    gr.drawText(buffer, length, p);
+                
+                DrawProgressRect(offscreen.handle(),zeroBasedBounds);
+                
+                DrawProgressBar(offscreen, percent, zeroBasedBounds);
+                
+                ArsLexis::Rectangle progressArea(zeroBasedBounds);    
+                int h = progressArea.height();
+                progressArea.explode(6, h - 20, -12, -h + 15);
+                
+                offscreen.setFont(WinFont());
+                String str(_T("Formatting article..."));
+                uint_t length=str.length();
+                uint_t width=zeroBasedBounds.width();
+                offscreen.charsInWidth(str.c_str(), length, width);
+                uint_t height=offscreen.fontHeight();
+                ArsLexis::Point p(progressArea.topLeft);
+                offscreen.drawText(str.c_str(), length, p);
+                //offscreen.drawText(str.c_str(), length,progressArea.topLeft);
+                
+                char_t buffer[16];
+                //assert(support.percentProgress()<=100);
+                length=tprintf(buffer, _T(" %hu%%"), percent);
+                
+                
+                p.x+=width+2;
+                width=zeroBasedBounds.width()-width;
+                offscreen.charsInWidth(buffer, length, width);
+                offscreen.drawText(buffer, length, p);
+                offscreen.copyArea(zeroBasedBounds, gr, bounds.topLeft );
+            }
+        }
+    }
 }
 
 void DrawProgressBar(Graphics& gr, uint_t percent, const ArsLexis::Rectangle& bounds)
@@ -1272,20 +1290,45 @@ void SmartPhoneProgressReported::showProgress(const ArsLexis::LookupProgressRepo
     if(!shallShow())
         return;
     setTicksAtUpdate(GetTickCount());
-    DrawProgressRect(gr.handle(),bounds);
 
-    if (support.percentProgress()!=support.percentProgressDisabled)
-        DrawProgressBar(gr, support.percentProgress(), bounds);
-    else
-        DrawProgressBar(gr, 0, bounds);
-    gr.setTextColor(RGB(0,0,0));
-    gr.setBackgroundColor(RGB(255,255,255));
-    
-    ArsLexis::Rectangle progressArea(bounds);    
-    int h = progressArea.height();
-    progressArea.explode(6, h - 20, -12, -h + 15);
+    HDC offscreenDc=::CreateCompatibleDC(gr.handle());
+    if (offscreenDc)
+    {
+        HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
+        if (bitmap) 
+        {
+            HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+            {
+                Graphics offscreen(offscreenDc, NULL);
+                ArsLexis::Rectangle zeroBasedBounds = bounds;
+                zeroBasedBounds.x() = 0;
+                zeroBasedBounds.y() = 0;
+                DrawProgressRect(offscreen.handle(),zeroBasedBounds);
 
-    DefaultLookupProgressReporter::showProgress(support, gr, progressArea, false);
+                if (support.percentProgress()!=support.percentProgressDisabled)
+                    DrawProgressBar(offscreen, support.percentProgress(), zeroBasedBounds);
+                else
+                    DrawProgressBar(offscreen, 0, zeroBasedBounds);    
+
+                DrawProgressRect(offscreen.handle(),zeroBasedBounds);
+                
+                if (support.percentProgress()!=support.percentProgressDisabled)
+                    DrawProgressBar(offscreen, support.percentProgress(), zeroBasedBounds);
+                else
+                    DrawProgressBar(offscreen, 0, zeroBasedBounds);
+                offscreen.setTextColor(RGB(0,0,0));
+                offscreen.setBackgroundColor(RGB(255,255,255));
+                
+                ArsLexis::Rectangle progressArea(zeroBasedBounds);    
+                int h = progressArea.height();
+                progressArea.explode(6, h - 20, -12, -h + 15);
+                
+                DefaultLookupProgressReporter::showProgress(support, offscreen, progressArea, false);
+                offscreen.copyArea(zeroBasedBounds, gr, bounds.topLeft );
+            }
+        }
+    }
+
 }
 
 void setMenuBarButtonState(int buttonID, bool state)

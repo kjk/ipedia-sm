@@ -19,7 +19,7 @@ struct LookupFinishedEventData;
 #define serverIpediaArslexis _T("ipedia.arslexis.com:9000")
 #define serverZjednoczenie   _T("10.10.101.129:9000")
 
-#define serverToUse serverIpediaArslexis
+#define serverToUse serverMarek
 
 class iPediaApplication
 {
