@@ -2,8 +2,6 @@
 ## 2. ability to cancel request e.g. during transfer we change to a form with only
 "Cancel" button and progress report.
 ## 7. improve (de-couple) LastResults.cpp dialog
-## 8. rendering bug, see "The Doors (album)" at the end list of Personnel
-The problem: \t (tab) is mis-rendered
 ## 9. sm, in "Extended search result", don't select any string in a list if we're 
 in the text field.
 ## 10. fix "hyperlinks" list in PPC build
@@ -12,6 +10,9 @@ in the text field.
        to main screen, SIP changes are not reflected.
 
         *  DONE   *
+
+## 8. rendering bug, see "The Doors (album)" at the end list of Personnel
+The problem: \t (tab) is mis-rendered (2004-08-16)
 
 ## 12. in PPC (and smartphone too?) version, "re-enter reg code" doesn't show 
        previous reg code. (2004-08-16)

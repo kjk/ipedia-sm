@@ -70,7 +70,7 @@ BEGIN
         MENUITEM "Search"                   ID_SEARCH
         MENUITEM "Extended search",         IDM_EXT_SEARCH          
         MENUITEM "Ext. search results",     IDM_MENU_RESULTS
-        MENUITEM "Hyperlinks",              IDM_MENU_HYPERS
+        MENUITEM "Linked articles",              IDM_MENU_HYPERS
         MENUITEM SEPARATOR
         MENUITEM "Random article",          IDM_MENU_RANDOM
         MENUITEM SEPARATOR 
