@@ -63,6 +63,13 @@
 #define IDS_NEXT_BTN                    146
 #define ID_PREV_BTN                     147
 #define ID_NEXT_BTN                     148
+#define ID_SEARCH_BTN                   149
+#define ID_OPTIONS_MENU_BTN             150
+#define IDS_OPTIONS_MENU_BTN            151
+#define ID_MAIN_MENU_BTN                152
+#define IDS_MAIN_MENU_BTN               153
+
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

@@ -21,7 +21,7 @@
 
 #include <windows.h>
 #include <aygshell.h>
-#ifndef  PPC
+#ifndef WIN32_PLATFORM_PSPC
 #include <tpcshell.h>
 #endif
 #include <wingdi.h>
@@ -29,6 +29,8 @@
 #include <sms.h>
 #include <uniqueid.h>
 #include <Text.hpp>
+
+
 
 using ArsLexis::String;
 using ArsLexis::Graphics;
@@ -178,12 +180,13 @@ String dateText;
 String recentWord;
 String searchWord;
 
-HINSTANCE g_hInst       = NULL;
-HWND      g_hwndMain    = NULL;
-HWND      g_hwndEdit    = NULL;
-HWND      g_hwndScroll  = NULL;
-HWND      g_hWndMenuBar = NULL;   // Current active menubar
-WNDPROC   g_oldEditWndProc = NULL;
+HINSTANCE g_hInst            = NULL;
+HWND      g_hwndMain         = NULL;
+HWND      g_hwndEdit         = NULL;
+HWND      g_hwndScroll       = NULL;
+HWND      g_hWndMenuBar      = NULL;   // Current active menubar
+HWND      g_hwndSearchButton = NULL;
+WNDPROC   g_oldEditWndProc   = NULL;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -196,6 +199,7 @@ void repaintDefiniton(HWND hwnd, int scrollDelta = 0);
 void handleMoveHistory(bool forward);
 void setScrollBar(Definition* definition);
 void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar);
+void SimpleOrExtendedSearch(HWND hwnd, bool simple);
 
 HANDLE    g_hConnection = NULL;
 // try to establish internet connection.
@@ -205,7 +209,7 @@ HANDLE    g_hConnection = NULL;
 // Can be called multiple times - will do nothing if connection is already established.
 static bool fInitConnection()
 {
-#ifdef PPC
+#ifdef WIN32_PLATFORM_PSPC
 	return true; // not needed on Pocket PC
 #endif
     if (NULL!=g_hConnection)
@@ -263,7 +267,7 @@ void OnCreate(HWND hwnd)
 {
     g_scrollBarDx = GetSystemMetrics(SM_CXVSCROLL);
     g_menuDy = 0;
-#ifdef PPC
+#ifdef WIN32_PLATFORM_PSPC
     g_menuDy = GetSystemMetrics(SM_CYMENU);
 #endif
 
@@ -289,6 +293,16 @@ void OnCreate(HWND hwnd)
         (HMENU) ID_EDIT,
         g_hInst,
         NULL);
+#ifdef WIN32_PLATFORM_PSPC
+    g_hwndSearchButton = CreateWindow(
+        _T("button"),  
+        _T("Search"),
+        WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+        CW_USEDEFAULT, CW_USEDEFAULT, 
+        CW_USEDEFAULT, CW_USEDEFAULT,
+        hwnd, (HMENU)ID_SEARCH_BTN, g_hInst, NULL);
+#endif
+
     g_oldEditWndProc=(WNDPROC)SetWindowLong(g_hwndEdit, GWL_WNDPROC, (LONG)EditWndProc);
 
     g_hwndScroll = CreateWindow(
@@ -327,23 +341,57 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     LRESULT     lResult = TRUE;
     HDC         hdc;
     bool        customAlert = false;
-
+    // I don't know why on PPC in first WM_SIZE mesaage hieght of menu
+    // bar is not taken into account, in next WM_SIZE messages (e.g. 
+    // after SIP usage) the height of menu is taken into account
+    static      firstWmSizeMsg = true;
     switch(msg)
     {
         case WM_CREATE:
             OnCreate(hwnd);
             break;
 
+        case WM_SETTINGCHANGE:
+        {
+            SHACTIVATEINFO sai;
+			if (SPI_SETSIPINFO == wp){
+				memset(&sai, 0, sizeof(SHACTIVATEINFO));
+				SHHandleWMSettingChange(hwnd, -1 , 0, &sai);
+			}
+			break;
+        }	
+		case WM_ACTIVATE:
+        {
+            SHACTIVATEINFO sai;
+			if (SPI_SETSIPINFO == wp){
+				memset(&sai, 0, sizeof(SHACTIVATEINFO));
+				SHHandleWMActivate(hwnd, wp, lp, &sai, 0);
+			}
+			break;
+        }
         case WM_SIZE:
         {
+            if (!firstWmSizeMsg)
+                g_menuDy = 0;
             int height = HIWORD(lp);
             int width = LOWORD(lp);
+            
+#ifdef WIN32_PLATFORM_PSPC
+            int searchButtonDX = 50;
+            int searchButtonX = LOWORD(lp) - searchButtonDX - 2;
+
+            MoveWindow(g_hwndSearchButton, searchButtonX, 2, searchButtonDX, 20, TRUE);
+            MoveWindow(g_hwndEdit, 2, 2, searchButtonX - 6, 20, TRUE);
+#else
             MoveWindow(g_hwndEdit, 2, 2, LOWORD(lp)-4, 20, TRUE);
+#endif
+
             MoveWindow(g_hwndScroll,width-g_scrollBarDx , 28 , g_scrollBarDx, height-28-g_menuDy, FALSE);
             g_progressRect.left = (width - g_scrollBarDx - 155)/2;
             g_progressRect.top = (height-45)/2;
             g_progressRect.right = g_progressRect.left + 155;   
             g_progressRect.bottom = g_progressRect.top + 45;  
+            firstWmSizeMsg = false;
             break;
         }
         case WM_SETFOCUS:
@@ -369,7 +417,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             switch(HIWORD(lp))
             {
                 case VK_TBACK:
-                    #ifndef PPC
+                    #ifndef WIN32_PLATFORM_PSPC
                     if ( 0 != (MOD_KEYUP & LOWORD(lp)))
                         SHSendBackToFocusWindow( msg, wp, lp );
                     #endif
@@ -387,7 +435,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         
         case WM_MOUSEMOVE:
-            if(g_lbuttondown)
+            if (g_lbuttondown)
                 handleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), false);
             break;
         
@@ -428,13 +476,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     break;
                 }
              }
-            //InvalidateRect (g_hwndScroll, NULL, TRUE);
             break;
         }
 
         case iPediaApplication::appForceUpgrade:
-            // TODO: implement me!
+        {           
+            int res = MessageBox(hwnd, 
+                _T("You need to upgrade iPedia to a newer version. You can do it right now or later using 'Options/Check for updates'. Would you like to do it now ?"),
+                _T("Upgrade required"),
+                MB_YESNO);
+            if (IDYES == res)
+                GotoURL(_T("http://arslexis.com/updates/sm-ipedia-1-0.html"));
             break;
+        }
 
         case iPediaApplication::appDisplayCustomAlertEvent:
             customAlert = true;
@@ -630,48 +684,17 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 setScrollBar(g_definition);
                 InvalidateRect(hwnd,NULL,TRUE);
                 break;
-            
+
             case IDM_EXT_SEARCH:
+                SimpleOrExtendedSearch(hwnd, false);
+                break;
+                
+            case ID_SEARCH_BTN:
             case ID_SEARCH:
-            {
-                if (!fInitConnection())
-                    break;
-                int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
-                TCHAR *buf = new TCHAR[len+1];
-                len = SendMessage(g_hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
-                SendMessage(g_hwndEdit, EM_SETSEL, 0,len);
-                String term(buf); 
-                delete buf;
-                if (term.empty()) break;
-                if (lookupManager && !lookupManager->lookupInProgress())
-                {
-                    if (wp==IDM_EXT_SEARCH)
-                    {
-                        lookupManager->search(term);
-                        setUI(false);
-                        InvalidateRect(hwnd,NULL,TRUE);
-                    }
-                    else
-                    {
-                        if (lookupManager->lookupIfDifferent(term))
-                        {
-                            setUI(false);
-                            InvalidateRect(hwnd,NULL,TRUE);
-                        }
-                        else
-                        {
-                            if (g_isAboutVisible)
-                            {
-                                g_isAboutVisible = false;
-                                setScrollBar(g_definition);
-                                setUI(true);
-                                InvalidateRect(hwnd,NULL,TRUE);                            
-                            }
-                        }
-                    }
-                }
-                break;            
-            }
+            // intentional fall-through
+                SimpleOrExtendedSearch(hwnd, true);
+                break;
+
             case IDM_MENU_HYPERS:
             {
                 if (!fInitConnection())
@@ -926,7 +949,7 @@ void DrawAboutInfo(HDC hdc, RECT rect)
     HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
     GetObject(fnt, sizeof(logfnt), &logfnt);
     logfnt.lfHeight-=1;
-#ifdef PPC
+#ifdef WIN32_PLATFORM_PSPC
     logfnt.lfHeight-=1;
 #endif
     logfnt.lfWeight=FW_BOLD;
@@ -1137,28 +1160,43 @@ void setMenu(HWND hwnd)
     HWND hwndMB = SHFindMenuBar (hwnd);
     if (hwndMB) 
     {
+        bool isNextHistoryElement = false;
         HMENU hMenu;
         hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
         iPediaApplication& app=iPediaApplication::instance();
         LookupManager* lookupManager=app.getLookupManager(true);
-        EnableMenuItem(hMenu, IDM_MENU_RESULTS, 
-            lookupManager->lastSearchResults().empty()?MF_GRAYED:MF_ENABLED);
-        EnableMenuItem(hMenu, IDM_MENU_NEXT, 
-            lookupManager->hasNextHistoryTerm()?MF_ENABLED:MF_GRAYED);
-        EnableMenuItem(hMenu, IDM_MENU_PREV, 
-            lookupManager->hasPreviousHistoryTerm()||
-            (g_isAboutVisible&&!g_definition->empty())?MF_ENABLED:MF_GRAYED);
-        EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_GRAYED);
-        EnableMenuItem(hMenu, IDM_MENU_CLIPBOARD, g_definition->empty()?
-            MF_GRAYED:MF_ENABLED);
-        #ifdef PPC
-        if(g_uiEnabled)
+        
+        unsigned int lastSearchResultEnabled = MF_GRAYED;
+        if (!lookupManager->lastSearchResults().empty())
+            lastSearchResultEnabled = MF_ENABLED;
+        EnableMenuItem(hMenu, IDM_MENU_RESULTS, lastSearchResultEnabled);
+        
+        unsigned int nextHistoryTermEnabled = MF_GRAYED;
+        if (lookupManager->hasNextHistoryTerm())
+            nextHistoryTermEnabled = MF_ENABLED;
+        EnableMenuItem(hMenu, IDM_MENU_NEXT, nextHistoryTermEnabled);
+
+        unsigned int previousHistoryTermEnabled = MF_GRAYED;
+        if (lookupManager->hasPreviousHistoryTerm()||
+            (g_isAboutVisible&&!g_definition->empty()))
+            previousHistoryTermEnabled = MF_ENABLED;
+
+        EnableMenuItem(hMenu, IDM_MENU_PREV, previousHistoryTermEnabled);
+        
+        unsigned int clipboardEnabled = MF_GRAYED;
+        if (!g_definition->empty())
+            clipboardEnabled = MF_ENABLED;
+        EnableMenuItem(hMenu, IDM_MENU_CLIPBOARD, clipboardEnabled);
+
+#ifdef WIN32_PLATFORM_PSPC
+        if (g_uiEnabled)
         {
             setMenuBarButtonState(ID_NEXT_BTN, lookupManager->hasNextHistoryTerm());
             setMenuBarButtonState(ID_PREV_BTN, lookupManager->hasPreviousHistoryTerm());
         }
-        #endif
+#endif
 
+        EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_GRAYED);
         Definition::ElementPosition_t pos;
         for(pos=g_definition->firstElementPosition();
             pos!=g_definition->lastElementPosition();
@@ -1203,7 +1241,7 @@ void setupAboutWindow()
 }
 
 // Try to launch IE with a given url
-BOOL GotoURL(LPCTSTR lpszUrl)
+bool GotoURL(LPCTSTR lpszUrl)
 {
     SHELLEXECUTEINFO sei;
     memset(&sei, 0, sizeof(SHELLEXECUTEINFO));
@@ -1220,10 +1258,11 @@ void setUI(bool enabled)
 {
     iPediaApplication& app=iPediaApplication::instance();
     LookupManager* lookupManager=app.getLookupManager(true);
+
+#ifdef WIN32_PLATFORM_PSPC
     setMenuBarButtonState(ID_MENU_BTN, enabled);
-    setMenuBarButtonState(ID_SEARCH, enabled);
-    #ifdef PPC
-    if(enabled)
+    setMenuBarButtonState(ID_OPTIONS_MENU_BTN, enabled);
+    if (enabled)
     {
         setMenuBarButtonState(ID_NEXT_BTN, lookupManager->hasNextHistoryTerm());
         setMenuBarButtonState(ID_PREV_BTN, lookupManager->hasPreviousHistoryTerm());
@@ -1233,7 +1272,12 @@ void setUI(bool enabled)
         setMenuBarButtonState(ID_NEXT_BTN, false);
         setMenuBarButtonState(ID_PREV_BTN, false);
     }
-    #endif
+    EnableWindow(g_hwndSearchButton, enabled);
+#else
+    setMenuBarButtonState(ID_MENU_BTN, enabled);
+    setMenuBarButtonState(ID_SEARCH, enabled);
+#endif
+
     g_uiEnabled = enabled;
 }
 
@@ -1327,9 +1371,9 @@ void CopyToClipboard()
 {
     if (g_definition->empty())
         return;
-    if(!OpenClipboard(g_hwndMain))
+    if (!OpenClipboard(g_hwndMain))
         return;
-    if(!EmptyClipboard())
+    if (!EmptyClipboard())
     {
         CloseClipboard();
         return;
@@ -1371,5 +1415,49 @@ void handleMoveHistory(bool forward)
             return;
         lookupManager->moveHistory(forward);
         setUI(false);
+    }
+}
+
+void SimpleOrExtendedSearch(HWND hwnd, bool simple)
+{
+    iPediaApplication& app=iPediaApplication::instance();
+    LookupManager* lookupManager=app.getLookupManager(true);
+
+    if (!fInitConnection())
+        return;
+    int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
+    TCHAR *buf = new TCHAR[len+1];
+    len = SendMessage(g_hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
+    SendMessage(g_hwndEdit, EM_SETSEL, 0,len);
+    String term(buf); 
+    delete buf;
+    if (term.empty()) 
+        return;
+    if (lookupManager && !lookupManager->lookupInProgress())
+    {
+        if (!simple)
+        {
+            lookupManager->search(term);
+            setUI(false);
+            InvalidateRect(hwnd,NULL,TRUE);
+        }
+        else
+        {
+            if (lookupManager->lookupIfDifferent(term))
+            {
+                setUI(false);
+                InvalidateRect(hwnd,NULL,TRUE);
+            }
+            else
+            {
+                if (g_isAboutVisible)
+                {
+                    g_isAboutVisible = false;
+                    setScrollBar(g_definition);
+                    setUI(true);
+                    InvalidateRect(hwnd,NULL,TRUE);                            
+                }
+            }
+        }
     }
 }

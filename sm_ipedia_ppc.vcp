@@ -2879,6 +2879,9 @@ SOURCE=.\sm_ipedia.rc
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
 
+# ADD BASE RSC /l 0x409
+# ADD RSC /l 0x409 /d "PPC"
+
 !ENDIF 
 
 # End Source File

@@ -2,29 +2,43 @@
 //
 #include "resource.h"
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// Menu
-//
 
 ID_ICON ICON "ipedia.ico"
 
+
+#ifdef WIN32_PLATFORM_PSPC
 IDR_MAIN_MENUBAR RCDATA
 BEGIN
 
 	IDR_MENU_MAIN,
-    #ifdef PPC
     4,
-	I_IMAGENONE, ID_PREV_BTN, TBSTATE_ENABLED, 
+
+    I_IMAGENONE, ID_MENU_BTN, TBSTATE_ENABLED, 
+	TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
+	IDS_MAIN_MENU_BTN, 0, 0,
+
+    I_IMAGENONE, ID_OPTIONS_MENU_BTN, TBSTATE_ENABLED, 
+	TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
+	IDS_OPTIONS_MENU_BTN, 0, 1,
+    
+
+    I_IMAGENONE, ID_PREV_BTN, TBSTATE_ENABLED, 
 	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
 	IDS_PREV_BTN, 0, NOMENU,
     
 	I_IMAGENONE, ID_NEXT_BTN, TBSTATE_ENABLED, 
 	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
 	IDS_NEXT_BTN, 0, NOMENU,
-    #else
+
+END
+
+#else
+
+IDR_MAIN_MENUBAR RCDATA
+BEGIN
+
+	IDR_MENU_MAIN,
     2,
-    #endif
     
     I_IMAGENONE, ID_SEARCH, TBSTATE_ENABLED, 
 	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
@@ -37,6 +51,39 @@ BEGIN
 
 END
 
+#endif
+
+#ifdef WIN32_PLATFORM_PSPC
+
+IDR_MENU_MAIN MENU DISCARDABLE 
+BEGIN
+    POPUP "&Dummy"
+    BEGIN
+        MENUITEM "Search"                   ID_SEARCH
+        MENUITEM "Extended search",         IDM_EXT_SEARCH          
+        MENUITEM "Ext. search results",     IDM_MENU_RESULTS
+        MENUITEM "Hyperlinks",              IDM_MENU_HYPERS
+        MENUITEM SEPARATOR
+        MENUITEM "Random article",          IDM_MENU_RANDOM
+        MENUITEM SEPARATOR 
+        MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
+        MENUITEM SEPARATOR
+        MENUITEM "Quit",                    IDOK
+        MENUITEM "Stress mode",             IDM_MENU_STRESS_MODE
+    END
+    POPUP "&Dummy"
+    BEGIN
+        MENUITEM "Register",                IDM_MENU_REGISTER
+        MENUITEM SEPARATOR
+        MENUITEM "Tutorial",                IDM_MENU_ABOUT
+        MENUITEM "ArsLexis home",           IDM_MENU_HOME
+		MENUITEM "Check updates",           IDM_MENU_UPDATES
+        MENUITEM "About",            	    IDM_MENU_ABOUT
+    END
+END
+
+#else
+
 IDR_MENU_MAIN MENU DISCARDABLE 
 BEGIN
     POPUP "&Dummy"
@@ -44,10 +91,8 @@ BEGIN
         MENUITEM "Hyperlinks",              IDM_MENU_HYPERS
         MENUITEM "Extended search",         IDM_EXT_SEARCH          
         MENUITEM "Ext. search results",     IDM_MENU_RESULTS
-#ifndef PPC
         MENUITEM "Previous",                IDM_MENU_PREV
         MENUITEM "Next",                    IDM_MENU_NEXT
-#endif
         MENUITEM "Random article",          IDM_MENU_RANDOM
         MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
         MENUITEM "Register",                IDM_MENU_REGISTER
@@ -61,6 +106,7 @@ BEGIN
         MENUITEM "Quit",                    IDOK
     END
 END
+#endif
 
 IDR_LAST_RESULTS_REFINE_MENUBAR RCDATA
 BEGIN
@@ -116,11 +162,7 @@ END
 
 STRINGTABLE DISCARDABLE
 BEGIN
-    #ifdef PPC
 	IDS_SEARCH		    "Search"
-    #else
-    IDS_SEARCH		    "Go"
-    #endif
     IDS_SELECT		    "Select"
     IDS_REGISTER        "Register"
     IDS_MENU_BTN        "Menu"
@@ -129,6 +171,8 @@ BEGIN
 	IDS_CANCEL          "Cancel"
     IDS_PREV_BTN        "Previous"
     IDS_NEXT_BTN        "Next"
+    IDS_MAIN_MENU_BTN   "Main"
+    IDS_OPTIONS_MENU_BTN "Options"
 END
 
 IDD_LAST_RESULTS DIALOG 

@@ -22,7 +22,7 @@ extern Definition *g_definition;
 extern ArsLexis::String recentWord;
 extern ArsLexis::String searchWord;
 
-BOOL GotoURL(LPCTSTR lpszUrl);
+bool GotoURL(LPCTSTR lpszUrl);
 void setupAboutWindow();
 void setMenu(HWND hwnd);
 

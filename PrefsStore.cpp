@@ -57,7 +57,7 @@ namespace ArsLexis
             case pitUInt32:
                 return sizeof(ulong_t);
             case pitStr:
-                return tstrlen(item.value.strVal)*2;
+                return tstrlen(item.value.strVal)*2+2;
         }       
         return 0;
     }

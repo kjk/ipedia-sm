@@ -18,11 +18,11 @@ RenderingPreferences::RenderingPreferences():
     
     HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
     GetObject(fnt, sizeof(logfnt), &logfnt);
-    #ifndef PPC
+#ifndef WIN32_PLATFORM_PSPC
         logfnt.lfHeight+=1;
-    #else
+#else
         logfnt.lfHeight-=1;
-    #endif
+#endif
     WinFont wfnt = WinFont(CreateFontIndirect(&logfnt));
     
     fx.setUnderline(FontEffects::underlineNone);
