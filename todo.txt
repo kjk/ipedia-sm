@@ -5,6 +5,9 @@
        is not sized correctly. Fix: remember and restore state of sip before
        bringing the dialog? Or maybe force WM_SIZE?
 ## 20. Ctrl-Q to quit on PPC
+## 21. to fix the problem that Pocket PC 2003 SE shows "this app might not 
+display correctly" during setup, I need to mark the *.cab as one handling 
+different screen orientation correctly. Need to figure what the parameter is.
 
     * POSSIBLY AFTER V1 *
 ## 1. ability to change font size (like in iNoah/sm)
