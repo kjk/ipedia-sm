@@ -419,7 +419,7 @@ static void RepaintDefiniton(int scrollDelta)
     GetClientRect(app.getMainWindow(), &clientRect);
     ArsLexis::Rectangle bounds = clientRect;
 
-    clientRect.top    += 22;
+    clientRect.top    += 24;
     clientRect.left   += 2;
     clientRect.right  -= 2 + GetScrollBarDx();
     clientRect.bottom -= 2 + g_menuDy;
@@ -679,6 +679,13 @@ static void DoRandom()
     SetUIState(false);
 }
 
+static void DoSearch(HWND hwnd)
+{
+    String term;
+    GetEditWinText(g_hwndEdit, term);            
+    DoSimpleSearch(hwnd,term);
+}
+
 static void DoRegister(HWND hwnd, const String& oldRegCode)
 {
     String newRegCode;
@@ -775,11 +782,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         // intentional fall-through
         case ID_SEARCH:
         // intentional fall-through
-            {
-                String term;
-                GetEditWinText(g_hwndEdit, term);            
-                DoSimpleSearch(hwnd,term);
-            }
+            DoSearch(hwnd);
             break;
         
         case IDM_MENU_HYPERS:
@@ -818,9 +821,11 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 static void OnCreate(HWND hwnd)
 {
     iPediaApplication &app = GetApp();
+    app.loadPreferences();
+
     g_menuDy = 0;
 #ifdef WIN32_PLATFORM_PSPC
-    g_menuDy = GetSystemMetrics(SM_CYMENU);
+    g_menuDy = GetSystemMetrics(SM_CYMENU) + 3;
 #endif
 
     // create the menu bar
@@ -1119,12 +1124,17 @@ static void OnPaint(HWND hwnd, HDC hdc, RECT rcpaint)
     }
 }
 
+bool g_fNotFirstOnSize = false;
 static void OnSize(HWND hwnd, LPARAM lp)
 {
-    static      firstWmSizeMsg = true;
-
-    if (!firstWmSizeMsg)
+    if (g_fNotFirstOnSize)
+    {
         g_menuDy = 0;
+    }
+    else
+    {
+        g_fNotFirstOnSize = true;
+    }
 
     int dx = LOWORD(lp);
     int dy = HIWORD(lp);
@@ -1142,7 +1152,12 @@ static void OnSize(HWND hwnd, LPARAM lp)
     int scrollStartY = 24;
     int scrollDy = dy - g_menuDy - scrollStartY - 2;
 
+#ifdef WIN32_PLATFORM_PSPC
+    // TODO: on first sizing, scrollDy is incorrect (3px too long)
     MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
+#else
+    MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
+#endif
 
     g_progressRect.left = (dx - GetScrollBarDx() - 155)/2;
     g_progressRect.top  = (dy-45)/2;
@@ -1154,7 +1169,6 @@ static void OnSize(HWND hwnd, LPARAM lp)
 #endif
     g_RenderingProgressReporter->setProgressArea(g_progressRect);
     g_RegistrationProgressReporter->setProgressArea(g_progressRect);
-    firstWmSizeMsg = false;
 }
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)

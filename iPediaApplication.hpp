@@ -43,7 +43,6 @@ class iPediaApplication
     
     typedef std::list<ArsLexis::String> CustomAlerts_t;
     CustomAlerts_t customAlerts_;
-    void loadPreferences();
 
     HWND hwndMain_;    
 
@@ -55,6 +54,7 @@ public:
     bool fArticleCountChecked;
 
     void savePreferences();
+    void loadPreferences();
 
     iPediaApplication();
 

@@ -12,25 +12,22 @@ using ArsLexis::status_t;
 RenderingPreferences::RenderingPreferences():
     standardIndentation_(16),
     bulletIndentation_(2),
+#ifdef DEBUG
+    backgroundColor_(RGB(12,255,12))
+#else
     backgroundColor_(RGB(255,255,255))
+#endif
 {
     FontEffects fx;
-//  LOGFONT logfnt;
-    
-//    HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
-//    GetObject(fnt, sizeof(logfnt), &logfnt);
-/*#ifndef WIN32_PLATFORM_PSPC
-        logfnt.lfHeight-=1;
-#else
-        logfnt.lfHeight-=1;
-#endif*/
-    WinFont wfnt = WinFont(13);
-    
+
+    int fontSize = 12;
+
+    WinFont wfnt = WinFont(fontSize);
+
     //fx.setUnderline(FontEffects::underlineNone);
     //wfnt.setEffects(fx);   
     styles_[styleDefault].font = wfnt;
- 
-    
+     
     fx.setUnderline(FontEffects::underlineDotted);
     for (uint_t i=0; i<hyperlinkTypesCount_; ++i) 
         hyperlinkDecorations_[i].font.setEffects(fx);
@@ -38,12 +35,10 @@ RenderingPreferences::RenderingPreferences():
     hyperlinkDecorations_[hyperlinkTerm].textColor=RGB(0,0,250);
     hyperlinkDecorations_[hyperlinkExternal].textColor=RGB(200,20,20);     
     hyperlinkDecorations_[hyperlinkBookmark].textColor=RGB(0,0,180);     
-    //logfnt.lfWeight=800;
-    //logfnt.lfHeight-=1;
 #ifdef WIN32_PLATFORM_PSPC
-    styles_[styleHeader].font=WinFont(15);
+    styles_[styleHeader].font=WinFont(fontSize+3);
 #else
-    styles_[styleHeader].font=WinFont(14);
+    styles_[styleHeader].font=WinFont(fontSize+2);
 #endif
     fx.setUnderline(FontEffects::underlineNone);
     fx.setWeight(FontEffects::weightBlack);

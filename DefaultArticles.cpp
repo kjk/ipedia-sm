@@ -30,7 +30,6 @@ void updateArticleCountEl(long articleCount, ArsLexis::String& dbTime)
     g_articleCountElement->setText(articleCountText);
 }
 
-
 static void wikipediaActionCallback(void *data)
 {
     assert(showWikipedia!=displayMode());
@@ -80,7 +79,11 @@ void prepareAbout(Definition *def)
     FontEffects fxBold;
     fxBold.setWeight(FontEffects::weightBold);
 
+#ifdef WIN32_PLATFORM_PSPC
+    elems.push_back(new LineBreakElement(1,1));
+#else
     elems.push_back(new LineBreakElement(1,10));
+#endif
 
     elems.push_back(text=new FormattedTextElement(_T("ArsLexis iPedia")));
     text->setJustification(DefinitionElement::justifyCenter);
@@ -102,7 +105,7 @@ void prepareAbout(Definition *def)
     text->setJustification(DefinitionElement::justifyCenter);
 
     elems.push_back(new LineBreakElement(1,4*divider));
-    iPediaApplication& app=iPediaApplication::instance();
+    iPediaApplication& app = GetApp();
     if (app.preferences().regCode.empty())
     {
 #ifdef WIN32_PLATFORM_PSPC

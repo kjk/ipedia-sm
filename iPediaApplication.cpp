@@ -164,13 +164,12 @@ LookupManager* iPediaApplication::getLookupManager(bool create)
 
 DWORD iPediaApplication::runEventLoop()
 {
-    loadPreferences();
     g_hwndForEvents = getMainWindow();
 
     MSG msg;
     while (true)
     {
-        ArsLexis::SocketConnectionManager* manager=0;
+        SocketConnectionManager* manager=0;
 
         if (lookupManager_)
             manager = &lookupManager_->connectionManager();
@@ -192,10 +191,10 @@ DWORD iPediaApplication::runEventLoop()
             {
                 EventType event;
                 event.eType = msg.message;
-                LookupFinishedEventData data;
-                ArsLexis::EventData i;
+                LookupFinishedEventData data = ExtractLookupFinishedEventData(msg.wParam, msg.lParam);
+                EventData i;
                 i.wParam=msg.wParam; i.lParam=msg.lParam;
-                memcpy(event.data, &i,sizeof(data));
+                memcpy(event.data, &data, sizeof(data));
                 lookupManager_->handleLookupEvent(event);
             }
     
@@ -293,14 +292,14 @@ OnError:
     return; 
 }
 
-ArsLexis::String iPediaApplication::popCustomAlert()
+String iPediaApplication::popCustomAlert()
 {
-    ArsLexis::String tmp = customAlerts_.front();
+    String tmp = customAlerts_.front();
     customAlerts_.pop_front();
     return tmp;
 }
 
-void iPediaApplication::sendDisplayCustomAlertEvent(ushort_t alertId, const ArsLexis::String& text1)
+void iPediaApplication::sendDisplayCustomAlertEvent(ushort_t alertId, const String& text1)
 {
     customAlerts_.push_back(text1);
     sendEvent(appDisplayCustomAlertEvent, DisplayAlertEventData(alertId));
@@ -320,7 +319,7 @@ void* ArsLexis::allocate(size_t size)
 
 const iPediaApplication::ErrorInfo& iPediaApplication::getErrorInfo(int alertId)
 {
-    for(int j=0; j<sizeof(ErrorsTable)/sizeof(ErrorsTable[0]); j++)
+    for (int j=0; j<sizeof(ErrorsTable)/sizeof(ErrorsTable[0]); j++)
     {
         if (ErrorsTable[j].errorCode == alertId)
             return ErrorsTable[j];
@@ -386,17 +385,14 @@ BOOL iPediaApplication::InitApplication ( HINSTANCE hInstance )
     return f;
 }
 
-bool iPediaApplication::initApplication(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     ArsLexis::String cmdLine,
-                     int cmdShow)
+bool iPediaApplication::initApplication(HINSTANCE hInstance, HINSTANCE hPrevInstance, String cmdLine, int cmdShow)
 {
     if (!hPrevInstance)
     {
         if (!InitApplication(hInstance))
             return false;
     }
-    
+
     if (!InitInstance(hInstance, cmdShow))
         return false;
     //Initialization of appilcation successful
