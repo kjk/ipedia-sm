@@ -4,6 +4,8 @@
 ## 3. fix the icon
 ## 7. improve (de-couple) LastResults.cpp dialog
 ## 8. rendering bug, see "The Doors (album)" at the end list of Personnel
+## 9. in "Extended search result", don't select any string in a list if we're 
+in the text field.
 
         *  DONE   *
 

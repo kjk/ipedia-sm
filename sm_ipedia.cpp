@@ -31,7 +31,6 @@
 
 #include "ProgressReporters.h"
 #include "LastResults.h"
-#include "Hyperlinks.h"
 #include "DefaultArticles.h"
 #include "sm_ipedia.h"
 #include "ipedia_rsc.h"
