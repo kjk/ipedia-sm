@@ -2,10 +2,9 @@
 #define __ARSLEXIS_DEFAULT_ARTICLES_H__
 
 void updateArticleCountEl(long articleCount, ArsLexis::String& dbTime);
-Definition& currentDefinition();
-void prepareAbout();
-void prepareTutorial();
-void prepareHowToRegister();
-void prepareWikipedia();
+void prepareAbout(Definition *def);
+void prepareTutorial(Definition *def);
+void prepareHowToRegister(Definition *def);
+void prepareWikipedia(Definition *def);
 
 #endif

@@ -19,21 +19,13 @@
 #define UPDATES_MENU_ITEM _T("Options/About/Check updates")
 #endif
 
-//extern HWND             g_hwndMain;
-//extern HINSTANCE        g_hInst;
-extern Definition *     g_definition;
 extern ArsLexis::String g_recentWord;
 extern ArsLexis::String g_searchWord;
 
-void setupAboutWindow();
+void SetupAboutWindow();
 void setMenu(HWND hwnd);
 void setUIState(bool enabled = true);
 
-extern Definition *g_about;
-extern Definition *g_register;
-extern Definition *g_tutorial;
-extern Definition *g_wikipedia;
-extern GenericTextElement* g_articleCountElement;
 extern long g_articleCountSet;
 extern bool g_forceLayoutRecalculation;
 

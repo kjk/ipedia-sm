@@ -72,7 +72,6 @@ Definition *g_tutorial = new Definition();
 Definition *g_wikipedia = new Definition();
 DisplayMode g_displayMode = showAbout;
 
-GenericTextElement* g_articleCountElement = NULL;
 long g_articleCountSet = -1;
 
 bool  g_forceLayoutRecalculation = false;
@@ -199,7 +198,7 @@ static void deinitConnection()
 
 void OnCreate(HWND hwnd)
 {
-    iPediaApplication &app = iPediaApplication::instance();
+    iPediaApplication &app = GetApp();
     g_scrollBarDx = GetSystemMetrics(SM_CXVSCROLL);
     g_menuDy = 0;
 #ifdef WIN32_PLATFORM_PSPC
@@ -208,8 +207,8 @@ void OnCreate(HWND hwnd)
 
     // create the menu bar
     SHMENUBARINFO mbi;
-    ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
-    mbi.cbSize = sizeof(SHMENUBARINFO);
+    ZeroMemory(&mbi, sizeof(mbi));
+    mbi.cbSize = sizeof(mbi);
     mbi.hwndParent = hwnd;
     mbi.nToolBarId = IDR_MAIN_MENUBAR;
 #ifdef WIN32_PLATFORM_PSPC
@@ -273,7 +272,6 @@ void OnCreate(HWND hwnd)
     
     g_RegistrationProgressReporter = new RenderingProgressReporter(hwnd, g_progressRect, String(_T("Registering application...")));
 
-
     g_articleCountSet = app.preferences().articleCount;
     
     g_about->setHyperlinkHandler(&app.hyperlinkHandler());
@@ -281,10 +279,10 @@ void OnCreate(HWND hwnd)
     g_register->setHyperlinkHandler(&app.hyperlinkHandler());
     g_wikipedia->setHyperlinkHandler(&app.hyperlinkHandler());
 
-    prepareAbout();
-    prepareHowToRegister();
-    prepareTutorial();
-    prepareWikipedia();
+    prepareAbout(g_about);
+    prepareHowToRegister(g_register);
+    prepareTutorial(g_tutorial);
+    prepareWikipedia(g_wikipedia);
 
     setMenu(hwnd);
     SetFocus(g_hwndEdit);
@@ -330,11 +328,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             OnCreate(hwnd);
             break;
 
+#ifdef WIN32_PLATFORM_PSPC
         case WM_SETTINGCHANGE:
         {
             SHACTIVATEINFO sai;
-            if (SPI_SETSIPINFO == wp){
-                memset(&sai, 0, sizeof(SHACTIVATEINFO));
+            if (SPI_SETSIPINFO == wp)
+            {
+                ZeroMemory(&sai, sizeof(sai));
                 SHHandleWMSettingChange(hwnd, -1 , 0, &sai);
             }
             break;
@@ -342,12 +342,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_ACTIVATE:
         {
             SHACTIVATEINFO sai;
-            if (SPI_SETSIPINFO == wp){
-                memset(&sai, 0, sizeof(SHACTIVATEINFO));
+            if (SPI_SETSIPINFO == wp)
+            {
+                ZeroMemory(&sai, sizeof(sai));
                 SHHandleWMActivate(hwnd, wp, lp, &sai, 0);
             }
             break;
         }
+#endif
         case WM_SIZE:
         {
             if (!firstWmSizeMsg)
@@ -369,8 +371,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
             g_progressRect.left = (width - g_scrollBarDx - 155)/2;
             g_progressRect.top = (height-45)/2;
-            g_progressRect.right = g_progressRect.left + 155;   
-            g_progressRect.bottom = g_progressRect.top + 45;  
+            g_progressRect.right = g_progressRect.left + 155;
+#ifdef WIN32_PLATFORM_PSPC
+            g_progressRect.bottom = g_progressRect.top + 45;
+#else
+            g_progressRect.bottom = g_progressRect.top + 55;
+#endif
             g_RenderingProgressReporter->setProgressArea(g_progressRect);
             g_RegistrationProgressReporter->setProgressArea(g_progressRect);
             firstWmSizeMsg = false;
@@ -386,7 +392,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
         case WM_PAINT:
         {
-            PAINTSTRUCT	ps;
+            PAINTSTRUCT ps;
             hdc = BeginPaint (hwnd, &ps);
             paint(hwnd, hdc, ps.rcPaint);
             EndPaint (hwnd, &ps);
@@ -427,6 +433,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             g_lbuttondown = false;
             handleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), true);
             break;
+
         case WM_VSCROLL:
         {
             switch (LOWORD(wp))
@@ -449,10 +456,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 case SB_PAGEDOWN:
                     scrollDefinition(1, scrollPage, false);
                     break;
+
                 case SB_THUMBPOSITION:
                 {
                     SCROLLINFO info;
-                    ZeroMemory(&info, sizeof(SCROLLINFO));
+                    ZeroMemory(&info, sizeof(info));
                     info.cbSize = sizeof(info);
                     info.fMask = SIF_TRACKPOS;
                     GetScrollInfo(g_hwndScroll, SB_CTL, &info);
@@ -485,8 +493,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             ArsLexis::EventData i;
             i.wParam=wp; i.lParam=lp;
             memcpy(&data, &i, sizeof(data));
-            
-            
+
             String msg;
             app.getErrorMessage(data.alertId, customAlert,msg);
             String title;
@@ -538,7 +545,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         g_definition->replaceElements(lookupManager->lastDefinitionElements());
                         g_forceLayoutRecalculation=true;
                         SendMessage(g_hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)lookupManager->lastInputTerm().c_str());
-                        //int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
                         SendMessage(g_hwndEdit, EM_SETSEL, 0, -1);
                     }
                     setScrollBar(g_definition);
@@ -560,7 +566,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     g_fRegistration = false;
                     assert(!g_newRegCode.empty());
                     // TODO: assert that it consists of numbers only
-                    iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
+                    iPediaApplication::Preferences& prefs = GetPrefs();
                     if (g_newRegCode!=prefs.regCode)
                     {
                         assert(g_newRegCode.length()<=prefs.regCodeLength);
@@ -578,7 +584,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 {
                     g_fRegistration = false;
                     setUIState(true);
-                    iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
+                    iPediaApplication::Preferences& prefs = GetPrefs();
                     int res = MessageBox(hwnd, 
                         _T("Wrong registration code. Please contact support@arslexis.com if problem persists.\n\nRe-enter the code?"),
                         _T("Wrong reg code"), MB_YESNO | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
@@ -597,18 +603,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     }
                 }
             }   
-            setupAboutWindow();
+            SetupAboutWindow();
             lookupManager->handleLookupFinishedInForm(data);
             setMenu(hwnd);
             InvalidateRect(hwnd,NULL,FALSE);
+            break;            
         }
-        break;
+
         case WM_CLOSE:
             DestroyWindow(hwnd);
             break;
+
         case WM_DESTROY:
             PostQuitMessage(0);
-        break;
+            break;
 
         default:
             lResult = DefWindowProc(hwnd, msg, wp, lp);
@@ -617,7 +625,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return lResult;
 }
 
-void OnHyperlinks(HWND hwnd)
+void OnLinkedArticles(HWND hwnd)
 {
      if (currentDefinition().empty())
        return;
@@ -708,11 +716,12 @@ void OnLastResults(HWND hwnd)
 
 LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    iPediaApplication& app=GetApp();
+    iPediaApplication& app = GetApp();
     LookupManager* lookupManager=app.getLookupManager(true);
     iPediaApplication::Preferences& prefs = GetPrefs();
 
-    if ( (NULL==lookupManager) || lookupManager->lookupInProgress())
+    // ignore them while we're doing network transfer
+    if ( (NULL==lookupManager) || app.fLookupInProgress())
         return TRUE;
 
     LRESULT lResult = TRUE;
@@ -777,17 +786,20 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         
         case IDM_MENU_HYPERS:
-            OnHyperlinks(hwnd);
+            OnLinkedArticles(hwnd);
             break;
+
         case IDM_MENU_RANDOM:
             if (!fInitConnection())
                 break;
             setUIState(false);
             lookupManager->lookupRandomTerm();
             break;
+
         case IDM_MENU_REGISTER:
             OnRegister(hwnd, prefs.regCode);
             break;
+
         case IDM_MENU_PREV:
             // intentionally fall through
         case ID_PREV_BTN:
@@ -805,7 +817,7 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         default:
-        lResult  = DefWindowProc(hwnd, msg, wp, lp);
+            lResult  = DefWindowProc(hwnd, msg, wp, lp);
     }
     return lResult;
 }
@@ -913,67 +925,71 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
             
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    iPediaApplication& app=iPediaApplication::instance();
-    switch(msg)
+    iPediaApplication& app=GetApp();
+    if (WM_KEYDOWN==msg)
     {
-        case WM_KEYDOWN:
+        if (VK_TACTION==wp)
         {
-            switch (wp) 
+            if (g_uiEnabled)
             {
-                case VK_TACTION:
-                    if (g_uiEnabled)
-                    {
-                        SendMessage(app.getMainWindow(),WM_COMMAND, ID_SEARCH, 0);
-                    }
-                    return 0; 
-                case VK_DOWN:
-                    scrollDefinition(1, scrollPage, true);
-                    return 0;
-                case VK_UP:
-                    scrollDefinition(-1, scrollPage, true);
-                    return 0;
+                SendMessage(app.getMainWindow(),WM_COMMAND, ID_SEARCH, 0);
             }
-            break;
-        }
-        /*
-        case WM_SETFOCUS:
-        {            
-            SHSipPreference(app.getMainWindow(), SIP_UP);
-            break;
-        }
-        case WM_KILLFOCUS:
+            return 0;
+        } else if (VK_DOWN==wp)
         {
-            SHSipPreference(app.getMainWindow(), SIP_DOWN);
-            break;
-        }*/
+            scrollDefinition(1, scrollPage, true);
+            return 0;
+        } else if (VK_UP==wp)
+        {
+            scrollDefinition(-1, scrollPage, true);
+            return 0;
+        }
     }
     return CallWindowProc(g_oldEditWndProc, hwnd, msg, wp, lp);
 }
 
-static void SetMenuBarButtonState(int buttonID, bool state)
+static void SetMenuBarButtonState(int buttonID, bool fEnabled)
 {
-    TBBUTTONINFO    buttonInfo;
-    
-    ZeroMemory( &buttonInfo, sizeof( TBBUTTONINFO ) );
-    buttonInfo.cbSize   = sizeof( TBBUTTONINFO );
-    buttonInfo.dwMask   = TBIF_STATE;
-    if (state)
+    TBBUTTONINFO    buttonInfo = {0};
+    buttonInfo.cbSize = sizeof( buttonInfo );
+    buttonInfo.dwMask = TBIF_STATE;
+    if (fEnabled)
         buttonInfo.fsState = TBSTATE_ENABLED;
     else
         buttonInfo.fsState = TBSTATE_INDETERMINATE;
     SendMessage( g_hWndMenuBar, TB_SETBUTTONINFO, buttonID, (LPARAM)(LPTBBUTTONINFO)&buttonInfo );
 }
 
+static bool FDefinitionHasLinks(Definition& def)
+{
+    Definition::ElementPosition_t posCur;
+    Definition::ElementPosition_t posStart = def.firstElementPosition();
+    Definition::ElementPosition_t posEnd   = def.lastElementPosition();
+    DefinitionElement *currEl;
+    for (posCur=posStart; posCur!=posEnd; posCur++)
+    {
+        currEl = *posCur;
+        if (currEl->isTextElement())
+        {
+            GenericTextElement *txtEl = (GenericTextElement*)currEl;
+            if ((txtEl->isHyperlink()) && (txtEl->hyperlinkProperties()->type==hyperlinkTerm))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void setMenu(HWND hwnd)
 {
-    Definition &def = currentDefinition();
     HWND hwndMB = SHFindMenuBar (hwnd);
     if (!hwndMB) 
         return;
 
     bool isNextHistoryElement = false;
     HMENU hMenu;
-    hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
+    hMenu = (HMENU)SendMessage(hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
     iPediaApplication& app=iPediaApplication::instance();
     LookupManager* lookupManager=app.getLookupManager(true);
     
@@ -988,56 +1004,55 @@ void setMenu(HWND hwnd)
     EnableMenuItem(hMenu, IDM_MENU_NEXT, nextHistoryTermEnabled);
 
     unsigned int previousHistoryTermEnabled = MF_GRAYED;
-    if (lookupManager->hasPreviousHistoryTerm()||
-        ( (displayMode()!=showArticle)&&(!g_definition->empty()) )
+    if (lookupManager->hasPreviousHistoryTerm() ||
+        ( (displayMode()!=showArticle) && (!g_definition->empty()) )
        )
+    {
         previousHistoryTermEnabled = MF_ENABLED;
+    }
 
     EnableMenuItem(hMenu, IDM_MENU_PREV, previousHistoryTermEnabled);
     
     unsigned int clipboardEnabled = MF_GRAYED;
+    Definition &def = currentDefinition();
     if (!def.empty())
+    {
         clipboardEnabled = MF_ENABLED;
+    }
     EnableMenuItem(hMenu, IDM_MENU_CLIPBOARD, clipboardEnabled);
 
 #ifdef WIN32_PLATFORM_PSPC
-    //SetMenuBarButtonState(ID_SEARCH_BTN2, g_uiEnabled);
     if (g_uiEnabled)
     {
-        SetMenuBarButtonState(ID_NEXT_BTN, lookupManager->hasNextHistoryTerm());
-        SetMenuBarButtonState(ID_PREV_BTN, 
-            lookupManager->hasPreviousHistoryTerm()||
-            ((displayMode()!=showArticle)&&(!g_definition->empty())));
+        bool fEnabled = false;
+        if (lookupManager->hasNextHistoryTerm())
+            fEnabled = true;
+        SetMenuBarButtonState(ID_NEXT_BTN, fEnabled);
+
+        fEnabled = false;
+        if (lookupManager->hasPreviousHistoryTerm() || 
+            ((displayMode()!=showArticle) && (!g_definition->empty())) )
+        {
+            fEnabled = true;
+        }
+        SetMenuBarButtonState(ID_PREV_BTN, fEnabled);
     }
 #endif
 
-    EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_GRAYED);
-    Definition::ElementPosition_t pos;
-    for(pos=def.firstElementPosition();
-        pos!=def.lastElementPosition();
-        pos++)
-    {
-        DefinitionElement *curr=*pos;
-        if (curr->isTextElement())
-        {
-            GenericTextElement *txtEl=(GenericTextElement*)curr;
-            if ((txtEl->isHyperlink())&&(txtEl->hyperlinkProperties()->type==hyperlinkTerm))
-            {
-                EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_ENABLED);
-                return;
-            }
-        }
-    }
+    if (FDefinitionHasLinks(def))
+        EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_ENABLED);
+    else
+        EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_GRAYED);
 }
 
-void setupAboutWindow()
+void SetupAboutWindow()
 {
-    iPediaApplication &app=iPediaApplication::instance();
-    if (app.preferences().articleCount!=-1)
+    iPediaApplication &app = GetApp();
+    if (-1!=app.preferences().articleCount)
     {
         g_articleCountSet = app.preferences().articleCount;
         updateArticleCountEl(app.preferences().articleCount, app.preferences().databaseTime);
-        prepareAbout();
+        prepareAbout(g_about);
         g_forceAboutRecalculation = true;
     }    
 }
@@ -1075,9 +1090,8 @@ void setUIState(bool enabled)
 
 void handleExtendSelection(HWND hwnd, int x, int y, bool finish)
 {
-    iPediaApplication& app=iPediaApplication::instance();
-    const LookupManager* lookupManager=app.getLookupManager();
-    if (lookupManager && lookupManager->lookupInProgress())
+    iPediaApplication& app = GetApp();
+    if (app.fLookupInProgress())
         return;
     Definition &def = currentDefinition();
     if (def.empty())
@@ -1089,19 +1103,21 @@ void handleExtendSelection(HWND hwnd, int x, int y, bool finish)
 
 void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
 {
-    iPediaApplication &app = iPediaApplication::instance();
-    const LookupManager* lookupManager = app.getLookupManager();
+    iPediaApplication& app = GetApp();
+    if (app.fLookupInProgress())
+        return;
+
+    if (g_recalculationInProgress)
+        return;
+
     Definition &def = currentDefinition();
     if (def.empty())
         return;
-    if (lookupManager && lookupManager->lookupInProgress())
-        return;
-    if (g_recalculationInProgress)
-        return;
-    switch(unit)
+
+    switch (unit)
     {
         case scrollPage:
-            units*=(def.shownLinesCount());
+            units = units * def.shownLinesCount();
             break;
         case scrollEnd:
             units = def.totalLinesCount();
@@ -1118,9 +1134,10 @@ void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
 
 void repaintDefiniton(int scrollDelta)
 {
-    iPediaApplication& app = iPediaApplication::instance();
+    iPediaApplication& app = GetApp();
     const RenderingPreferences& prefs = app.preferences().renderingPreferences;
-    Definition &def=currentDefinition();
+    Definition &def = currentDefinition();
+
     RECT rect;
     GetClientRect (app.getMainWindow(), &rect);
     ArsLexis::Rectangle bounds=rect;
@@ -1177,12 +1194,14 @@ void repaintDefiniton(int scrollDelta)
 
 void CopyToClipboard()
 {
-    iPediaApplication& app=iPediaApplication::instance();
+    iPediaApplication& app = GetApp();
 
     if (g_definition->empty())
         return;
+
     if (!OpenClipboard(app.getMainWindow()))
         return;
+
     if (!EmptyClipboard())
     {
         CloseClipboard();
@@ -1194,9 +1213,9 @@ void CopyToClipboard()
     
     char_t *hLocal;
     int len = text.length();
-    hLocal = (char_t*) LocalAlloc (LPTR, len*2+2);
+    hLocal = (char_t*) LocalAlloc (LPTR, (len+1)*sizeof(char_t));
     
-    memcpy(hLocal, text.c_str(), len*2);
+    memcpy(hLocal, text.c_str(), len*sizeof(char_t));
 
     SetClipboardData(CF_UNICODETEXT, hLocal);
     CloseClipboard();
@@ -1204,8 +1223,8 @@ void CopyToClipboard()
 
 static void handleMoveHistory(bool forward)
 {
-    iPediaApplication& app=iPediaApplication::instance();
-    LookupManager* lookupManager=app.getLookupManager(true);
+    iPediaApplication& app = GetApp();
+
     if (displayMode()!=showArticle)
     {
         if (!g_definition->empty())
@@ -1219,7 +1238,9 @@ static void handleMoveHistory(bool forward)
             return;
         }
     }
-    if (lookupManager && !lookupManager->lookupInProgress())
+
+    LookupManager* lookupManager=app.getLookupManager(true);
+    if (!app.fLookupInProgress())
     {
         if (!fInitConnection())
             return;
@@ -1238,33 +1259,25 @@ void moveHistoryBack()
     handleMoveHistory(false);
 }
 
-
 void SimpleOrExtendedSearch(HWND hwnd, bool simple)
 {
-    iPediaApplication& app=iPediaApplication::instance();
-    LookupManager* lookupManager=app.getLookupManager(true);
-
-    if (!fInitConnection())
-        return;
-    int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
-    TCHAR *buf = new TCHAR[len+1];
-    len = SendMessage(g_hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
-    //SendMessage(g_hwndEdit, EM_SETSEL, 0, -1);
-    String term(buf); 
-    delete buf;
+    String term;
+    GetEditWinText(g_hwndEdit, term);
     if (term.empty()) 
         return;
 
-    if ((NULL==lookupManager) || lookupManager->lookupInProgress())
+    if (!fInitConnection())
         return;
 
-    if (!simple)
-    {
-        lookupManager->search(term);
-        setUIState(false);
-        InvalidateRect(hwnd,NULL,FALSE);
-    }
-    else
+    iPediaApplication& app = GetApp();
+    LookupManager* lookupManager = app.getLookupManager(true);
+    if (NULL==lookupManager)
+        return;
+
+    if (app.fLookupInProgress())
+        return;
+
+    if (simple)
     {
         if (lookupManager->lookupIfDifferent(term))
         {
@@ -1281,5 +1294,11 @@ void SimpleOrExtendedSearch(HWND hwnd, bool simple)
                 InvalidateRect(hwnd,NULL,FALSE);                            
             }
         }
+    }
+    else
+    {
+        lookupManager->search(term);
+        setUIState(false);
+        InvalidateRect(hwnd,NULL,FALSE);
     }
 }

@@ -9,6 +9,8 @@
 
 using namespace ArsLexis;
 
+GenericTextElement* g_articleCountElement = NULL;
+
 void updateArticleCountEl(long articleCount, ArsLexis::String& dbTime)
 {
     assert(NULL!=g_articleCountElement);
@@ -67,7 +69,7 @@ static void randomArticleActionCallback(void *data)
     SendMessage(iPediaApplication::instance().getMainWindow(), WM_COMMAND, IDM_MENU_RANDOM, 0);
 }
 
-void prepareAbout()
+void prepareAbout(Definition *def)
 {
     int divider = 2;
 #ifdef WIN32_PLATFORM_PSPC
@@ -77,9 +79,6 @@ void prepareAbout()
     FormattedTextElement* text;
     FontEffects fxBold;
     fxBold.setWeight(FontEffects::weightBold);
-
-    /* FontEffects fxSmall;
-    fxSmall.setSmall(true); */
 
     elems.push_back(new LineBreakElement(1,10));
 
@@ -169,22 +168,26 @@ void prepareAbout()
     text->setHyperlink(_T("Tutorial"), hyperlinkTerm);
     text->setActionCallback( tutorialActionCallback, NULL);
 #else
-    /* elems.push_back(new LineBreakElement(1,2));
+    /*
+    FontEffects fxSmall;
+    fxSmall.setSmall(true);
+
+    elems.push_back(new LineBreakElement(1,2));
     elems.push_back(text=new FormattedTextElement(_T("Downloading uses data connection")));
     text->setJustification(DefinitionElement::justifyCenter);
     text->setEffects(fxSmall); */
 #endif
 
-    (*g_about).replaceElements(elems);    
+    def->replaceElements(elems);
 }
 
 // TODO: make those on-demand only to save memory
-void prepareTutorial()
+void prepareTutorial(Definition *def)
 {
     Definition::Elements_t elems;
     FormattedTextElement* text;
 
-    assert( (*g_tutorial).empty() );
+    assert( def->empty() );
     
     ParagraphElement* parent=0; 
     
@@ -305,7 +308,7 @@ void prepareTutorial()
     text->setHyperlink(_T("Main screen"), hyperlinkTerm);
     text->setActionCallback( aboutActionCallback, NULL );
 
-    (*g_tutorial).replaceElements(elems);
+    def->replaceElements(elems);
 }
 
 static void registerActionCallback(void *data)
@@ -315,12 +318,12 @@ static void registerActionCallback(void *data)
 }
 
 // TODO: make those on-demand only to save memory
-void prepareHowToRegister()
+void prepareHowToRegister(Definition *def)
 {
     Definition::Elements_t elems;
     FormattedTextElement* text;
 
-    assert( (*g_register).empty() );
+    assert( def->empty() );
 
     FontEffects fxBold;
     fxBold.setWeight(FontEffects::weightBold);
@@ -366,15 +369,15 @@ void prepareHowToRegister()
     text->setHyperlink(_T("Main screen"), hyperlinkTerm);
     text->setActionCallback( aboutActionCallback, NULL );
 
-    (*g_register).replaceElements(elems);
+    def->replaceElements(elems);
 }
 
-void prepareWikipedia()
+void prepareWikipedia(Definition *def)
 {
     Definition::Elements_t elems;
     FormattedTextElement* text;
 
-    assert( (*g_wikipedia).empty() );
+    assert( def->empty() );
 
     FontEffects fxBold;
     fxBold.setWeight(FontEffects::weightBold);
@@ -396,5 +399,5 @@ void prepareWikipedia()
     text->setHyperlink(_T("Main screen"), hyperlinkTerm);
     text->setActionCallback( aboutActionCallback, NULL );
 
-    (*g_wikipedia).replaceElements(elems);
+    def->replaceElements(elems);
 }    

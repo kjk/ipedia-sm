@@ -168,7 +168,7 @@ LookupManager* iPediaApplication::getLookupManager(bool create)
 DWORD iPediaApplication::runEventLoop()
 {
     loadPreferences();
-    setupAboutWindow();
+    SetupAboutWindow();
     setMenu(hwndMain_);
     InvalidateRect(hwndMain_,NULL,FALSE);
 
