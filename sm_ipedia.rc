@@ -7,6 +7,8 @@
 // Menu
 //
 
+ID_ICON ICON "ipedia.ico"
+
 IDR_MAIN_MENUBAR RCDATA
 BEGIN
 

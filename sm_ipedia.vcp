@@ -112,6 +112,7 @@ LINK32=link.exe
 # PROP CPU_ID "{D6518FF3-710F-11D3-99F2-00105A0DF099}"
 # PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
 # PROP Ignore_Export_Lib 0
+# PROP Sec_ConfigureDevice 0
 # PROP Target_Dir ""
 RSC=rc.exe
 # ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
@@ -145,6 +146,7 @@ LINK32=link.exe
 # PROP CPU_ID "{D6518FF3-710F-11D3-99F2-00105A0DF099}"
 # PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
 # PROP Ignore_Export_Lib 0
+# PROP Sec_ConfigureDevice 0
 # PROP Target_Dir ""
 RSC=rc.exe
 # ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
@@ -2173,9 +2175,6 @@ DEP_CPP_PREFS=\
 	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
 	
 
 !ENDIF 
@@ -2704,9 +2703,7 @@ DEP_CPP_SM_IP=\
 	{$(INCLUDE)}"connmgr.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
 	{$(INCLUDE)}"uniqueid.h"\
-	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ENDIF 
