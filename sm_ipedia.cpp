@@ -93,11 +93,6 @@ WNDPROC   g_oldEditWndProc   = NULL;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
-void handleExtendSelection(HWND hwnd, int x, int y, bool finish);
-
-void RepaintDefiniton(int scrollDelta);
-void setScrollBar(Definition* definition);
-
 /*DWORD WINAPI formattingThreadProc(LPVOID lpParameter)
 {
     RepaintDefiniton(0);
@@ -248,7 +243,7 @@ void OnLinkedArticles(HWND hwnd)
     }
 }
 
-void setScrollBar(Definition* definition)
+static void SetScrollBar(Definition* definition)
 {
     int first=0;
     int total=0;
@@ -402,7 +397,7 @@ void SetUIState(bool enabled)
     g_uiEnabled = enabled;
 }
 
-void handleExtendSelection(HWND hwnd, int x, int y, bool finish)
+static void HandleExtendSelection(HWND hwnd, int x, int y, bool finish)
 {
     iPediaApplication& app = GetApp();
     if (app.fLookupInProgress())
@@ -421,15 +416,15 @@ static void RepaintDefiniton(int scrollDelta)
     const RenderingPreferences& prefs = app.preferences().renderingPreferences;
     Definition &def = currentDefinition();
 
-    RECT rect;
-    GetClientRect(app.getMainWindow(), &rect);
-    ArsLexis::Rectangle bounds=rect;
-    
-    rect.top    += 22;
-    rect.left   += 2;
-    rect.right  -= 2 + GetScrollBarDx();
-    rect.bottom -= 2 + g_menuDy;
-    ArsLexis::Rectangle defRect=rect;
+    RECT clientRect;
+    GetClientRect(app.getMainWindow(), &clientRect);
+    ArsLexis::Rectangle bounds = clientRect;
+
+    clientRect.top    += 22;
+    clientRect.left   += 2;
+    clientRect.right  -= 2 + GetScrollBarDx();
+    clientRect.bottom -= 2 + g_menuDy;
+    ArsLexis::Rectangle defRect = clientRect;
     
     Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
     if ( (true == g_forceAboutRecalculation) && (displayMode() == showAbout) )
@@ -468,7 +463,7 @@ static void RepaintDefiniton(int scrollDelta)
             def.render(gr, defRect, prefs, g_forceLayoutRecalculation);
     }
 
-    setScrollBar(&def);
+    SetScrollBar(&def);
     if (g_forceLayoutRecalculation)
         PostMessage(app.getMainWindow(),WM_COMMAND, IDM_ENABLE_UI, 0);
     g_forceLayoutRecalculation = false;
@@ -567,7 +562,7 @@ static void MoveHistoryForwardOrBack(bool forward)
         if (!g_definition->empty())
         {
             setDisplayMode(showArticle);
-            setScrollBar(g_definition);
+            SetScrollBar(g_definition);
             InvalidateRect(app.getMainWindow(), NULL, false);
             return;
         }
@@ -621,7 +616,7 @@ static void SimpleOrExtendedSearch(HWND hwnd, String& term, bool simple)
             if (displayMode()!=showArticle)
             {
                 setDisplayMode(showArticle);
-                setScrollBar(g_definition);
+                SetScrollBar(g_definition);
                 SetUIState(true);
                 InvalidateRect(hwnd,NULL,FALSE);                            
             }
@@ -756,14 +751,14 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case IDM_MENU_ABOUT:
             setDisplayMode(showAbout);
             SetMenu(hwnd);
-            setScrollBar(g_about);
+            SetScrollBar(g_about);
             InvalidateRect(hwnd,NULL,FALSE);
             break;
         
         case IDM_MENU_TUTORIAL:
             setDisplayMode(showTutorial);
             SetMenu(hwnd);
-            setScrollBar(g_about);
+            SetScrollBar(g_about);
             InvalidateRect(hwnd,NULL,FALSE);
             break;
         
@@ -878,7 +873,7 @@ static void OnCreate(HWND hwnd)
         app.getApplicationHandle(),
         NULL);
 
-    setScrollBar(g_about);
+    SetScrollBar(g_about);
     (void)SendMessage(
         mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK,
         MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
@@ -967,7 +962,7 @@ static void DoHandleArticleBody()
         SetEditWinText(g_hwndEdit,lookupManager->lastSearchTerm());
         SendMessage(g_hwndEdit, EM_SETSEL, 0, -1);
     }
-    setScrollBar(g_definition);
+    SetScrollBar(g_definition);
     setDisplayMode(showArticle);
     SetFocus(g_hwndEdit);
     InvalidateRect(app.getMainWindow(), NULL, FALSE);
@@ -1145,7 +1140,7 @@ static void OnSize(HWND hwnd, LPARAM lp)
     MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
 #endif
 
-    MoveWindow(g_hwndScroll, dx-GetScrollBarDx() , 28 , GetScrollBarDx(), dy-28-g_menuDy, FALSE);
+    MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), 28, GetScrollBarDx(), dy-28-g_menuDy, FALSE);
 
     g_progressRect.left = (dx - GetScrollBarDx() - 155)/2;
     g_progressRect.top  = (dy-45)/2;
@@ -1263,17 +1258,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         
         case WM_LBUTTONDOWN:
             g_lbuttondown = true;
-            handleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), false);
+            HandleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), false);
             break;
         
         case WM_MOUSEMOVE:
             if (g_lbuttondown)
-                handleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), false);
+                HandleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), false);
             break;
         
         case WM_LBUTTONUP:
             g_lbuttondown = false;
-            handleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), true);
+            HandleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), true);
             break;
 
         case WM_VSCROLL:
