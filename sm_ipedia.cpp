@@ -35,14 +35,12 @@
 #include "sm_ipedia.h"
 #include "ipedia_rsc.h"
 
-using ArsLexis::String;
-using ArsLexis::Graphics;
-using ArsLexis::char_t;
+using namespace ArsLexis;
 
 // holds new registration code being checked while we send the request to
 // server to check it.
 // TODO: we should stick it in preferences
-ArsLexis::String g_newRegCode;
+String g_newRegCode;
 
 bool g_fRegistration = false;
 
@@ -87,9 +85,6 @@ void CopyToClipboard();
 static int  g_stressModeCnt = 0;
 
 bool g_uiEnabled = true;
-
-String g_recentWord;
-String g_searchWord;
 
 HWND      g_hwndEdit         = NULL;
 HWND      g_hwndScroll       = NULL;
@@ -174,7 +169,7 @@ static bool fInitConnection()
 
     if (NULL==g_hConnection)
     {
-        ArsLexis::String errorMsg = _T("Unable to connect");
+        String errorMsg = _T("Unable to connect");
         errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
         iPediaApplication& app = GetApp();
         MessageBox(app.getMainWindow(), errorMsg.c_str(), _T("Error"), MB_OK | MB_ICONERROR | MB_APPLMODAL | MB_SETFOREGROUND );
@@ -252,10 +247,6 @@ void OnLinkedArticles(HWND hwnd)
 
     if (NULL!=txtElMatching)
     {
-        // TODO: is this necessary?
-        g_searchWord.assign(selectedString);
-        g_recentWord.assign(selectedString);
-        
         txtElMatching->performAction(currentDefinition());
     }
 }
@@ -410,7 +401,7 @@ static void SetMenu(HWND hwnd)
     LookupManager* lookupManager=app.getLookupManager(true);
     
     unsigned int lastSearchResultEnabled = MF_GRAYED;
-    if (!lookupManager->lastSearchResults().empty())
+    if (!lookupManager->lastExtendedSearchResults().empty())
         lastSearchResultEnabled = MF_ENABLED;
     EnableMenuItem(hMenu, IDM_MENU_RESULTS, lastSearchResultEnabled);
     
@@ -694,11 +685,9 @@ void MoveHistoryBack()
     MoveHistoryForwardOrBack(false);
 }
 
-static void SimpleOrExtendedSearch(HWND hwnd, bool simple)
+static void SimpleOrExtendedSearch(HWND hwnd, String& term, bool simple)
 {
-    String term;
-    GetEditWinText(g_hwndEdit, term);
-    if (term.empty()) 
+    if (term.empty())
         return;
 
     if (!fInitConnection())
@@ -738,34 +727,41 @@ static void SimpleOrExtendedSearch(HWND hwnd, bool simple)
     }
 }
 
-static void DoSimpleSearch(HWND hwnd)
+static void DoSimpleSearch(HWND hwnd, String& term)
 {
-    SimpleOrExtendedSearch(hwnd, true);
+    SimpleOrExtendedSearch(hwnd, term, true);
 }
 
-static void DoExtendedSearch(HWND hwnd)
+static void DoExtendedSearch(HWND hwnd, String& term)
 {
-    SimpleOrExtendedSearch(hwnd, false);
+    SimpleOrExtendedSearch(hwnd, term, false);
 }
 
-static void DoLastResults(HWND hwnd)
+static void DoExtSearchResults(HWND hwnd)
 {
     iPediaApplication& app=GetApp();
     if (app.fLookupInProgress())
         return;
 
     LookupManager* lookupManager = app.getLookupManager(true);
-    int res = DialogBox(app.getApplicationHandle(), MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc);
-    if (LR_DO_LOOKUP_IF_DIFFERENT==res)
+    String lastSearchResults = lookupManager->lastExtendedSearchResults();
+
+    CharPtrList_t strList;
+    AddLinesToList(lastSearchResults, strList);
+    String strResult;
+    int res = ExtSearchResultsDlg(hwnd, strList, strResult);
+
+    if (EXT_RESULTS_REFINE==res)
     {
-        lookupManager->lookupIfDifferent(g_searchWord);
-        SetUIState(false);
-        InvalidateRect(hwnd,NULL,FALSE);
-    } else if (LR_DO_REFINE==res)
+        String newExtendedSearchTerm;
+        newExtendedSearchTerm.assign(lookupManager->lastExtendedSearchTerm());
+        newExtendedSearchTerm.append(_T(" "));
+        newExtendedSearchTerm.append(strResult);
+        DoExtendedSearch(hwnd, newExtendedSearchTerm);
+    } 
+    else if (EXT_RESULTS_SELECT==res)
     {
-        lookupManager->lookupIfDifferent(g_searchWord);
-        SetUIState(false);
-        InvalidateRect(hwnd,NULL,FALSE);
+        DoSimpleSearch(hwnd, strResult);
     }
 }    
 
@@ -864,7 +860,11 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         
         case IDM_EXT_SEARCH:
-            DoExtendedSearch(hwnd);
+            {
+                String term;
+                GetEditWinText(g_hwndEdit, term);            
+                DoExtendedSearch(hwnd,term);
+            }
             break;
         
         case ID_SEARCH_BTN:
@@ -873,7 +873,11 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         // intentional fall-through
         case ID_SEARCH:
         // intentional fall-through
-            DoSimpleSearch(hwnd);
+            {
+                String term;
+                GetEditWinText(g_hwndEdit, term);            
+                DoSimpleSearch(hwnd,term);
+            }
             break;
         
         case IDM_MENU_HYPERS:
@@ -901,9 +905,8 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_MENU_RESULTS:
-            DoLastResults(hwnd);
+            DoExtSearchResults(hwnd);
             break;
-
         default:
             lResult  = DefWindowProc(hwnd, msg, wp, lp);
     }
@@ -1055,7 +1058,7 @@ static void DoHandleArticleBody()
     {
         g_definition->replaceElements(lookupManager->lastDefinitionElements());
         g_forceLayoutRecalculation=true;
-        SetEditWinText(g_hwndEdit,lookupManager->lastInputTerm());
+        SetEditWinText(g_hwndEdit,lookupManager->lastSearchTerm());
         SendMessage(g_hwndEdit, EM_SETSEL, 0, -1);
     }
     setScrollBar(g_definition);
@@ -1095,7 +1098,6 @@ static void DoHandleLookupFinished(HWND hwnd, WPARAM wp, LPARAM lp)
             break;
 
         case LookupFinishedEventData::outcomeList:
-            g_recentWord.assign(lookupManager->lastInputTerm());
             SendMessage(hwnd, WM_COMMAND, IDM_MENU_RESULTS, 0);
             SetUIState(true);
             break;

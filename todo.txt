@@ -1,9 +1,7 @@
-## 9. improve (de-couple) LastResults.cpp dialog
 ## 16. on ppc, fix the progress dialog (font doesn't show on ppc 2003/dell axim 
 30 although it does show on emu 2002)
 ## 14. try to eliminate the delay between pressing "Lookup" and showing the progress
        dialog on sm
-## 17. make a separate pocket pc 2003 build
 
     * POSSIBLY AFTER V1 *
 ## 13. in PPC, when SIP state is changed in enter reg code dialog and we get back
@@ -20,6 +18,10 @@
 "Cancel" button and progress report.
 
         *  DONE   *
+
+## 17. make a separate pocket pc 2003 build (2004-08-18)
+
+## 9. improve (de-couple) LastResults.cpp dialog (2004-08-18)
 
 ## 9. sm, in "Extended search result", don't select any string in a list if we're 
 in the text field. (2004-08-18)

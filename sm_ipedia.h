@@ -22,9 +22,6 @@
 #define UPDATES_MENU_ITEM _T("Options/About/Check updates")
 #endif
 
-extern ArsLexis::String g_recentWord;
-extern ArsLexis::String g_searchWord;
-
 void SetUIState(bool enabled = true);
 
 extern long g_articleCountSet;

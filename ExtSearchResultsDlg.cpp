@@ -8,9 +8,14 @@ using namespace ArsLexis;
 
 static WNDPROC oldResultsListWndProc = NULL;
 static WNDPROC oldResultsEditWndProc = NULL;
-static HWND    g_hLastResultsDlg  = NULL;
 
-static CharPtrList_t g_strList;
+// TODO: should be able to eliminate g_hDlg. Just need to know the API
+// for finding parent dialog based on hwnd of a control
+static HWND    g_hDlg  = NULL;
+
+static CharPtrList_t*  g_strList=NULL;
+static String          g_editBoxTxt;
+static String          g_listCtrlSelectedTxt;
 
 #define HOT_KEY_ACTION 0x32
 #define HOT_KEY_UP     0x33
@@ -66,9 +71,8 @@ LRESULT CALLBACK ResultsEditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     if (WM_SETFOCUS==msg)
     {               
-        if (!SetRefineMenu(g_hLastResultsDlg))
+        if (!SetRefineMenu(g_hDlg))
             return FALSE;
-        // return TRUE;
     }
 
     return CallWindowProc(oldResultsEditWndProc, hwnd, msg, wp, lp);
@@ -80,7 +84,7 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
     if (WM_SETFOCUS==msg)
     {
-        if (!SetSearchMenu(g_hLastResultsDlg))
+        if (!SetSearchMenu(g_hDlg))
             return FALSE;
         SendMessage (hwnd, LB_SETCURSEL, 0, 0);
         return TRUE;
@@ -93,13 +97,13 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         {
             case HOT_KEY_ACTION:
                 currSelection = SendMessage (hwnd, LB_GETCURSEL, 0, 0);
-                SendMessage(g_hLastResultsDlg, WM_COMMAND, ID_REFINE, 0);
+                SendMessage(g_hDlg, WM_COMMAND, ID_REFINE, 0);
                 break;
             case HOT_KEY_UP:
                 currSelection = SendMessage (hwnd, LB_GETCURSEL, 0, 0);
                 if (0==currSelection)
                 {
-                    HWND ctrl=GetDlgItem(g_hLastResultsDlg, IDC_REFINE_EDIT);                    
+                    HWND ctrl=GetDlgItem(g_hDlg, IDC_REFINE_EDIT);                    
                     SetFocus(ctrl);
                     SendMessage (hwnd, LB_SETCURSEL, -1, 0);
                 }
@@ -126,23 +130,19 @@ static void OnSize(HWND hDlg, WPARAM wp, LPARAM lp)
 static void DoRefine(HWND hDlg)
 {
     HWND hwndEdit = GetDlgItem(hDlg, IDC_REFINE_EDIT);
-    String txt;
-    GetEditWinText(hwndEdit, txt);
-    if (txt.empty())
+    GetEditWinText(hwndEdit, g_editBoxTxt);
+    if (g_editBoxTxt.empty())
         return;
-
-    g_recentWord += _T(" ");
-    g_recentWord += txt;
-    g_searchWord.assign(g_recentWord);
-    EndDialog(hDlg, LR_DO_REFINE);
+    
+    EndDialog(hDlg, EXT_RESULTS_REFINE);
 }
     
 static void DoSelect(HWND hDlg)
 {
     HWND ctrl = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
-    bool fSelected = FGetListSelectedItemText(ctrl, g_searchWord);
+    bool fSelected = ListCtrlGetSelectedItemText(ctrl, g_listCtrlSelectedTxt);
     if (fSelected)
-        EndDialog(hDlg, LR_DO_LOOKUP_IF_DIFFERENT);
+        EndDialog(hDlg, EXT_RESULTS_SELECT);
 }
 
 static void DoSelectOrRefine(HWND hDlg)
@@ -153,12 +153,43 @@ static void DoSelectOrRefine(HWND hDlg)
         DoSelect(hDlg);
 }
 
-BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+static bool FInitDlg(HWND hDlg)
+{
+    // Specify that the dialog box should stretch full screen
+    SHINITDLGINFO shidi = {0};
+    shidi.dwMask  = SHIDIM_FLAGS;
+    shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;
+    shidi.hDlg    = hDlg;
+
+    // If we could not initialize the dialog box, return an error
+    if (!SHInitDialog(&shidi))
+        return false;
+
+    if (!SetRefineMenu(hDlg))
+        return false;
+
+    g_hDlg = hDlg;
+
+    HWND EditCrl = GetDlgItem(hDlg, IDC_REFINE_EDIT);
+    oldResultsEditWndProc = (WNDPROC)SetWindowLong(EditCrl, GWL_WNDPROC, (LONG)ResultsEditWndProc);
+
+    HWND ctrlList = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
+    oldResultsListWndProc = (WNDPROC)SetWindowLong(ctrlList, GWL_WNDPROC, (LONG)ResultsListWndProc);
+    RegisterHotKey(ctrlList, HOT_KEY_ACTION, 0, VK_TACTION);
+    RegisterHotKey(ctrlList, HOT_KEY_UP,     0, VK_TUP);
+    ListCtrlFillFromList(ctrlList, *g_strList, false);
+    SendMessage (ctrlList, LB_SETCURSEL, -1, 0);
+    UpdateWindow(ctrlList);
+
+    return true;
+}
+
+static BOOL CALLBACK ExtSearchResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg)
     {
         case WM_INITDIALOG:
-            return FInitLastResults(hDlg) ? TRUE : FALSE;
+            return FInitDlg(hDlg) ? TRUE : FALSE;
 
         case WM_SIZE:
             OnSize(hDlg,wp,lp);
@@ -169,7 +200,7 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
             switch (wp)
             {
                 case ID_CANCEL:
-                    EndDialog(hDlg, LR_CANCEL_PRESSED);
+                    EndDialog(hDlg, EXT_RESULTS_CANCEL);
                     break;
 
                 case ID_REFINE:  // no break is intentional
@@ -190,81 +221,24 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
     return FALSE;
 }
 
-bool FInitLastResults(HWND hDlg)
+int ExtSearchResultsDlg(HWND hwnd, CharPtrList_t& strList, String& strOut)
 {
-    // Specify that the dialog box should stretch full screen
-    SHINITDLGINFO shidi = {0};
-    shidi.dwMask  = SHIDIM_FLAGS;
-    shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;
-    shidi.hDlg    = hDlg;
+    g_strList = &strList;
 
-    // If we could not initialize the dialog box, return an error
-    if (!SHInitDialog(&shidi))
-        return false;
+    int res = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,ExtSearchResultsDlgProc);
 
-    if (!SetRefineMenu(hDlg))
-        return false;
-
-    g_hLastResultsDlg = hDlg;
-
-    HWND ctrlList = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
-    oldResultsListWndProc = (WNDPROC)SetWindowLong(ctrlList, GWL_WNDPROC, (LONG)ResultsListWndProc);
-    RegisterHotKey(ctrlList, HOT_KEY_ACTION, 0, VK_TACTION);
-    RegisterHotKey(ctrlList, HOT_KEY_UP,     0, VK_TUP);
-
-    HWND EditCrl = GetDlgItem(hDlg, IDC_REFINE_EDIT);
-    oldResultsEditWndProc = (WNDPROC)SetWindowLong(EditCrl, GWL_WNDPROC, (LONG)ResultsEditWndProc);
-
-    iPediaApplication& app = GetApp();
-    LookupManager* lookupManager=app.getLookupManager();
-    
-    ArsLexis::String   listPositionsString;
-    if (lookupManager)
+    if (EXT_RESULTS_SELECT==res)
     {
-        listPositionsString=lookupManager->lastSearchResults();
-        String::iterator end(listPositionsString.end());
-        String::iterator lastStart=listPositionsString.begin();
-        for (String::iterator it=listPositionsString.begin(); it!=end; ++it)
-        {
-            if ('\n'==*it)
-            {
-                char_t* start = &(*lastStart);
-                lastStart = it;
-                ++lastStart;
-                *it = chrNull;
-                SendMessage(ctrlList, LB_ADDSTRING, 0, (LPARAM)start);
-            }
-        }
-    }
-    SendMessage (ctrlList, LB_SETCURSEL, -1, 0);
-    UpdateWindow(ctrlList);
-    return true;
-}
-
-enum RefineDlgResult {
-    REFINE_DLG_REFINE,
-    REFINE_DLG_SEARCH,
-    REFINE_DLG_CANCEL
-};
-
-RefineDlgResult DoRefineDlg(HWND hwnd, CharPtrList_t strList, String& strOut)
-{
-    g_strList = strList;
-
-    int res = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc);
-
-    if (LR_DO_LOOKUP_IF_DIFFERENT==res)
-    {
-        // TODO: put string
-        return REFINE_DLG_SEARCH;
+        strOut.assign(g_listCtrlSelectedTxt);
+        return res;
     }
 
-    if (LR_DO_REFINE==res)
+    if (EXT_RESULTS_REFINE==res)
     {
-        // TODO: put string
-        return REFINE_DLG_REFINE;
+        strOut.assign(g_editBoxTxt);
+        return res;
     }
 
-    return REFINE_DLG_CANCEL;
+    return EXT_RESULTS_CANCEL;
 }
 
