@@ -1,4 +1,7 @@
 #include <windows.h>
+#ifdef WIN32_PLATFORM_WFSP
+#include <tpcshell.h>
+#endif
 #include <iPediaApplication.hpp>
 #include <LookupManager.hpp>
 #include "ExtSearchResultsDlg.hpp"
@@ -37,9 +40,8 @@ static bool SetRefineMenu(HWND hDlg)
     if (!SHCreateMenuBar(&shmbi))
         return false;
 
-    (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
-        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
-        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
+    // TODO: do I have to repeat that?
+    OverrideBackButton(shmbi.hwndMB);
 
     g_fRefineMenu = true;
     return true;
@@ -59,9 +61,8 @@ static bool SetSearchMenu(HWND hDlg)
     if (!SHCreateMenuBar(&shmbi))
         return false;
 
-    (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
-        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
-        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
+    // TODO: do I have to repeat that?
+    OverrideBackButton(shmbi.hwndMB);
 
     g_fRefineMenu = false;
     return true;
@@ -196,7 +197,12 @@ static BOOL CALLBACK ExtSearchResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPA
             OnSize(hDlg,wp,lp);
             break;
 
-        case WM_COMMAND:
+ #ifdef WIN32_PLATFORM_WFSP
+        case WM_HOTKEY:
+            SHSendBackToFocusWindow(msg, wp, lp);
+            return TRUE;
+#endif
+         case WM_COMMAND:
         {
             switch (wp)
             {

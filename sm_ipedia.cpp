@@ -1342,24 +1342,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             OnPaint(hwnd);
             break;
         
-        case WM_HOTKEY:
-        {
-            HWND hwnd = app.getMainWindow();
-            Graphics gr(GetDC(hwnd), hwnd);
-            switch(HIWORD(lp))
-            {
 #ifdef WIN32_PLATFORM_WFSP
-                case VK_TBACK:
-                    if ( 0 != (MOD_KEYUP & LOWORD(lp)))
-                        SHSendBackToFocusWindow( msg, wp, lp );
-                    break;
-#endif
-                case VK_TDOWN:
-                    ScrollDefinition(1, scrollPage, true);
-                    break;
-            }
+        case WM_HOTKEY:
+            SHSendBackToFocusWindow(msg, wp, lp);
             break;
-        }    
+#endif
         
         case WM_LBUTTONDOWN:
             g_lbuttondown = true;
