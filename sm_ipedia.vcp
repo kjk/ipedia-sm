@@ -925,9 +925,11 @@ DEP_CPP_ENTER=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"vibrate.h"\
+	
+NODEP_CPP_ENTER=\
+	".\ibrate.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
@@ -938,9 +940,11 @@ DEP_CPP_ENTER=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"vibrate.h"\
+	
+NODEP_CPP_ENTER=\
+	".\ibrate.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
@@ -1394,165 +1398,6 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
-	
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\HyperLinks.cpp
-
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
-
-DEP_CPP_HYPER=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	"..\ars_framework\Src\Debug.hpp"\
-	"..\ars_framework\Src\Definition.hpp"\
-	"..\ars_framework\Src\DefinitionElement.hpp"\
-	"..\ars_framework\Src\ErrBase.h"\
-	"..\ars_framework\Src\FontEffects.hpp"\
-	"..\ars_framework\Src\GenericTextElement.hpp"\
-	"..\ars_framework\Src\Geometry.hpp"\
-	"..\ars_framework\Src\Graphics.hpp"\
-	"..\ars_framework\Src\Library.hpp"\
-	"..\ars_framework\Src\Logging.hpp"\
-	"..\ars_framework\Src\LookupManagerBase.hpp"\
-	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeSocks.hpp"\
-	"..\ars_framework\Src\NetLibrary.hpp"\
-	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
-	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
-	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
-	"..\ars_framework\Src\Socket.hpp"\
-	"..\ars_framework\Src\SocketAddress.hpp"\
-	"..\ars_framework\Src\SocketConnection.hpp"\
-	"..\ars_framework\Src\SysUtils.hpp"\
-	"..\ars_framework\Src\Utility.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinFont.h"\
-	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	".\HyperLinks.h"\
-	".\iPediaApplication.hpp"\
-	".\iPediaHyperlinkHandler.hpp"\
-	".\RenderingPreferences.hpp"\
-	".\sm_ipedia.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
-
-DEP_CPP_HYPER=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	"..\ars_framework\Src\Debug.hpp"\
-	"..\ars_framework\Src\Definition.hpp"\
-	"..\ars_framework\Src\DefinitionElement.hpp"\
-	"..\ars_framework\Src\ErrBase.h"\
-	"..\ars_framework\Src\FontEffects.hpp"\
-	"..\ars_framework\Src\GenericTextElement.hpp"\
-	"..\ars_framework\Src\Geometry.hpp"\
-	"..\ars_framework\Src\Graphics.hpp"\
-	"..\ars_framework\Src\Library.hpp"\
-	"..\ars_framework\Src\Logging.hpp"\
-	"..\ars_framework\Src\LookupManagerBase.hpp"\
-	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeSocks.hpp"\
-	"..\ars_framework\Src\NetLibrary.hpp"\
-	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
-	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
-	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
-	"..\ars_framework\Src\Socket.hpp"\
-	"..\ars_framework\Src\SocketAddress.hpp"\
-	"..\ars_framework\Src\SocketConnection.hpp"\
-	"..\ars_framework\Src\SysUtils.hpp"\
-	"..\ars_framework\Src\Utility.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinFont.h"\
-	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	".\HyperLinks.h"\
-	".\iPediaApplication.hpp"\
-	".\iPediaHyperlinkHandler.hpp"\
-	".\RenderingPreferences.hpp"\
-	".\sm_ipedia.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
-
-DEP_CPP_HYPER=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	"..\ars_framework\Src\Debug.hpp"\
-	"..\ars_framework\Src\Definition.hpp"\
-	"..\ars_framework\Src\DefinitionElement.hpp"\
-	"..\ars_framework\Src\ErrBase.h"\
-	"..\ars_framework\Src\FontEffects.hpp"\
-	"..\ars_framework\Src\GenericTextElement.hpp"\
-	"..\ars_framework\Src\Geometry.hpp"\
-	"..\ars_framework\Src\Graphics.hpp"\
-	"..\ars_framework\Src\Library.hpp"\
-	"..\ars_framework\Src\Logging.hpp"\
-	"..\ars_framework\Src\LookupManagerBase.hpp"\
-	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeSocks.hpp"\
-	"..\ars_framework\Src\NetLibrary.hpp"\
-	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
-	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
-	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
-	"..\ars_framework\Src\Socket.hpp"\
-	"..\ars_framework\Src\SocketAddress.hpp"\
-	"..\ars_framework\Src\SocketConnection.hpp"\
-	"..\ars_framework\Src\SysUtils.hpp"\
-	"..\ars_framework\Src\Utility.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinFont.h"\
-	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	".\HyperLinks.h"\
-	".\iPediaApplication.hpp"\
-	".\iPediaHyperlinkHandler.hpp"\
-	".\RenderingPreferences.hpp"\
-	".\sm_ipedia.h"\
-	
-
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
-
-DEP_CPP_HYPER=\
-	"..\ars_framework\Src\BaseTypes.hpp"\
-	"..\ars_framework\Src\Debug.hpp"\
-	"..\ars_framework\Src\Definition.hpp"\
-	"..\ars_framework\Src\DefinitionElement.hpp"\
-	"..\ars_framework\Src\ErrBase.h"\
-	"..\ars_framework\Src\FontEffects.hpp"\
-	"..\ars_framework\Src\GenericTextElement.hpp"\
-	"..\ars_framework\Src\Geometry.hpp"\
-	"..\ars_framework\Src\Graphics.hpp"\
-	"..\ars_framework\Src\Library.hpp"\
-	"..\ars_framework\Src\Logging.hpp"\
-	"..\ars_framework\Src\LookupManagerBase.hpp"\
-	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeSocks.hpp"\
-	"..\ars_framework\Src\NetLibrary.hpp"\
-	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
-	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
-	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
-	"..\ars_framework\Src\Socket.hpp"\
-	"..\ars_framework\Src\SocketAddress.hpp"\
-	"..\ars_framework\Src\SocketConnection.hpp"\
-	"..\ars_framework\Src\SysUtils.hpp"\
-	"..\ars_framework\Src\Utility.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinFont.h"\
-	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	".\HyperLinks.h"\
-	".\iPediaApplication.hpp"\
-	".\iPediaHyperlinkHandler.hpp"\
-	".\RenderingPreferences.hpp"\
-	".\sm_ipedia.h"\
 	
 
 !ENDIF 
@@ -3482,22 +3327,22 @@ DEP_CPP_SM_IP=\
 	"..\ipedia\Src\LookupHistory.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\DefaultArticles.h"\
-	".\HyperLinks.h"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
 	".\ProgressReporters.h"\
-	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
 NODEP_CPP_SM_IP=\
+	".\HyperLinks.h"\
 	".\ibrate.h"\
 	".\ipapi.h"\
 	".\ms.h"\
 	".\niqueid.h"\
 	".\onnmgr.h"\
 	".\pcshell.h"\
+	".\Registration.h"\
 	".\ygshell.h"\
 	
 
@@ -3537,22 +3382,22 @@ DEP_CPP_SM_IP=\
 	"..\ipedia\Src\LookupHistory.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\DefaultArticles.h"\
-	".\HyperLinks.h"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
 	".\ProgressReporters.h"\
-	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
 NODEP_CPP_SM_IP=\
+	".\HyperLinks.h"\
 	".\ibrate.h"\
 	".\ipapi.h"\
 	".\ms.h"\
 	".\niqueid.h"\
 	".\onnmgr.h"\
 	".\pcshell.h"\
+	".\Registration.h"\
 	".\ygshell.h"\
 	
 
@@ -3585,6 +3430,7 @@ DEP_CPP_SM_IP=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
@@ -3593,7 +3439,6 @@ DEP_CPP_SM_IP=\
 	"..\ipedia\Src\LookupHistory.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\DefaultArticles.h"\
-	".\HyperLinks.h"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
@@ -3637,6 +3482,8 @@ DEP_CPP_SM_IP=\
 	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
@@ -3645,12 +3492,10 @@ DEP_CPP_SM_IP=\
 	"..\ipedia\Src\LookupHistory.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\DefaultArticles.h"\
-	".\HyperLinks.h"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
 	".\ProgressReporters.h"\
-	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	{$(INCLUDE)}"aygshell.h"\
@@ -3861,6 +3706,65 @@ DEP_CPP_SOCKETC=\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\WindowsCE\StringListDialog.cpp
+
+!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+
+DEP_CPP_STRIN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+
+DEP_CPP_STRIN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+
+DEP_CPP_STRIN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+
+DEP_CPP_STRIN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ENDIF 
@@ -4134,6 +4038,7 @@ DEP_CPP_WINGR=\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
@@ -4148,6 +4053,7 @@ DEP_CPP_WINGR=\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
@@ -4391,10 +4297,6 @@ SOURCE=..\ars_framework\Src\HorizontalLineElement.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\HyperLinks.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\iPediaApplication.hpp
 # End Source File
 # Begin Source File
@@ -4488,6 +4390,10 @@ SOURCE=..\ars_framework\Src\SocketAddress.hpp
 # Begin Source File
 
 SOURCE=..\ars_framework\Src\SocketConnection.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\WindowsCE\StringListDialog.hpp
 # End Source File
 # Begin Source File
 
