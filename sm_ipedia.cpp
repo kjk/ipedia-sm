@@ -75,8 +75,6 @@ DWORD g_recalculationData  = 0;
 RenderingProgressReporter* rep;
 LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
-void CopyToClipboard();
-
 static int  g_stressModeCnt = 0;
 
 bool g_uiEnabled = true;
@@ -557,23 +555,23 @@ static void* CreateNewClipboardData(const String& str)
     return g_ClipboardText;
 }
 
-void CopyToClipboard()
+// copy definition to clipboard
+static void CopyToClipboard(HWND hwndMain, Definition *def)
 {
-    void *clipData;
-    String text;
+    void *    clipData;
+    String    text;
 
-    iPediaApplication& app = GetApp();
-
-    if (g_definition->empty())
+    if (def->empty())
         return;
 
-    if (!OpenClipboard(app.getMainWindow()))
+    if (!OpenClipboard(hwndMain))
         return;
 
+    // TODO: should we put it anyway?
     if (!EmptyClipboard())
         goto Exit;
     
-    g_definition->selectionToText(text);
+    def->selectionToText(text);
 
     clipData = CreateNewClipboardData(text);
     if (NULL==clipData)
@@ -817,7 +815,6 @@ static void OnPaint(HWND hwnd)
         }
     }
 
-    // ShowEstablishingConnection();
     EndPaint (hwnd, &ps);
 }
 
@@ -836,7 +833,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (wp)
     {   
         case IDM_MENU_CLIPBOARD:
-            CopyToClipboard();
+            CopyToClipboard(app.getMainWindow(),g_definition);
             break;
         
         case IDM_MENU_STRESS_MODE:
@@ -1349,7 +1346,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_PAINT:
             OnPaint(hwnd);
             break;
-        
+
 #ifdef WIN32_PLATFORM_WFSP
         case WM_HOTKEY:
             SHSendBackToFocusWindow(msg, wp, lp);
