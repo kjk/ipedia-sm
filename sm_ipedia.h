@@ -17,9 +17,10 @@
 
 extern HWND g_hwndMain;
 extern HINSTANCE g_hInst;
+extern Definition *g_definition;
+
 extern ArsLexis::String recentWord;
 extern ArsLexis::String searchWord;
-extern Definition *definition_;
 
 bool GotoURL(LPCTSTR lpszUrl);
 void setupAboutWindow();

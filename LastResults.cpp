@@ -37,8 +37,9 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
                     SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
                 refine = false;
-            break;
+                break;
         }
+        
         case 0x87: 
         {
             switch(wp)
@@ -85,6 +86,18 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
     {
         case WM_INITDIALOG:
             return InitLastResults(hDlg);
+        case WM_SIZE:
+        {
+            int width = LOWORD(lp);
+            int height = HIWORD(lp);
+            HWND ctrlRefineEdit = GetDlgItem(hDlg, IDC_REFINE_EDIT);
+            HWND ctrlResultsList = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
+            int fntHeight = GetSystemMetrics(SM_CYCAPTION);
+            MoveWindow(ctrlRefineEdit, 2, 1, width-4, fntHeight, TRUE);
+            MoveWindow(ctrlResultsList,0, fntHeight + 2, width, height - fntHeight, TRUE);
+            break;
+        }
+
         case WM_COMMAND:
         {
             switch (wp)

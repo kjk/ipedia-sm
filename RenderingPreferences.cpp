@@ -18,8 +18,11 @@ RenderingPreferences::RenderingPreferences():
     
     HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
     GetObject(fnt, sizeof(logfnt), &logfnt);
-    logfnt.lfHeight+=1;
-    logfnt.lfCharSet = SHIFTJIS_CHARSET;//logfnt.lfCharSet = EASTEUROPE_CHARSET;
+    #ifndef PPC
+        logfnt.lfHeight+=1;
+    #else
+        logfnt.lfHeight-=1;
+    #endif
     WinFont wfnt = WinFont(CreateFontIndirect(&logfnt));
     
     fx.setUnderline(FontEffects::underlineNone);

@@ -57,6 +57,7 @@
 #define IDM_EXT_SEARCH                  140
 #define IDM_ENABLE_UI                   141
 #define IDM_MENU_STRESS_MODE            142
+#define IDC_STATIC_REG_CODE             143
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

@@ -36,6 +36,12 @@ BOOL CALLBACK HyperlinksDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
     {
         case WM_INITDIALOG:
             return InitHyperlinks(hDlg);
+        case WM_SIZE:
+        {
+            HWND ctrlList = GetDlgItem(hDlg, IDC_LIST_HYPERLINKS);
+            MoveWindow(ctrlList, 0, 2, LOWORD(lp), HIWORD(lp), TRUE);
+            break;
+        }
         case WM_COMMAND:
         {
             switch (wp)
@@ -108,8 +114,8 @@ BOOL InitHyperlinks(HWND hDlg)
 
     
     Definition::ElementPosition_t pos;
-    for(pos=definition_->firstElementPosition();
-        pos!=definition_->lastElementPosition();
+    for(pos=g_definition->firstElementPosition();
+        pos!=g_definition->lastElementPosition();
         pos++)
     {
         DefinitionElement *curr=*pos;

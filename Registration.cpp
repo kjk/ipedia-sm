@@ -11,6 +11,18 @@ BOOL CALLBACK RegistrationDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
     {
         case WM_INITDIALOG:
             return InitRegistrationDlg(hDlg);
+
+        case WM_SIZE:
+        {
+            int width = LOWORD(lp);
+            int height = HIWORD(lp);
+            HWND ctrlRegCodeText = GetDlgItem(hDlg, IDC_STATIC_REG_CODE);
+            HWND ctrlRegCodeEdit = GetDlgItem(hDlg, IDC_EDIT_REGCODE);
+            int fntHeight = GetSystemMetrics(SM_CYCAPTION);
+            MoveWindow(ctrlRegCodeText, 0, (height-fntHeight*2)/2, width, fntHeight, TRUE);
+            MoveWindow(ctrlRegCodeEdit, 4, (height-fntHeight*2)/2 + fntHeight, width-8, fntHeight, TRUE);
+            break;
+        }
         case WM_COMMAND:
         {
             switch (wp)

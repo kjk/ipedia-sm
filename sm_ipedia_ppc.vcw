@@ -3,7 +3,7 @@ Microsoft eMbedded Visual Tools Workspace File, Format Version 3.00
 
 ###############################################################################
 
-Project: "sm_ipedia"=.\sm_ipedia.vcp - Package Owner=<4>
+Project: "sm_ipedia_ppc"=.\sm_ipedia_ppc.vcp - Package Owner=<4>
 
 Package=<5>
 {{{
