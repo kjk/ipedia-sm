@@ -115,8 +115,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
             iPediaApplication& app=iPediaApplication::instance();
             LookupManager* lookupManager=app.getLookupManager(true);
-            if (lookupManager && !lookupManager->lookupInProgress())
-                lookupManager->checkArticleCount();
+            //if (lookupManager && !lookupManager->lookupInProgress())
+            //    lookupManager->checkArticleCount();
             lookupManager->setProgressReporter(new SmartPhoneProgressReported());
             rep = new RenderingProgressReporter(hwnd);
             definition_->setRenderingProgressReporter(rep);

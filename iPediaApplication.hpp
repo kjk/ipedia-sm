@@ -97,7 +97,7 @@ public:
             checkArticleCountAtStartup(true),
             articleCount(articleCountNotChecked)            
         {}
-        
+            ArsLexis::String databaseTime;
     };
     
     Preferences& preferences() 
@@ -169,7 +169,7 @@ public:
 
     /*iPediaHyperlinkHandler& hyperlinkHandler()
     {return hyperlinkHandler_;}    */
-    
+    bool fArticleCountChecked;
 private:
     
     Preferences preferences_;

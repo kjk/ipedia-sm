@@ -35,7 +35,7 @@ RenderingPreferences::RenderingPreferences():
     }
     logfnt.lfUnderline = FALSE;
     logfnt.lfWeight=800;
-    logfnt.lfHeight-=2;
+    logfnt.lfHeight-=1;
     styles_[styleHeader].font=WinFont(CreateFontIndirect(&logfnt));
     fx.setUnderline(FontEffects::underlineNone);
     styles_[styleHeader].font.setEffects(fx);   
