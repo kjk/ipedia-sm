@@ -474,6 +474,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             g_progressRect.right = g_progressRect.left + 155;   
             g_progressRect.bottom = g_progressRect.top + 45;  
             g_RenderingProgressReporter->setProgressArea(g_progressRect);
+            g_RegistrationProgressReporter->setProgressArea(g_progressRect);
             firstWmSizeMsg = false;
             break;
         }
@@ -1327,17 +1328,18 @@ static void handleMoveHistory(bool forward)
     LookupManager* lookupManager=app.getLookupManager(true);
     if (displayMode()!=showArticle)//g_isAboutVisible) 
     {
-        setDisplayMode(showArticle);
         //g_isAboutVisible = false;
         if (!g_definition->empty())
         {
+            setDisplayMode(showArticle);
             SendMessage(g_hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)lookupManager->lastInputTerm().c_str());
             int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
             SendMessage(g_hwndEdit, EM_SETSEL, 0,len);
+            setScrollBar(g_definition);
+            InvalidateRect(g_hwndMain, NULL, false);
+            return;
         }
-        setScrollBar(g_definition);
-        InvalidateRect(g_hwndMain, NULL, false);
-        return;
+        
     }
     if (lookupManager && !lookupManager->lookupInProgress())
     {
