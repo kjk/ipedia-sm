@@ -57,18 +57,19 @@ DWORD iPediaApplication::waitForEvent()
     setupAboutWindow();    
     setMenu(hwndMain_);
     InvalidateRect(hwndMain_,NULL,TRUE);
+
     MSG msg;
-    while(true)
+    while (true)
     {
         ArsLexis::SocketConnectionManager* manager=0;
         if (lookupManager_)
             manager=&lookupManager_->connectionManager();
         if (manager && manager->active())
         {
-            if(!PeekMessage(&msg, NULL, 0, 0, FALSE))
+            if (!PeekMessage(&msg, NULL, 0, 0, FALSE))
                 manager->manageConnectionEvents(ticksPerSecond_/20);
         }
-        if(!PeekMessage(&msg, NULL, 0, 0, TRUE))
+        if (!PeekMessage(&msg, NULL, 0, 0, TRUE))
             Sleep(ticksPerSecond_/20);
         else
         {
@@ -102,58 +103,6 @@ DWORD iPediaApplication::waitForEvent()
     };
 }
 
-/*Form* iPediaApplication::createForm(ushort_t formId)
-{
-    Form* form=0;
-    switch (formId)
-    {
-        case mainForm:
-            form=new MainForm(*this);
-            break;
-            
-        case registrationForm:
-            form=new RegistrationForm(*this);
-            break;
-            
-        case searchResultsForm:
-            form=new SearchResultsForm(*this);
-            break;
-        
-        default:
-            assert(false);
-    }
-    return form;            
-}*/
-
-/*bool iPediaApplication::handleApplicationEvent(EventType& event)
-{
-    bool handled=false;
-    if (appDisplayAlertEvent==event.eType)
-    {
-        DisplayAlertEventData& data=reinterpret_cast<DisplayAlertEventData&>(event.data);
-        if (!inStressMode())
-            FrmAlert(data.alertId);
-        else
-            log().debug()<<_T("Alert: ")<<data.alertId;
-    }
-    else if (appDisplayCustomAlertEvent==event.eType)
-    {
-        assert(!customAlerts_.empty());            
-        DisplayAlertEventData& data=reinterpret_cast<DisplayAlertEventData&>(event.data);
-        if (!inStressMode())
-            FrmCustomAlert(data.alertId, customAlerts_.front().c_str(), _T(""), _T(""));
-        else
-            log().debug()<<_T("Custom alert: ")<<data.alertId<<char_t('[')<<customAlerts_.front()<<char_t(']');
-        customAlerts_.pop_front();
-    }
-    
-    if (lookupManager_ && appLookupEventFirst<=event.eType && appLookupEventLast>=event.eType)
-        lookupManager_->handleLookupEvent(event);
-    else
-        handled=Application::handleApplicationEvent(event);
-    return handled;
-}*/
-
 namespace {
 
     enum PreferenceId 
@@ -177,27 +126,32 @@ namespace {
 
 void iPediaApplication::loadPreferences()
 {
-    Preferences prefs;
-    // PrefsStoreXXXX seem to be rather heavyweight objects (writer is >480kB), so it might be a good idea not to allocate them on stack.
     std::auto_ptr<PrefsStoreReader> reader(new PrefsStoreReader(appPrefDatabase, appFileCreator, 0));
 
-    status_t error;
-    const char_t* text;
+    Preferences     prefs;
+    status_t        error;
+    const char_t*   text;
 
     if (errNone!=(error=reader->ErrGetStr(cookiePrefId, &text))) 
         goto OnError;
-    prefs.cookie=text;
+    prefs.cookie = text;
+
     if (errNone!=(error=reader->ErrGetStr(regCodePrefId, &text))) 
         goto OnError;
-    prefs.regCode=text;
+    prefs.regCode = text;
+
     if (errNone!=(error=reader->ErrGetLong(lastArticleCountPrefId, &prefs.articleCount))) 
         goto OnError;
+
     if (errNone!=(error=reader->ErrGetStr(databaseTimePrefId, &text))) 
         goto OnError;
-    prefs.databaseTime=text;
+    prefs.databaseTime = text;
+
     if (errNone!=(error=prefs.renderingPreferences.serializeIn(*reader, renderingPrefsFirstPrefId)))
         goto OnError;
-    preferences_=prefs;    
+
+    preferences_ = prefs;    
+
     assert(0!=history_);
     if (errNone!=(error=history_->serializeIn(*reader, lookupHistoryFirstPrefId)))
         goto OnError;

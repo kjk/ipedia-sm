@@ -1,9 +1,6 @@
 #ifndef __WIN_IPEDIA_APPLICATION_HPP__
 #define __WIN_IPEDIA_APPLICATION_HPP__
 
-//#include "ipedia.h"
-//#include <Application.hpp>
-//#include <DynamicInputAreas.hpp>
 #include "iPediaHyperlinkHandler.hpp"
 #include <Logging.hpp>
 #include <RenderingPreferences.hpp>
@@ -23,7 +20,7 @@ struct LookupFinishedEventData;
 
 #define serverToUse serverMarek
 
-class iPediaApplication //: public ArsLexis::Application 
+class iPediaApplication
 {
     mutable ArsLexis::RootLogger log_;
     ushort_t                ticksPerSecond_;
