@@ -14,35 +14,38 @@ RenderingPreferences::RenderingPreferences():
     backgroundColor_(RGB(255,255,255))
 {
     FontEffects fx;
-    LOGFONT logfnt;
+//  LOGFONT logfnt;
     
-    HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
-    GetObject(fnt, sizeof(logfnt), &logfnt);
-#ifndef WIN32_PLATFORM_PSPC
-        logfnt.lfHeight+=1;
+//    HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
+//    GetObject(fnt, sizeof(logfnt), &logfnt);
+/*#ifndef WIN32_PLATFORM_PSPC
+        logfnt.lfHeight-=1;
 #else
         logfnt.lfHeight-=1;
-#endif
-    WinFont wfnt = WinFont(CreateFontIndirect(&logfnt));
+#endif*/
+    WinFont wfnt = WinFont(13);
     
-    fx.setUnderline(FontEffects::underlineNone);
-    wfnt.setEffects(fx);   
+    //fx.setUnderline(FontEffects::underlineNone);
+    //wfnt.setEffects(fx);   
     styles_[styleDefault].font = wfnt;
  
     
     fx.setUnderline(FontEffects::underlineDotted);
     for (uint_t i=0; i<hyperlinkTypesCount_; ++i) 
-    {
-        //hyperlinkDecorations_[i].font=WinFont(CreateFontIndirect(&logfnt));
         hyperlinkDecorations_[i].font.setEffects(fx);
-    }
+
     hyperlinkDecorations_[hyperlinkTerm].textColor=RGB(0,0,250);
     hyperlinkDecorations_[hyperlinkExternal].textColor=RGB(200,20,20);     
     hyperlinkDecorations_[hyperlinkBookmark].textColor=RGB(0,0,180);     
-    logfnt.lfWeight=800;
-    logfnt.lfHeight-=1;
-    styles_[styleHeader].font=WinFont(CreateFontIndirect(&logfnt));
+    //logfnt.lfWeight=800;
+    //logfnt.lfHeight-=1;
+#ifdef WIN32_PLATFORM_PSPC
+    styles_[styleHeader].font=WinFont(15);
+#else
+    styles_[styleHeader].font=WinFont(14);
+#endif
     fx.setUnderline(FontEffects::underlineNone);
+    fx.setWeight(FontEffects::weightBlack);
     styles_[styleHeader].font.setEffects(fx);   
 
     calculateIndentation();

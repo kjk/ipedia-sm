@@ -37,7 +37,7 @@ Owner: Krzysztof Kowalczyk (krzysztofk@pobox.com)
 #ifndef WIN32_PLATFORM_PSPC
     #define STORE_FOLDER CSIDL_APPDATA
 #else
-    #define STORE_FOLDER CSIDL_PROGRAMS
+    #define STORE_FOLDER CSIDL_PERSONAL
 #endif
 
 namespace ArsLexis 

@@ -68,6 +68,10 @@ static void randomArticleActionCallback(void *data)
 
 void prepareAbout()
 {
+    int divider = 2;
+#ifdef WIN32_PLATFORM_PSPC
+    divider = 1;
+#endif
     Definition::Elements_t elems;
     FormattedTextElement* text;
 
@@ -81,7 +85,7 @@ void prepareAbout()
     text->setStyle(styleHeader);
     text->setEffects(fxBold);
 
-    elems.push_back(new LineBreakElement(1,3));
+    elems.push_back(new LineBreakElement(1,3*divider));
 
     const char_t* version=_T("Ver ") appVersion
 #ifdef INTERNAL_BUILD
@@ -94,7 +98,7 @@ void prepareAbout()
     ;
     elems.push_back(text=new FormattedTextElement(version));
     text->setJustification(DefinitionElement::justifyCenter);
-    elems.push_back(new LineBreakElement(1,4));
+    elems.push_back(new LineBreakElement(1,4*divider));
 
     iPediaApplication& app=iPediaApplication::instance();
     if (app.preferences().regCode.empty())
@@ -108,13 +112,13 @@ void prepareAbout()
         text->setActionCallback( unregisteredActionCallback, NULL);
         elems.push_back(text=new FormattedTextElement(_T(")")));
         text->setJustification(DefinitionElement::justifyCenter);
-        elems.push_back(new LineBreakElement(1,2));
+        elems.push_back(new LineBreakElement(1,2*divider));
     }
     else
     {
         elems.push_back(text=new FormattedTextElement(_T("Registered")));
         text->setJustification(DefinitionElement::justifyCenter);
-        elems.push_back(new LineBreakElement(1,2));
+        elems.push_back(new LineBreakElement(1,2*divider));
     }
 
     elems.push_back(text=new FormattedTextElement(_T("Software \251 ")));
@@ -124,7 +128,7 @@ void prepareAbout()
     text->setJustification(DefinitionElement::justifyCenter);
     text->setHyperlink(_T("http://www.arslexis.com/pda/palm.html"), hyperlinkExternal);
 
-    elems.push_back(new LineBreakElement(1,4));
+    elems.push_back(new LineBreakElement(1,4*divider));
     elems.push_back(text=new FormattedTextElement(_T("Data \251 ")));
     text->setJustification(DefinitionElement::justifyCenter);
 
@@ -134,7 +138,7 @@ void prepareAbout()
     text->setHyperlink(_T(""), hyperlinkTerm);
     text->setActionCallback( wikipediaActionCallback, NULL);
 
-    elems.push_back(new LineBreakElement());
+    elems.push_back(new LineBreakElement(1,1*divider));
     elems.push_back(g_articleCountElement=new FormattedTextElement(_T(" ")));
     if (-1!=g_articleCountSet)
     {
@@ -143,7 +147,7 @@ void prepareAbout()
     }
     g_articleCountElement->setJustification(DefinitionElement::justifyCenter);
 
-    elems.push_back(new LineBreakElement(3,2));
+    elems.push_back(new LineBreakElement(3,2*divider));
     elems.push_back(text=new FormattedTextElement(_T("Using iPedia: ")));
     text->setJustification(DefinitionElement::justifyLeft);
 

@@ -74,6 +74,13 @@ BOOL CALLBACK HyperlinksDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                     }*/
                 }
             }
+            HWND ctrlList = GetDlgItem(hDlg, IDC_LIST_HYPERLINKS);
+            int senderID = LOWORD(wp);
+            int code = HIWORD(wp);
+            HWND senderHWND = (HWND)lp;
+            if((IDC_LIST_HYPERLINKS == senderID) && (senderHWND == ctrlList))
+                if (LBN_DBLCLK == code)
+                    SendMessage(hHyperlinksDlg, WM_COMMAND, ID_SELECT, 0); 
         }
     }
     return FALSE;

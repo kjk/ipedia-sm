@@ -19,6 +19,7 @@ bool iPediaHyperlinkHandler::handleTermHyperlink(const ArsLexis::String& term)
     {
         result=true;
         lookupManager->lookupIfDifferent(term);
+        setUIState(false);
     }
     return result;        
 }

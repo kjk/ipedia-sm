@@ -186,9 +186,8 @@ void CopyToClipboard();
 
 static int  g_stressModeCnt = 0;
 
-bool g_isAboutVisible = false;
+//bool g_isAboutVisible = false;
 
-void setUIState(bool enable = true);
 bool g_uiEnabled = true;
 
 String articleCountText;
@@ -223,16 +222,13 @@ void setScrollBar(Definition* definition);
 void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar);
 void SimpleOrExtendedSearch(HWND hwnd, bool simple);
 void DrawSearchButton(LPDRAWITEMSTRUCT lpdis);
+static void DoRegister();
 
 DisplayMode displayMode()
-{
-    return g_displayMode;
-}
+{return g_displayMode;}
 
 void setDisplayMode(DisplayMode displayMode)
-{
-    g_displayMode=displayMode;
-}
+{g_displayMode=displayMode;}
 
 Definition& currentDefinition()
 {
@@ -368,6 +364,8 @@ void OnCreate(HWND hwnd)
 #endif
 
     g_oldEditWndProc=(WNDPROC)SetWindowLong(g_hwndEdit, GWL_WNDPROC, (LONG)EditWndProc);
+    
+    SendMessage(g_hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)_T(""));
 
     g_hwndScroll = CreateWindow(
         TEXT("scrollbar"),
@@ -409,7 +407,6 @@ void OnCreate(HWND hwnd)
 
     setMenu(hwnd);
     SetFocus(g_hwndEdit);
-
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -634,7 +631,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     //g_isAboutVisible=false;
                     setScrollBar(g_definition);
                     setDisplayMode(showArticle);
-                    InvalidateRect(g_hwndMain, NULL, TRUE);
+                    InvalidateRect(g_hwndMain, NULL, FALSE);
                     break;
                 }
 
@@ -681,19 +678,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     }
                     else
                     {
-                        if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), hwnd,RegistrationDlgProc))
-                        {
-                            iPediaApplication& app=iPediaApplication::instance();
-                            LookupManager* lookupManager=app.getLookupManager(true);
-                            if (lookupManager && !lookupManager->lookupInProgress())
-                            {
-                                lookupManager->verifyRegistrationCode(g_newRegCode);
-                                setUIState(false);
-                                g_fRegistration = true;
-                            }
-                        }
-                        else
-                            g_newRegCode = _T("");
+                        DoRegister();
                         break;
                     }
                 }
@@ -702,7 +687,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             setupAboutWindow();
             lookupManager->handleLookupFinishedInForm(data);
             setMenu(hwnd);
-            InvalidateRect(hwnd,NULL,TRUE);
+            InvalidateRect(hwnd,NULL,FALSE);
         }
         break;
         case WM_CLOSE:
@@ -792,14 +777,14 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             setDisplayMode(showAbout);
             setMenu(hwnd);
             setScrollBar(g_about);
-            InvalidateRect(hwnd,NULL,TRUE);
+            InvalidateRect(hwnd,NULL,FALSE);
             break;
         
         case IDM_MENU_TUTORIAL:
             setDisplayMode(showTutorial);
             setMenu(hwnd);
             setScrollBar(g_about);
-            InvalidateRect(hwnd,NULL,TRUE);
+            InvalidateRect(hwnd,NULL,FALSE);
             break;
         
         case IDM_EXT_SEARCH:
@@ -828,7 +813,7 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 {
                     lookupManager->lookupTerm(searchWord);*/
                     //setUIState(false);
-                    InvalidateRect(hwnd,NULL,TRUE);
+                    InvalidateRect(hwnd,NULL,FALSE);
                     //}
                 }
             }
@@ -875,7 +860,7 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         lookupManager->search(searchWord);
                     setUIState(false);
                 }
-                InvalidateRect(hwnd,NULL,TRUE);
+                InvalidateRect(hwnd,NULL,FALSE);
             }
             break;
         }
@@ -1119,7 +1104,21 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     return 0;
             }
             break;
-       }
+        }
+        /*
+        I thought it would be more useful, but it's only 
+        irritating me
+        case WM_SETFOCUS:
+        {            
+            SHSipPreference(g_hwndMain, SIP_UP);
+            break;
+        }
+        case WM_KILLFOCUS:
+        {
+            SHSipPreference(g_hwndMain, SIP_DOWN);
+		    break;
+        }
+        */
     }
     return CallWindowProc(g_oldEditWndProc, hwnd, msg, wp, lp);
 }
@@ -1146,11 +1145,7 @@ void DrawProgressRect(HDC hdc, const ArsLexis::Rectangle& bounds)
 }
 
 RenderingProgressReporter::RenderingProgressReporter(HWND hwnd):
-    hwndMain_(hwnd),
-    ticksAtStart_(0),
-    lastPercent_(-1),
-    showProgress_(true),
-    afterTrigger_(false)
+    hwndMain_(hwnd)
 {
     waitText_.assign(_T("Wait... %d%%"));
     waitText_.c_str(); // We don't want reallocation to occur while rendering...
@@ -1158,9 +1153,11 @@ RenderingProgressReporter::RenderingProgressReporter(HWND hwnd):
 
 void RenderingProgressReporter::reportProgress(uint_t percent) 
 {      
-    if (percent==lastPercent_)
+    
+    update(percent);
+    if(!shallShow())
         return;
-    lastPercent_=percent;
+    setTicksAtUpdate(GetTickCount());    
 
     assert( hwndMain_ == g_hwndMain);
     Graphics gr(GetDC(hwndMain_), hwndMain_);
@@ -1214,10 +1211,67 @@ void DrawProgressBar(Graphics& gr, uint_t percent, const ArsLexis::Rectangle& bo
     FillRect(gr.handle(), &nativeRec, hbr);
     DeleteObject(hbr);
 }
+CommonProgressReporter::CommonProgressReporter():
+    ticksAtStart_(0),
+    lastPercent_(-1),
+    showProgress_(true),
+    afterTrigger_(false)
+{
+}
+
+void CommonProgressReporter::update(u_int percent)
+{
+    if (percent==lastPercent_)
+    {
+        showProgress_ = false;
+        return;
+    }
+    
+    lastPercent_ = percent;
+    
+    if (0==lastPercent_)
+    {
+        ticksAtStart_ = GetTickCount();
+        ticksAtUpdate_ = ticksAtStart_;
+        showProgress_=false;
+        afterTrigger_=false;
+        showProgress_ = false;
+        return;
+    }
+    
+    iPediaApplication& app=iPediaApplication::instance();
+    if (!afterTrigger_)
+    {
+        // Delay before we start displaying progress meter in milliseconds. Timespans < 300ms are typically perceived "instant"
+        // so we shouldn't distract user if the time is short enough.
+        static const uint_t delay=100; 
+        int ticksDiff=GetTickCount()-ticksAtStart_;
+        ticksDiff*=1000;
+        ticksDiff/=app.ticksPerSecond();
+        if (ticksDiff>=delay)
+            afterTrigger_=true;
+        if (afterTrigger_ && percent<=20)
+            showProgress_=true;
+        return;
+    }
+    
+    static const uint_t refreshDelay=250; 
+    int ticksDiff=GetTickCount()-ticksAtUpdate_;
+    ticksDiff*=1000;
+    ticksDiff/=app.ticksPerSecond();
+    if(ticksDiff<refreshDelay)
+        showProgress_ = false;
+    else
+        showProgress_ = true;
+}
+
 
 void SmartPhoneProgressReported::showProgress(const ArsLexis::LookupProgressReportingSupport& support, Graphics& gr, const ArsLexis::Rectangle& bounds, bool clearBkg)
 {
-    
+    update(support.percentProgress());
+    if(!shallShow())
+        return;
+    setTicksAtUpdate(GetTickCount());
     DrawProgressRect(gr.handle(),bounds);
 
     if (support.percentProgress()!=support.percentProgressDisabled)
@@ -1272,7 +1326,7 @@ void setMenu(HWND hwnd)
 
         unsigned int previousHistoryTermEnabled = MF_GRAYED;
         if (lookupManager->hasPreviousHistoryTerm()||
-            ((displayMode()!=showArticle)&&!(def.empty())))
+            ((displayMode()!=showArticle)&&!(g_definition->empty())))
             previousHistoryTermEnabled = MF_ENABLED;
 
         EnableMenuItem(hMenu, IDM_MENU_PREV, previousHistoryTermEnabled);
@@ -1397,7 +1451,7 @@ void handleExtendSelection(HWND hwnd, int x, int y, bool finish)
 void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
 {
     Definition &def = currentDefinition();
-    if (def.empty()||g_isAboutVisible)
+    if (def.empty())
         return;
     switch(unit)
     {
@@ -1433,13 +1487,13 @@ void repaintDefiniton(HWND hwnd, int scrollDelta)
     ArsLexis::Rectangle defRect=rect;
 
     Graphics gr(GetDC(g_hwndMain), g_hwndMain);
-    bool doubleBuffer=false;
+    bool doubleBuffer=true;
     if ( (true == g_forceAboutRecalculation) && (displayMode() == showAbout) )
     {
         g_forceLayoutRecalculation = true;
         g_forceAboutRecalculation = false;
     }   
-    /*HDC offscreenDc=::CreateCompatibleDC(gr.handle());
+    HDC offscreenDc=::CreateCompatibleDC(gr.handle());
     if (offscreenDc) 
     {
         HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
@@ -1448,10 +1502,11 @@ void repaintDefiniton(HWND hwnd, int scrollDelta)
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
             {
                 Graphics offscreen(offscreenDc, NULL);
+                gr.copyArea(defRect, offscreen, defRect.topLeft);
                 if (0 != scrollDelta)
-                    def->scroll(offscreen,*prefs, scrollDelta);
+                    def.scroll(offscreen,*prefs, scrollDelta);
                 else
-                    def->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
+                    def.render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
                 offscreen.copyArea(defRect, gr, defRect.topLeft);
             }
             ::SelectObject(offscreenDc, oldBitmap);
@@ -1462,7 +1517,7 @@ void repaintDefiniton(HWND hwnd, int scrollDelta)
         ::DeleteDC(offscreenDc);
     }
     else
-        doubleBuffer=false;*/
+        doubleBuffer=false;
     if (!doubleBuffer)
         if (0 != scrollDelta)
             def.scroll(gr,*prefs, scrollDelta);
@@ -1556,14 +1611,14 @@ void SimpleOrExtendedSearch(HWND hwnd, bool simple)
         {
             lookupManager->search(term);
             setUIState(false);
-            InvalidateRect(hwnd,NULL,TRUE);
+            InvalidateRect(hwnd,NULL,FALSE);
         }
         else
         {
             if (lookupManager->lookupIfDifferent(term))
             {
                 setUIState(false);
-                InvalidateRect(hwnd,NULL,TRUE);
+                InvalidateRect(hwnd,NULL,FALSE);
             }
             else
             {
@@ -1573,7 +1628,7 @@ void SimpleOrExtendedSearch(HWND hwnd, bool simple)
                     setDisplayMode(showArticle);
                     setScrollBar(g_definition);
                     setUIState(true);
-                    InvalidateRect(hwnd,NULL,TRUE);                            
+                    InvalidateRect(hwnd,NULL,FALSE);                            
                 }
             }
         }

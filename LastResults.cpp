@@ -8,6 +8,7 @@
 using namespace ArsLexis;
 
 static WNDPROC oldResultsListWndProc = NULL;
+static WNDPROC oldResultsEditWndProc = NULL;
 static HWND    g_hLastResultsDlg  = NULL;
 static bool    g_fRefine = true;
 
@@ -16,6 +17,32 @@ ArsLexis::String   g_listPositionsString;
 
 const int hotKeyCode=0x32;
 
+LRESULT CALLBACK ResultsEditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    switch(msg)
+    {
+        case WM_SETFOCUS:
+        {               
+                SHMENUBARINFO shmbi;
+                ZeroMemory(&shmbi, sizeof(shmbi));
+                shmbi.cbSize = sizeof(shmbi);
+                shmbi.hwndParent = g_hLastResultsDlg;
+                shmbi.nToolBarId = IDR_LAST_RESULTS_REFINE_MENUBAR;
+                shmbi.hInstRes = g_hInst;
+                
+                if (!SHCreateMenuBar(&shmbi))
+                    return FALSE;
+                
+                (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
+                    MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
+                    SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
+                g_fRefine = true;
+                break;
+        }
+    }
+    return CallWindowProc(oldResultsEditWndProc, hwnd, msg, wp, lp);
+}
+
 LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch(msg)
@@ -23,21 +50,21 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         //What the hell is constatnt - any idea VK_F24 ??
         case WM_SETFOCUS:
         {               
-                SHMENUBARINFO shmbi;
-                ZeroMemory(&shmbi, sizeof(shmbi));
-                shmbi.cbSize = sizeof(shmbi);
-                shmbi.hwndParent = g_hLastResultsDlg;
-                shmbi.nToolBarId = IDR_LAST_RESULTS_SEARCH_MENUBAR;
-                shmbi.hInstRes = g_hInst;
-                
-                if (!SHCreateMenuBar(&shmbi))
-                    return FALSE;
-    
-                (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
-                    MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
-                    SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-                g_fRefine = false;
-                break;
+            SHMENUBARINFO shmbi;
+            ZeroMemory(&shmbi, sizeof(shmbi));
+            shmbi.cbSize = sizeof(shmbi);
+            shmbi.hwndParent = g_hLastResultsDlg;
+            shmbi.nToolBarId = IDR_LAST_RESULTS_SEARCH_MENUBAR ;
+            shmbi.hInstRes = g_hInst;
+            
+            if (!SHCreateMenuBar(&shmbi))
+                return FALSE;
+            
+            (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
+                MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
+                SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
+            g_fRefine = false;
+            break;
         }
         
         case 0x87: 
@@ -54,7 +81,7 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         HWND ctrl=GetDlgItem(g_hLastResultsDlg, IDC_REFINE_EDIT);
                         SetFocus(ctrl);
 
-                        SHMENUBARINFO shmbi;
+                        /*SHMENUBARINFO shmbi;
                         ZeroMemory(&shmbi, sizeof(shmbi));
                         shmbi.cbSize = sizeof(shmbi);
                         shmbi.hwndParent = g_hLastResultsDlg;
@@ -67,7 +94,7 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
                             MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
                             SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-                        g_fRefine = true;
+                        g_fRefine = true;*/
                     }
                     else
                         SendMessage (hwnd, LB_SETCURSEL, pos-1, 0);
@@ -113,6 +140,7 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                     break;
 
                 case ID_REFINE:
+                case ID_SELECT:
                 {
                     if (!g_fRefine)
                     {
@@ -146,6 +174,13 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                 }
             }
         }
+        HWND ctrlList = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
+        int senderID = LOWORD(wp);
+        int code = HIWORD(wp);
+        HWND senderHWND = (HWND)lp;
+        if((IDC_LAST_RESULTS_LIST == senderID) && (senderHWND == ctrlList))
+            if (LBN_DBLCLK == code)
+                SendMessage(g_hLastResultsDlg , WM_COMMAND, ID_SELECT, 0); 
     }
     return FALSE;
 }
@@ -182,10 +217,13 @@ bool FInitLastResults(HWND hDlg)
     g_fRefine = true;
 
     HWND ctrl=GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
-    oldResultsListWndProc=(WNDPROC)SetWindowLong(ctrl, GWL_WNDPROC, (LONG)ResultsListWndProc);
+    oldResultsListWndProc = (WNDPROC)SetWindowLong(ctrl, GWL_WNDPROC, (LONG)ResultsListWndProc);
     RegisterHotKey( ctrl, hotKeyCode,   0, VK_TACTION);
     RegisterHotKey( ctrl, hotKeyCode+1, 0, VK_TUP);
-        
+
+    HWND EditCrl=GetDlgItem(hDlg, IDC_REFINE_EDIT);
+    oldResultsEditWndProc = (WNDPROC)SetWindowLong(EditCrl, GWL_WNDPROC, (LONG)ResultsEditWndProc);
+
     g_listPositions.clear();
     
     iPediaApplication& app=iPediaApplication::instance();

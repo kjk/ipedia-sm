@@ -25,6 +25,7 @@ extern ArsLexis::String searchWord;
 bool GotoURL(LPCTSTR lpszUrl);
 void setupAboutWindow();
 void setMenu(HWND hwnd);
+void setUIState(bool enabled = true);
 
 extern Definition *g_about;
 extern Definition *g_register;
@@ -47,13 +48,25 @@ void setDisplayMode(DisplayMode mode);
 DisplayMode displayMode();
 Definition& currentDefinition();
 
-class RenderingProgressReporter: public Definition::RenderingProgressReporter
+class CommonProgressReporter
 {
-    HWND hwndMain_;
+protected:
+    DWORD ticksAtUpdate_;
     DWORD ticksAtStart_;
     uint_t lastPercent_;
     bool showProgress_:1;
     bool afterTrigger_:1;
+    CommonProgressReporter();
+    void update(uint_t percent);
+    void setTicksAtUpdate(DWORD ticks)
+    {ticksAtUpdate_ = ticks;}
+    bool shallShow()
+    {return showProgress_;}
+};
+
+class RenderingProgressReporter: public Definition::RenderingProgressReporter, CommonProgressReporter
+{
+    HWND hwndMain_;
     ArsLexis::String waitText_;
     
 public:
@@ -63,7 +76,7 @@ public:
     virtual void reportProgress(uint_t percent);
 };
 
-class SmartPhoneProgressReported: public ArsLexis::DefaultLookupProgressReporter
+class SmartPhoneProgressReported: public ArsLexis::DefaultLookupProgressReporter, CommonProgressReporter
 {
     void showProgress(const ArsLexis::LookupProgressReportingSupport& support, ArsLexis::Graphics& gr, const ArsLexis::Rectangle& bounds, bool clearBkg=true);
 };

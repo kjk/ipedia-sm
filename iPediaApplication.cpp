@@ -56,7 +56,7 @@ DWORD iPediaApplication::waitForEvent()
     loadPreferences();
     setupAboutWindow();    
     setMenu(hwndMain_);
-    InvalidateRect(hwndMain_,NULL,TRUE);
+    InvalidateRect(hwndMain_,NULL,FALSE);
 
     MSG msg;
     while (true)
