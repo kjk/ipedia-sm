@@ -144,15 +144,16 @@ DWORD iPediaApplication::waitForEvent()
         {
             if (lookupManager_ && 
                 (LookupManager::lookupStartedEvent<=msg.message)
-                && (LookupManager::lookupFinishedEvent>=msg.message))
+                && (LookupManager::lookupFinishedEvent>=msg.message)&&
+                this->hwndMain_==msg.hwnd)
             {
                 EventType event;
                 event.eType = msg.message;
                 LookupFinishedEventData data;
                 ArsLexis::EventData i;
                 i.wParam=msg.wParam; i.lParam=msg.lParam;
-                memcpy(&data, &i, sizeof(data));
-                memcpy(event.data, &data,sizeof(data));
+                //memcpy(&data, &i, sizeof(data));
+                memcpy(event.data, &i,sizeof(data));
                 lookupManager_->handleLookupEvent(event);
             }
     

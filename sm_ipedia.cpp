@@ -128,9 +128,10 @@ ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
     )
 };
 
-iPediaApplication iPediaApplication::instance_;
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 WNDPROC oldEditWndProc;
+
+iPediaApplication iPediaApplication::instance_;
 
 Definition *definition_ = new Definition();
 RenderingProgressReporter* rep; 
@@ -221,9 +222,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
                 SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
                 );
-
             iPediaApplication& app=iPediaApplication::instance();
             LookupManager* lookupManager=app.getLookupManager(true);
+            app.setMainWindow(hwnd);
             //if (lookupManager && !lookupManager->lookupInProgress())
             //    lookupManager->checkArticleCount();
             lookupManager->setProgressReporter(new SmartPhoneProgressReported());

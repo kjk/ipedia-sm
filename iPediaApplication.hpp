@@ -39,6 +39,7 @@ class iPediaApplication //: public ArsLexis::Application
 
     void savePreferences();
     
+    HWND hwndMain_;    
     
 protected:
 
@@ -66,6 +67,12 @@ public:
 
     DWORD waitForEvent();
     
+    HWND getMainWindow()
+    {return hwndMain_ ;}
+    
+    void setMainWindow(HWND hwndMain)
+    {hwndMain_=hwndMain;}
+
     ~iPediaApplication();
     
     ArsLexis::status_t initialize();
