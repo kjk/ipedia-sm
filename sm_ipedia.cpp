@@ -44,7 +44,6 @@ String g_newRegCode;
 
 bool g_fRegistration = false;
 
-int  g_scrollBarDx = 0;
 int  g_menuDy = 0;
 bool g_lbuttondown = false;
 
@@ -94,16 +93,14 @@ WNDPROC   g_oldEditWndProc   = NULL;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
-void paint(HWND hwnd, HDC hdc, RECT rcpaint);
 void handleExtendSelection(HWND hwnd, int x, int y, bool finish);
 
-void repaintDefiniton(int scrollDelta);
+void RepaintDefiniton(int scrollDelta);
 void setScrollBar(Definition* definition);
-void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar);
 
 /*DWORD WINAPI formattingThreadProc(LPVOID lpParameter)
 {
-    repaintDefiniton(0);
+    RepaintDefiniton(0);
     g_recalculationInProgress = false;
     return 0;
 }*/
@@ -266,95 +263,6 @@ void setScrollBar(Definition* definition)
     SetScrollRange(g_hwndScroll, SB_CTL, 0, total-shown, TRUE);
 }
 
-void paint(HWND hwnd, HDC hdc, RECT rcpaint)
-{
-    RECT rect;
-    GetClientRect (hwnd, &rect);
-    ArsLexis::Rectangle rin(rcpaint);
-    ArsLexis::Rectangle rout(g_progressRect);
-    
-    iPediaApplication& app=GetApp();
-    bool fLookupInProgress = app.fLookupInProgress();
-
-    bool onlyProgress=false;
-
-    if (fLookupInProgress &&
-        (rout && rin.topLeft) && (rout.extent.x>=rin.extent.x)
-        && (rout.extent.y>=rin.extent.y))
-    {
-            onlyProgress = true;
-    }
-
-    rect.top    += 22;
-    rect.left   += 2;
-    rect.right  -= (2+g_scrollBarDx);
-    rect.bottom -= (2+g_menuDy);
-
-    if ( !onlyProgress && !g_recalculationInProgress)
-    {
-        Definition &def = currentDefinition();
-        if (g_forceLayoutRecalculation)
-        {
-            /*
-            DWORD threadID;
-            g_recalculationInProgress = true;
-            HANDLE hThread;
-            hThread = CreateThread(NULL, 0, formattingThreadProc, &g_recalculationData, 0, &threadID);
-            if (NULL!=hThread)
-                CloseHandle(hThread);*/
-            repaintDefiniton(0);
-        }
-        else
-        {
-            // TODO: a bit of a hack - we shouldn't be getting repaint if we
-            // started the download
-            if (!fLookupInProgress)
-            {
-                repaintDefiniton(0);
-            }
-        }
-    }
-
-    if (fLookupInProgress)
-    {
-        if (g_fRegistration)
-        {
-            g_RegistrationProgressReporter->reportProgress(-1);
-        }
-        else
-        {
-            Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());    
-            ArsLexis::Rectangle progressArea(g_progressRect);
-            app.getLookupManager()->showProgress(gr, progressArea);
-        }
-    }
-}
-
-LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    iPediaApplication& app=GetApp();
-    if (WM_KEYDOWN==msg)
-    {
-        if (VK_TACTION==wp)
-        {
-            if (g_uiEnabled)
-            {
-                SendMessage(app.getMainWindow(),WM_COMMAND, ID_SEARCH, 0);
-            }
-            return 0;
-        } else if (VK_DOWN==wp)
-        {
-            scrollDefinition(1, scrollPage, true);
-            return 0;
-        } else if (VK_UP==wp)
-        {
-            scrollDefinition(-1, scrollPage, true);
-            return 0;
-        }
-    }
-    return CallWindowProc(g_oldEditWndProc, hwnd, msg, wp, lp);
-}
-
 static void SetMenuBarButtonState(int buttonID, bool fEnabled)
 {
     TBBUTTONINFO    buttonInfo = {0};
@@ -507,38 +415,7 @@ void handleExtendSelection(HWND hwnd, int x, int y, bool finish)
     def.extendSelection(graphics, app.preferences().renderingPreferences, point, finish);         
 }
 
-void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
-{
-    iPediaApplication& app = GetApp();
-    if (app.fLookupInProgress())
-        return;
-
-    if (g_recalculationInProgress)
-        return;
-
-    Definition &def = currentDefinition();
-    if (def.empty())
-        return;
-
-    switch (unit)
-    {
-        case scrollPage:
-            units = units * def.shownLinesCount();
-            break;
-        case scrollEnd:
-            units = def.totalLinesCount();
-            break;
-        case scrollHome:
-            units = -(int)def.totalLinesCount();
-            break;
-        case scrollPosition:
-            units = units - def.firstShownLine();
-            break;
-    }
-    repaintDefiniton(units);
-}
-
-void repaintDefiniton(int scrollDelta)
+static void RepaintDefiniton(int scrollDelta)
 {
     iPediaApplication& app = GetApp();
     const RenderingPreferences& prefs = app.preferences().renderingPreferences;
@@ -550,7 +427,7 @@ void repaintDefiniton(int scrollDelta)
     
     rect.top    += 22;
     rect.left   += 2;
-    rect.right  -= 2 + g_scrollBarDx;
+    rect.right  -= 2 + GetScrollBarDx();
     rect.bottom -= 2 + g_menuDy;
     ArsLexis::Rectangle defRect=rect;
     
@@ -595,6 +472,37 @@ void repaintDefiniton(int scrollDelta)
     if (g_forceLayoutRecalculation)
         PostMessage(app.getMainWindow(),WM_COMMAND, IDM_ENABLE_UI, 0);
     g_forceLayoutRecalculation = false;
+}
+
+void ScrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
+{
+    iPediaApplication& app = GetApp();
+    if (app.fLookupInProgress())
+        return;
+
+    if (g_recalculationInProgress)
+        return;
+
+    Definition &def = currentDefinition();
+    if (def.empty())
+        return;
+
+    switch (unit)
+    {
+        case scrollPage:
+            units = units * def.shownLinesCount();
+            break;
+        case scrollEnd:
+            units = def.totalLinesCount();
+            break;
+        case scrollHome:
+            units = -(int)def.totalLinesCount();
+            break;
+        case scrollPosition:
+            units = units - def.firstShownLine();
+            break;
+    }
+    RepaintDefiniton(units);
 }
 
 void *g_ClipboardText = NULL;
@@ -916,21 +824,19 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 static void OnCreate(HWND hwnd)
 {
     iPediaApplication &app = GetApp();
-    g_scrollBarDx = GetSystemMetrics(SM_CXVSCROLL);
     g_menuDy = 0;
 #ifdef WIN32_PLATFORM_PSPC
     g_menuDy = GetSystemMetrics(SM_CYMENU);
 #endif
 
     // create the menu bar
-    SHMENUBARINFO mbi;
-    ZeroMemory(&mbi, sizeof(mbi));
+    SHMENUBARINFO mbi = {0};
     mbi.cbSize = sizeof(mbi);
     mbi.hwndParent = hwnd;
     mbi.nToolBarId = IDR_MAIN_MENUBAR;
 #ifdef WIN32_PLATFORM_PSPC
     mbi.nBmpId     = IDB_TOOLBAR;
-    mbi.cBmpImages = 3;	
+    mbi.cBmpImages = 3;
 #endif
 
     mbi.hInstRes = app.getApplicationHandle();
@@ -1085,6 +991,14 @@ static LookupFinishedEventData ExtractLookupFinishedEventData(WPARAM wp, LPARAM 
     return data;
 }
 
+static DisplayAlertEventData ExtractDisplayAlertEventData(WPARAM wp, LPARAM lp)
+{
+    EventData eventData = ExtractEventData(wp,lp);
+    DisplayAlertEventData data;
+    memcpy((void*)&data, (void*)&eventData, sizeof(data));
+    return data;
+}
+
 static void DoHandleLookupFinished(HWND hwnd, WPARAM wp, LPARAM lp)
 {
     iPediaApplication& app = GetApp();
@@ -1117,17 +1031,170 @@ static void DoHandleLookupFinished(HWND hwnd, WPARAM wp, LPARAM lp)
     InvalidateRect(hwnd,NULL,FALSE);
 }
 
+static void DoDisplayAlert(HWND hwnd, WPARAM wp, LPARAM lp, bool fCustom)
+{
+    iPediaApplication& app=GetApp();
+
+    DisplayAlertEventData data = ExtractDisplayAlertEventData(wp, lp);
+
+    String msg;
+    app.getErrorMessage(data.alertId, fCustom, msg);
+    String title;
+    app.getErrorTitle(data.alertId, title);
+
+    if (lookupLimitReachedAlert == data.alertId)
+    {
+        int res = MessageBox(app.getMainWindow(), msg.c_str(), title.c_str(),
+                  MB_YESNO | MB_ICONEXCLAMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+        if (IDYES == res)
+            SendMessage(hwnd, WM_COMMAND, IDM_MENU_REGISTER, 0);
+    }
+    else
+    {
+        // we need to do make it MB_APPLMODAL - if we don't if we switch
+        // to other app and return here, the dialog is gone but the app
+        // is blocked
+        MessageBox(app.getMainWindow(), msg.c_str(), title.c_str(),
+                   MB_OK | MB_ICONEXCLAMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+    }
+
+    SetUIState(true);
+}
+
+static void OnPaint(HWND hwnd, HDC hdc, RECT rcpaint)
+{
+    RECT rect;
+    GetClientRect (hwnd, &rect);
+    ArsLexis::Rectangle rin(rcpaint);
+    ArsLexis::Rectangle rout(g_progressRect);
+    
+    iPediaApplication& app=GetApp();
+    bool fLookupInProgress = app.fLookupInProgress();
+
+    bool onlyProgress=false;
+
+    if (fLookupInProgress &&
+        (rout && rin.topLeft) && (rout.extent.x>=rin.extent.x)
+        && (rout.extent.y>=rin.extent.y))
+    {
+            onlyProgress = true;
+    }
+
+    rect.top    += 22;
+    rect.left   += 2;
+    rect.right  -= (2+GetScrollBarDx());
+    rect.bottom -= (2+g_menuDy);
+
+    if ( !onlyProgress && !g_recalculationInProgress)
+    {
+        Definition &def = currentDefinition();
+        if (g_forceLayoutRecalculation)
+        {
+            /*
+            DWORD threadID;
+            g_recalculationInProgress = true;
+            HANDLE hThread;
+            hThread = CreateThread(NULL, 0, formattingThreadProc, &g_recalculationData, 0, &threadID);
+            if (NULL!=hThread)
+                CloseHandle(hThread);*/
+            RepaintDefiniton(0);
+        }
+        else
+        {
+            // TODO: a bit of a hack - we shouldn't be getting repaint if we
+            // started the download
+            if (!fLookupInProgress)
+            {
+                RepaintDefiniton(0);
+            }
+        }
+    }
+
+    if (fLookupInProgress)
+    {
+        if (g_fRegistration)
+        {
+            g_RegistrationProgressReporter->reportProgress(-1);
+        }
+        else
+        {
+            Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());    
+            ArsLexis::Rectangle progressArea(g_progressRect);
+            app.getLookupManager()->showProgress(gr, progressArea);
+        }
+    }
+}
+
+static void OnSize(HWND hwnd, LPARAM lp)
+{
+    static      firstWmSizeMsg = true;
+
+    if (!firstWmSizeMsg)
+        g_menuDy = 0;
+
+    int dx = LOWORD(lp);
+    int dy = HIWORD(lp);
+                
+#ifdef WIN32_PLATFORM_PSPC
+    int searchButtonDX = 50;
+    int searchButtonX = dx - searchButtonDX - 2;
+
+    MoveWindow(g_hwndSearchButton, searchButtonX, 2, searchButtonDX, 20, TRUE);
+    MoveWindow(g_hwndEdit, 2, 2, searchButtonX - 6, 20, TRUE);
+#else
+    MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
+#endif
+
+    MoveWindow(g_hwndScroll, dx-GetScrollBarDx() , 28 , GetScrollBarDx(), dy-28-g_menuDy, FALSE);
+
+    g_progressRect.left = (dx - GetScrollBarDx() - 155)/2;
+    g_progressRect.top  = (dy-45)/2;
+    g_progressRect.right = g_progressRect.left + 155;
+#ifdef WIN32_PLATFORM_PSPC
+    g_progressRect.bottom = g_progressRect.top + 55;
+#else
+    g_progressRect.bottom = g_progressRect.top + 45;
+#endif
+    g_RenderingProgressReporter->setProgressArea(g_progressRect);
+    g_RegistrationProgressReporter->setProgressArea(g_progressRect);
+    firstWmSizeMsg = false;
+}
+
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    iPediaApplication& app=GetApp();
+    if (WM_KEYDOWN==msg)
+    {
+        if (VK_TACTION==wp)
+        {
+            if (g_uiEnabled)
+            {
+                SendMessage(app.getMainWindow(),WM_COMMAND, ID_SEARCH, 0);
+            }
+            return 0;
+        } else if (VK_DOWN==wp)
+        {
+            ScrollDefinition(1, scrollPage, true);
+            return 0;
+        } else if (VK_UP==wp)
+        {
+            ScrollDefinition(-1, scrollPage, true);
+            return 0;
+        }
+    }
+    return CallWindowProc(g_oldEditWndProc, hwnd, msg, wp, lp);
+}
+
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT     lResult = TRUE;
     HDC         hdc;
-    bool        customAlert = false;
     iPediaApplication& app = GetApp();
 
     // I don't know why on PPC in first WM_SIZE mesaage hieght of menu
     // bar is not taken into account, in next WM_SIZE messages (e.g. 
     // after SIP usage) the height of menu is taken into account
-    static      firstWmSizeMsg = true;
     switch (msg)
     {
         case WM_CREATE:
@@ -1137,57 +1204,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 #ifdef WIN32_PLATFORM_PSPC
         case WM_SETTINGCHANGE:
         {
-            SHACTIVATEINFO sai;
+            SHACTIVATEINFO sai = {0};
             if (SPI_SETSIPINFO == wp)
             {
-                ZeroMemory(&sai, sizeof(sai));
                 SHHandleWMSettingChange(hwnd, -1 , 0, &sai);
             }
             break;
         }
         case WM_ACTIVATE:
         {
-            SHACTIVATEINFO sai;
+            SHACTIVATEINFO sai = {0};
             if (SPI_SETSIPINFO == wp)
             {
-                ZeroMemory(&sai, sizeof(sai));
                 SHHandleWMActivate(hwnd, wp, lp, &sai, 0);
             }
             break;
         }
 #endif
         case WM_SIZE:
-        {
-            if (!firstWmSizeMsg)
-                g_menuDy = 0;
-            int height = HIWORD(lp);
-            int width = LOWORD(lp);
-            
-#ifdef WIN32_PLATFORM_PSPC
-            int searchButtonDX = 50;
-            int searchButtonX = LOWORD(lp) - searchButtonDX - 2;
-
-            MoveWindow(g_hwndSearchButton, searchButtonX, 2, searchButtonDX, 20, TRUE);
-            MoveWindow(g_hwndEdit, 2, 2, searchButtonX - 6, 20, TRUE);
-#else
-            MoveWindow(g_hwndEdit, 2, 2, LOWORD(lp)-4, 20, TRUE);
-#endif
-
-            MoveWindow(g_hwndScroll,width-g_scrollBarDx , 28 , g_scrollBarDx, height-28-g_menuDy, FALSE);
-
-            g_progressRect.left = (width - g_scrollBarDx - 155)/2;
-            g_progressRect.top = (height-45)/2;
-            g_progressRect.right = g_progressRect.left + 155;
-#ifdef WIN32_PLATFORM_PSPC
-            g_progressRect.bottom = g_progressRect.top + 55;
-#else
-            g_progressRect.bottom = g_progressRect.top + 45;
-#endif
-            g_RenderingProgressReporter->setProgressArea(g_progressRect);
-            g_RegistrationProgressReporter->setProgressArea(g_progressRect);
-            firstWmSizeMsg = false;
+            OnSize(hwnd, lp);
             break;
-        }
 
         case WM_SETFOCUS:
             SetFocus(g_hwndEdit);
@@ -1201,7 +1237,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         {
             PAINTSTRUCT ps;
             hdc = BeginPaint (hwnd, &ps);
-            paint(hwnd, hdc, ps.rcPaint);
+            OnPaint(hwnd, hdc, ps.rcPaint);
             EndPaint (hwnd, &ps);
             break;
         }
@@ -1219,7 +1255,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     break;
 #endif
                 case VK_TDOWN:
-                    scrollDefinition(1, scrollPage, true);
+                    ScrollDefinition(1, scrollPage, true);
                     break;
             }
             break;
@@ -1245,22 +1281,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             switch (LOWORD(wp))
             {
                 case SB_TOP:
-                    scrollDefinition(0, scrollHome, false);
+                    ScrollDefinition(0, scrollHome, false);
                     break;
                 case SB_BOTTOM:
-                    scrollDefinition(0, scrollEnd, false);
+                    ScrollDefinition(0, scrollEnd, false);
                     break;
                 case SB_LINEUP:
-                    scrollDefinition(-1, scrollLine, false);
+                    ScrollDefinition(-1, scrollLine, false);
                     break;
                 case SB_LINEDOWN:
-                    scrollDefinition(1, scrollLine, false);
+                    ScrollDefinition(1, scrollLine, false);
                     break;
                 case SB_PAGEUP:
-                    scrollDefinition(-1, scrollPage, false);
+                    ScrollDefinition(-1, scrollPage, false);
                     break;
                 case SB_PAGEDOWN:
-                    scrollDefinition(1, scrollPage, false);
+                    ScrollDefinition(1, scrollPage, false);
                     break;
 
                 case SB_THUMBPOSITION:
@@ -1270,7 +1306,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     info.cbSize = sizeof(info);
                     info.fMask = SIF_TRACKPOS;
                     GetScrollInfo(g_hwndScroll, SB_CTL, &info);
-                    scrollDefinition(info.nTrackPos, scrollPosition, true);
+                    ScrollDefinition(info.nTrackPos, scrollPosition, true);
                     break;
                 }
              }
@@ -1293,40 +1329,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         }
 
         case iPediaApplication::appDisplayCustomAlertEvent:
-            customAlert = true;
-            // intentional fall-through
+            DoDisplayAlert(hwnd, wp, lp, true);
+            break;
         
         case iPediaApplication::appDisplayAlertEvent:
-        {
-            iPediaApplication::DisplayAlertEventData data;
-            ArsLexis::EventData i;
-            i.wParam=wp; i.lParam=lp;
-            memcpy(&data, &i, sizeof(data));
-
-            String msg;
-            app.getErrorMessage(data.alertId, customAlert,msg);
-            String title;
-            app.getErrorTitle(data.alertId, title);
-
-            if (lookupLimitReachedAlert == data.alertId)
-            {
-                int res = MessageBox(app.getMainWindow(), msg.c_str(), title.c_str(),
-                          MB_YESNO | MB_ICONEXCLAMATION | MB_APPLMODAL | MB_SETFOREGROUND );
-                if (IDYES == res)
-                    SendMessage(hwnd, WM_COMMAND, IDM_MENU_REGISTER, 0);
-            }
-            else
-            {
-                // we need to do make it MB_APPLMODAL - if we don't if we switch
-                // to other app and return here, the dialog is gone but the app
-                // is blocked
-                MessageBox(app.getMainWindow(), msg.c_str(), title.c_str(),
-                           MB_OK | MB_ICONEXCLAMATION | MB_APPLMODAL | MB_SETFOREGROUND );
-            }
-
-            SetUIState(true);
+            DoDisplayAlert(hwnd, wp,lp, false);
             break;
-        }
 
         case LookupManager::lookupStartedEvent:
         case LookupManager::lookupProgressEvent:
@@ -1373,7 +1381,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     SetupAboutWindow();
     SetMenu(app.getMainWindow());
-    //InvalidateRect(app.getMainWindow(),NULL,FALSE);
 
     int retVal = app.runEventLoop();
 

@@ -90,7 +90,7 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         return TRUE;
     }
 
-    //What the hell is constatnt - any idea VK_F24 ??
+    // What the hell is constant - any idea VK_F24 ??
     if (0x87==msg)
     {
         switch (wp)
@@ -111,6 +111,7 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 {
                     SendMessage (hwnd, LB_SETCURSEL, currSelection-1, 0);
                 }
+                break;
         }
     }
     return CallWindowProc(oldResultsListWndProc, hwnd, msg, wp, lp);

@@ -7,7 +7,7 @@
 #include <LookupManagerBase.hpp>
 #include "resource.h"
 
-#define APP_NAME _T("iPedia")
+#define APP_NAME      _T("iPedia")
 #define APP_WIN_TITLE _T("iPedia")
 
 #define MENU_HEIGHT 26

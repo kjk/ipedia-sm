@@ -20,6 +20,17 @@ struct LookupFinishedEventData;
 
 #define serverToUse serverIpediaArslexis
 
+struct DisplayAlertEventData
+{
+    ushort_t alertId;
+
+    DisplayAlertEventData(ushort_t aid):
+        alertId(aid) {}
+
+    DisplayAlertEventData():
+        alertId(0) {}
+};
+
 class iPediaApplication
 {
     mutable ArsLexis::RootLogger log_;
@@ -104,18 +115,6 @@ public:
         appLookupEventLast=appLookupEventFirst+reservedLookupEventsCount,
         appForceUpgrade,
         appFirstAvailableEvent
-    };
-
-    struct DisplayAlertEventData
-    {
-        ushort_t alertId;
-        
-        DisplayAlertEventData(ushort_t aid):
-            alertId(aid) {}
-        
-        DisplayAlertEventData():
-            alertId(0) {}
-
     };
     
     static void sendDisplayAlertEvent(ushort_t alertId)
