@@ -32,7 +32,6 @@
 
 const int ErrorsTableEntries = 18;
 bool      g_fRegistration = false;
-HANDLE    g_hConnection = NULL;
 
 ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
 {
@@ -173,25 +172,55 @@ TCHAR szTitle[]   = TEXT("iPedia");
 HWND g_hwndEdit;
 HWND g_hwndScroll;
 
-static bool initConnection()
+HANDLE    g_hConnection = NULL;
+
+// try to establish internet connection.
+// If can't (e.g. because tcp/ip stack is not working), display a dialog box
+// informing about that and return false
+// Return true if established connection.
+// Can be called multiple times - will do nothing if connection is already established.
+static bool fInitConnection()
 {
-    DWORD dwStatus  = 0;
-    DWORD dwTimeout = 5000;     // connection timeout: 5 seconds
+    if (NULL!=g_hConnection)
+        return true;
 
     CONNMGR_CONNECTIONINFO ccInfo;
-    
     memset(&ccInfo, 0, sizeof(CONNMGR_CONNECTIONINFO));
-    ccInfo.cbSize = sizeof(CONNMGR_CONNECTIONINFO);
-    ccInfo.dwParams = CONNMGR_PARAM_GUIDDESTNET;
-    ccInfo.dwFlags = CONNMGR_FLAG_PROXY_HTTP;
-    ccInfo.dwPriority = CONNMGR_PRIORITY_USERINTERACTIVE;
+    ccInfo.cbSize      = sizeof(CONNMGR_CONNECTIONINFO);
+    ccInfo.dwParams    = CONNMGR_PARAM_GUIDDESTNET;
+    ccInfo.dwFlags     = CONNMGR_FLAG_PROXY_HTTP;
+    ccInfo.dwPriority  = CONNMGR_PRIORITY_USERINTERACTIVE;
     ccInfo.guidDestNet = IID_DestNetInternet;
     
+    DWORD dwStatus  = 0;
+    DWORD dwTimeout = 5000;     // connection timeout: 5 seconds
     HRESULT res = ConnMgrEstablishConnectionSync(&ccInfo, &g_hConnection, dwTimeout, &dwStatus);
-    
+
     if (FAILED(res))
+    {
+        //assert(NULL==g_hConnection);
+        g_hConnection = NULL;
+    }
+
+    if (NULL==g_hConnection)
+    {
+#ifdef DEBUG
+        ArsLexis::String errorMsg = _T("Unable to connect to ");
+        errorMsg += iPediaApplication::instance().server();
+#else
+        ArsLexis::String errorMsg = _T("Unable to connect");
+#endif
+        errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
+        MessageBox(
+            g_hwndMain,
+            errorMsg.c_str(),
+            TEXT("Error"),
+            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND
+            );
         return false;
-    return true;
+    }
+    else
+        return true;
 }
 
 static void deinitConnection()
@@ -200,34 +229,6 @@ static void deinitConnection()
     {
         ConnMgrReleaseConnection(g_hConnection,1);
         g_hConnection = NULL;
-    }
-}
-
-static void initConnectionIfNotPresent()
-{
-    static bool fInitialized = false;
-
-    if (fInitialized)
-        return;
-
-    if (initConnection())
-    {
-        fInitialized = true;
-    }
-    else
-    {
-#ifdef DEBUG
-        ArsLexis::String errorMsg = TEXT("Can't establish connection to ");
-        errorMsg += iPediaApplication::instance().server();
-#else
-        ArsLexis::String errorMsg = TEXT("Can't establish connection. Please check your proxy settings.");
-#endif
-        MessageBox(
-            g_hwndMain,
-            errorMsg.c_str(),
-            TEXT("Error"),
-            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND
-            );
     }
 }
 
@@ -350,7 +351,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     case IDM_EXT_SEARCH:
                     case ID_SEARCH:
                     {
-                        initConnectionIfNotPresent();
+                        if (!fInitConnection())
+                            break;
                         int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
                         TCHAR *buf=new TCHAR[len+1];
                         len = SendMessage(g_hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
@@ -379,7 +381,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     }
                     case IDM_MENU_HYPERS:
                     {
-                        initConnectionIfNotPresent();
+                        if (!fInitConnection())
+                            break;
                         if (!definition_->empty())
                         {
                             if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_HYPERLINKS), hwnd,HyperlinksDlgProc))
@@ -396,7 +399,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     }
                     case IDM_MENU_RANDOM:
                     {
-                        initConnectionIfNotPresent();
+                        if (!fInitConnection())
+                            break;
                         if (lookupManager && !lookupManager->lookupInProgress())
                         {
                             setUI(false);
@@ -406,7 +410,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     }
                     case IDM_MENU_REGISTER:
                     {
-                        initConnectionIfNotPresent();
+                        if (!fInitConnection())
+                            break;
                         newRegCode_ = app.preferences().regCode;
                         if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), hwnd,RegistrationDlgProc))
                         {
@@ -439,7 +444,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         }
                         if (lookupManager && !lookupManager->lookupInProgress())
                         {
-                            initConnectionIfNotPresent();
+                            if (!fInitConnection())
+                                break;
                             lookupManager->moveHistory(!(wp-IDM_MENU_NEXT));
                             setUI(false);
                         }
@@ -869,6 +875,7 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
             g_forceLayoutRecalculation=false;
         }
     }
+
     if(rec)
     {
         setScrollBar(definition_);
