@@ -7,15 +7,15 @@
 
 using namespace ArsLexis;
 
-WNDPROC oldResultsListWndProc;
-HWND hLastResultsDlg=NULL;
-HWND RefineEditBox = NULL;
+static WNDPROC oldResultsListWndProc = NULL;
+static HWND    hLastResultsDlg  = NULL;
+static bool    fRefine = true;
 
 std::list<char_t*> listPositions_;
 ArsLexis::String listPositionsString_;
 
 const int hotKeyCode=0x32;
-bool refine = true;
+
 LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch(msg)
@@ -36,20 +36,20 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
                     MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
                     SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-                refine = false;
+                fRefine = false;
                 break;
         }
         
         case 0x87: 
         {
-            switch(wp)
+            switch (wp)
             {
                 case hotKeyCode:
                     SendMessage(hLastResultsDlg, WM_COMMAND, ID_REFINE, 0);
                     break;
-                case hotKeyCode +1:
+                case hotKeyCode+1:
                     int pos = SendMessage (hwnd, LB_GETCURSEL, 0, 0);
-                    if(pos==0)
+                    if (0==pos)
                     {
                         HWND ctrl=GetDlgItem(hLastResultsDlg, IDC_REFINE_EDIT);
                         SetFocus(ctrl);
@@ -67,7 +67,7 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
                             MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
                             SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-                        refine = true;
+                        fRefine = true;
                     }
                     else
                         SendMessage (hwnd, LB_SETCURSEL, pos-1, 0);
@@ -85,7 +85,13 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
     switch(msg)
     {
         case WM_INITDIALOG:
-            return InitLastResults(hDlg);
+            if (FInitLastResults(hDlg))
+                return TRUE;
+            else
+                return FALSE;
+            assert(0);
+            break;
+
         case WM_SIZE:
         {
             int width = LOWORD(lp);
@@ -108,7 +114,7 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
                 case ID_REFINE:
                 {
-                    if(!refine)
+                    if (!fRefine)
                     {
                         HWND ctrl = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
                         int idx = SendMessage(ctrl, LB_GETCURSEL, 0, 0);
@@ -124,7 +130,7 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                     {
                         HWND ctrl = GetDlgItem(hDlg, IDC_REFINE_EDIT);
                         int len = SendMessage(ctrl, EM_LINELENGTH, 0,0);
-                        if(len)
+                        if (len>0)
                         {
                             TCHAR *buf=new TCHAR[len+1];
                             len = SendMessage(ctrl, WM_GETTEXT, len+1, (LPARAM)buf);
@@ -144,36 +150,36 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
     return FALSE;
 }
 
-BOOL InitLastResults(HWND hDlg)
+bool FInitLastResults(HWND hDlg)
 {
     // Specify that the dialog box should stretch full screen
     SHINITDLGINFO shidi;
     ZeroMemory(&shidi, sizeof(shidi));
-    shidi.dwMask = SHIDIM_FLAGS;
+    shidi.dwMask  = SHIDIM_FLAGS;
     shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;
-    shidi.hDlg = hDlg;
-    
+    shidi.hDlg    = hDlg;
+
     // Set up the menu bar
     SHMENUBARINFO shmbi;
     ZeroMemory(&shmbi, sizeof(shmbi));
-    shmbi.cbSize = sizeof(shmbi);
+    shmbi.cbSize     = sizeof(shmbi);
     shmbi.hwndParent = hDlg;
     shmbi.nToolBarId = IDR_LAST_RESULTS_REFINE_MENUBAR;
-    shmbi.hInstRes = g_hInst;
-    
+    shmbi.hInstRes   = g_hInst;
+
     // If we could not initialize the dialog box, return an error
     if (!SHInitDialog(&shidi))
-        return FALSE;
-    
+        return false;
+
     if (!SHCreateMenuBar(&shmbi))
-        return FALSE;
-    
+        return false;
+
     (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
         MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
         SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-    
-    hLastResultsDlg=hDlg;
-    refine = true;
+
+    hLastResultsDlg = hDlg;
+    fRefine = true;
 
     HWND ctrl=GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
     oldResultsListWndProc=(WNDPROC)SetWindowLong(ctrl, GWL_WNDPROC, (LONG)ResultsListWndProc);
@@ -194,16 +200,12 @@ BOOL InitLastResults(HWND hDlg)
         {
             if ('\n'==*it)
             {
-                char_t* start=&(*lastStart);
-                lastStart=it;
+                char_t* start = &(*lastStart);
+                lastStart = it;
                 ++lastStart;
-                *it=chrNull;
+                *it = chrNull;
                 listPositions_.push_back(start);
-                SendMessage(
-                    ctrl,
-                    LB_ADDSTRING,
-                    0,
-                    (LPARAM)start);            
+                SendMessage(ctrl, LB_ADDSTRING, 0, (LPARAM)start);
             }
         }
         //if (!lookupManager->lastSearchExpression().empty())
@@ -211,5 +213,5 @@ BOOL InitLastResults(HWND hDlg)
     }
     SendMessage (ctrl, LB_SETCURSEL, 0, 0);
     UpdateWindow(ctrl);
-    return TRUE;
+    return true;
 }

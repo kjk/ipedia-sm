@@ -30,42 +30,8 @@ iPediaApplication::iPediaApplication():
 #endif
 }
 
-inline void iPediaApplication::detectViewer()
-{
-    //ushort_t  cardNo;
-    //LocalID dbID;
-
-    /*if (fDetectViewer(&cardNo,&dbID))
-    {
-        assert(dbID!=0);
-        hyperlinkHandler_.setViewerLocation(cardNo, dbID);
-    }*/
-}
-
-status_t iPediaApplication::initialize()
-{
-    status_t error = errNone;
-    //err = initialize();
-    if (!error)
-    {
-        /*if (diaSupport_ && notifyManagerPresent()) 
-        {
-            error=registerNotify(diaSupport_.notifyType());
-            if (!error)
-                diaNotifyRegistered_=true;
-        }*/
-    }
-    
-    //detectViewer();
-       
-    return error;
-    //return errNone;
-}
-
 iPediaApplication::~iPediaApplication()
 {
-/*    if (diaNotifyRegistered_) 
-        unregisterNotify(diaSupport_.notifyType());*/
     
     if (lookupManager_)
         delete lookupManager_;
@@ -77,21 +43,13 @@ iPediaApplication::~iPediaApplication()
 }
 
 
-status_t iPediaApplication::normalLaunch()
+/*status_t iPediaApplication::normalLaunch()
 {
     history_=new LookupHistory();
     loadPreferences();
     //gotoForm(mainForm);
     //runEventLoop();
     savePreferences();
-    return errNone;
-}
-
-/*status_t iPediaApplication::handleSystemNotify(SysNotifyParamType& notify)
-{
-    const ArsLexis::DIA_Support& dia=getDIASupport();
-    if (dia && dia.notifyType()==notify.notifyType)
-        dia.handleNotify();
     return errNone;
 }*/
 
@@ -141,10 +99,10 @@ DWORD iPediaApplication::waitForEvent()
                 lookupManager_->handleLookupEvent(event);
             }
     
-            if(msg.message!=WM_QUIT)
+            if (msg.message!=WM_QUIT)
             {
                 TranslateMessage (&msg);
-		        DispatchMessage(&msg);
+                DispatchMessage(&msg);
             }
             else
             {

@@ -48,7 +48,7 @@ enum ScrollUnit
     scrollPosition
 };
 
-const int ErrorsTableEntries = 25;
+const int ErrorsTableEntries = 24;
 ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
 {
         ErrorsTableEntry( romIncompatibleAlert,
@@ -423,6 +423,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             //InvalidateRect (g_hwndScroll, NULL, TRUE);
             break;
         }
+
+        case iPediaApplication::appForceUpgrade:
+            // TODO: implement me!
+            break;
+
         case iPediaApplication::appDisplayCustomAlertEvent:
             customAlert = true;
             // intentional fall-through
@@ -479,7 +484,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     {
                         g_definition->replaceElements(lookupManager->lastDefinitionElements());
                         g_forceLayoutRecalculation=true;
-                        //const LookupHistory& history=app.history();
                         SendMessage(g_hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)lookupManager->lastInputTerm().c_str());
                         int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
                         SendMessage(g_hwndEdit, EM_SETSEL, 0,len);
@@ -491,7 +495,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
 
                 case LookupFinishedEventData::outcomeList:
-                    //DialogBox(g_hInst, MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc);                        
                     recentWord.assign(lookupManager->lastInputTerm());
                     SendMessage(hwnd, WM_COMMAND, IDM_MENU_RESULTS, 0);
                     setUI(true);

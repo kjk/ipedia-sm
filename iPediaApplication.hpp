@@ -24,25 +24,22 @@ struct LookupFinishedEventData;
 class iPediaApplication //: public ArsLexis::Application 
 {
     mutable ArsLexis::RootLogger log_;
-    ushort_t ticksPerSecond_;
-    iPediaHyperlinkHandler hyperlinkHandler_;
-    LookupHistory* history_;
-    LookupManager* lookupManager_;
-    ArsLexis::String server_;
+    ushort_t                ticksPerSecond_;
+    iPediaHyperlinkHandler  hyperlinkHandler_;
+    LookupHistory*          history_;
+    LookupManager*          lookupManager_;
+    ArsLexis::String        server_;
     
     typedef std::list<ArsLexis::String> CustomAlerts_t;
     CustomAlerts_t customAlerts_;
 
-    void detectViewer();
-    
     void loadPreferences();
 
-    
     HWND hwndMain_;    
     
 protected:
     
-    ArsLexis::status_t normalLaunch();
+//    ArsLexis::status_t normalLaunch();
     
     bool handleApplicationEvent(ArsLexis::EventType& event);
     
@@ -61,8 +58,6 @@ public:
     {hwndMain_=hwndMain;}
 
     ~iPediaApplication();
-    
-    ArsLexis::status_t initialize();
     
     LookupManager* getLookupManager(bool create=false);
     const LookupManager* getLookupManager() const
@@ -113,6 +108,7 @@ public:
         appLookupEventFirst,
         appLookupEventLast=appLookupEventFirst+reservedLookupEventsCount,
         appGetArticlesCountEvent,
+        appForceUpgrade,
         appFirstAvailableEvent
     };
 
