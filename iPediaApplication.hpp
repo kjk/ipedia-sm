@@ -4,9 +4,9 @@
 //#include "ipedia.h"
 //#include <Application.hpp>
 //#include <DynamicInputAreas.hpp>
+#include "iPediaHyperlinkHandler.hpp"
 #include <Logging.hpp>
 #include <RenderingPreferences.hpp>
-//#include "iPediaHyperlinkHandler.hpp"
 #include <SysUtils.hpp>
 #include <BaseTypes.hpp>
 
@@ -19,14 +19,13 @@ struct LookupFinishedEventData;
 #define serverLocalhost      _T("192.168.0.1:9000")
 #define serverIpediaArslexis _T("ipedia.arslexis.com:9000")
 
-#define serverToUse serverKjk
+#define serverToUse serverLocalhost
 
 class iPediaApplication //: public ArsLexis::Application 
 {
     mutable ArsLexis::RootLogger log_;
-    //ArsLexis::DIA_Support diaSupport_;
     ushort_t ticksPerSecond_;
-    //iPediaHyperlinkHandler hyperlinkHandler_;
+    iPediaHyperlinkHandler hyperlinkHandler_;
     LookupHistory* history_;
     LookupManager* lookupManager_;
     ArsLexis::String server_;
@@ -42,13 +41,9 @@ class iPediaApplication //: public ArsLexis::Application
     HWND hwndMain_;    
     
 protected:
-
-    //ArsLexis::status_t handleSystemNotify(SysNotifyParamType& notify);
     
     ArsLexis::status_t normalLaunch();
     
-    //ArsLexis::Form* createForm(ushort_t formId);
-
     bool handleApplicationEvent(ArsLexis::EventType& event);
     
 public:
@@ -106,10 +101,7 @@ public:
     
     const RenderingPreferences& renderingPreferences() const
     {return preferences().renderingPreferences;}
-    
-    /*const ArsLexis::DIA_Support& diaSupport() const
-    {return diaSupport_;}*/
-    
+        
     enum {
         reservedLookupEventsCount=3
     };
@@ -171,8 +163,9 @@ public:
     bool hasHighDensityFeatures() const
     {return hasHighDensityFeatures_;}
 
-    /*iPediaHyperlinkHandler& hyperlinkHandler()
-    {return hyperlinkHandler_;}    */
+    iPediaHyperlinkHandler& hyperlinkHandler()
+    {return hyperlinkHandler_;}
+
     bool fArticleCountChecked;
 private:
     
