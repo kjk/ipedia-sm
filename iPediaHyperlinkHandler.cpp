@@ -13,18 +13,15 @@ bool iPediaHyperlinkHandler::handleExternalHyperlink(const ArsLexis::String& url
 
 bool iPediaHyperlinkHandler::handleTermHyperlink(const ArsLexis::String& term)
 {
-    bool result=false;
-    iPediaApplication& app=iPediaApplication::instance();
-    LookupManager* lookupManager=app.getLookupManager();  
-    if (lookupManager && !lookupManager->lookupInProgress())
-    {
-        result=true;
-        lookupManager->lookupIfDifferent(term);
-        setUIState(false);
-    }
-    return result;        
-}
+    iPediaApplication& app=GetApp();
+    if (app.fLookupInProgress())
+        return false;
 
+    LookupManager* lookupManager=app.getLookupManager();  
+    lookupManager->lookupIfDifferent(term);
+    SetUIState(false);
+    return true;
+}
 
 iPediaHyperlinkHandler::iPediaHyperlinkHandler()
 {

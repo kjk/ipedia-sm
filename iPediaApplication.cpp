@@ -12,9 +12,6 @@ HWND g_hwndForEvents = NULL;
 
 using namespace ArsLexis;
 
-const char_t iPediaApplication::szAppName[] = _T("iPedia");
-const char_t iPediaApplication::szTitle[]   = _T("iPedia");
-
 const iPediaApplication::ErrorInfo iPediaApplication::ErrorsTable[] =
 {
     ErrorInfo(romIncompatibleAlert,
@@ -168,11 +165,7 @@ LookupManager* iPediaApplication::getLookupManager(bool create)
 DWORD iPediaApplication::runEventLoop()
 {
     loadPreferences();
-    SetupAboutWindow();
-    setMenu(hwndMain_);
-    InvalidateRect(hwndMain_,NULL,FALSE);
-
-    g_hwndForEvents = hwndMain_;
+    g_hwndForEvents = getMainWindow();
 
     MSG msg;
     while (true)
@@ -355,8 +348,8 @@ bool iPediaApplication::InitInstance(HINSTANCE hInstance, int CmdShow )
 {
     
     hInst_ = hInstance;
-    hwndMain_ = CreateWindow(szAppName,
-        szTitle,
+    hwndMain_ = CreateWindow(APP_NAME,
+        APP_WIN_TITLE,
         WS_VISIBLE,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -386,7 +379,7 @@ BOOL iPediaApplication::InitApplication ( HINSTANCE hInstance )
     wc.hCursor = NULL;
     wc.hbrBackground = (HBRUSH) GetStockObject( WHITE_BRUSH );
     wc.lpszMenuName = NULL;
-    wc.lpszClassName = szAppName;
+    wc.lpszClassName = APP_NAME;
     
     f = RegisterClass(&wc);
     
@@ -398,13 +391,6 @@ bool iPediaApplication::initApplication(HINSTANCE hInstance,
                      ArsLexis::String cmdLine,
                      int cmdShow)
 {
-    HWND hwndPrev = FindWindow(szAppName, szTitle);
-    if (hwndPrev) 
-    {
-        SetForegroundWindow(hwndPrev);    
-        return false;
-    }
-    
     if (!hPrevInstance)
     {
         if (!InitApplication(hInstance))

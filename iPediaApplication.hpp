@@ -176,8 +176,6 @@ private:
     bool logAllocation_;  
     static const ErrorInfo ErrorsTable[];
     const ErrorInfo& getErrorInfo(int alertID);
-    static const ArsLexis::char_t szAppName[];
-    static const ArsLexis::char_t szTitle[];
 
 };
 

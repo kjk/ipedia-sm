@@ -7,6 +7,9 @@
 #include <LookupManagerBase.hpp>
 #include "resource.h"
 
+#define APP_NAME _T("iPedia")
+#define APP_WIN_TITLE _T("iPedia")
+
 #define MENU_HEIGHT 26
 
 #ifdef WIN32_PLATFORM_PSPC
@@ -22,9 +25,7 @@
 extern ArsLexis::String g_recentWord;
 extern ArsLexis::String g_searchWord;
 
-void SetupAboutWindow();
-void setMenu(HWND hwnd);
-void setUIState(bool enabled = true);
+void SetUIState(bool enabled = true);
 
 extern long g_articleCountSet;
 extern bool g_forceLayoutRecalculation;
