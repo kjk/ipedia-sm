@@ -78,8 +78,8 @@ void prepareAbout()
     FontEffects fxBold;
     fxBold.setWeight(FontEffects::weightBold);
 
-    FontEffects fxSmall;
-    fxSmall.setSmall(true);
+    /* FontEffects fxSmall;
+    fxSmall.setSmall(true); */
 
     elems.push_back(new LineBreakElement(1,10));
 
@@ -167,10 +167,10 @@ void prepareAbout()
     text->setHyperlink(_T(""), hyperlinkTerm);
     text->setActionCallback( tutorialActionCallback, NULL);
 #else
-    elems.push_back(new LineBreakElement(1,2));
+    /* elems.push_back(new LineBreakElement(1,2));
     elems.push_back(text=new FormattedTextElement(_T("Downloading uses data connection")));
     text->setJustification(DefinitionElement::justifyCenter);
-    text->setEffects(fxSmall);
+    text->setEffects(fxSmall); */
 #endif
 
     (*g_about).replaceElements(elems);    

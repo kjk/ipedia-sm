@@ -1,16 +1,20 @@
-1. shorter connection timeout so that when the server is down, doesn't wait so long?
-2. ability to cancel request e.g. during transfer we change to a form with only
+## 1. shorter connection timeout so that when the server is down, doesn't wait so long?
+## 2. ability to cancel request e.g. during transfer we change to a form with only
 "Cancel" button and progress report.
-3. fix the icon
-4. registration bug
+## 3. fix the icon
+## 6. use StringListDialog common with iNoah
+
+        *  DONE   *
+
+## 5. common enter reg code dialog with iNoah (2004-08-12)
+
+## 4. registration bug
 Repro:
 * enter registration screen
 * while reg field is empty, press "Register" button
 Observed: nothing happens, menus are disabled - we can scroll and enter a word
 but not launch query
 
-Probable cause: not handling "error" response from the server.
-
-        *  DONE   *
-5. common enter reg code dialog with iNoah (2004-08-12)
-
+Problem was: if a reg code field was empty, we wouldn't send 
+Verify-Registration-Code field in a query, so the server would just echo 
+Transaction-ID back and we didn't handle that in any way.
