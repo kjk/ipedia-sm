@@ -61,7 +61,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
-# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib winsock.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /out:"ARMRel/sm_ipedia_arm.exe" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib winsock.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /out:"ARMRel/ipedia_sm_arm_rel.exe" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
 
@@ -95,7 +95,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
-# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib winsock.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /verbose /debug /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib winsock.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /verbose /debug /nodefaultlib:"$(CENoDefaultLib)" /out:"ARMDbg/ipedia_sm_arm_dbg.exe" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
 
@@ -163,7 +163,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
-# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib winsock.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib winsock.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /out:"X86Dbg/ipedia_sm_dbg.exe" /subsystem:$(CESubsystem) /MACHINE:IX86
 
 !ENDIF 
 
@@ -199,7 +199,7 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -222,7 +222,7 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -245,7 +245,7 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -268,7 +268,7 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -418,12 +418,12 @@ DEP_CPP_DEFAU=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\ipedia.h"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -450,6 +450,7 @@ DEP_CPP_DEFAU=\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
+	"..\ars_framework\Src\ParagraphElement.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
@@ -460,12 +461,12 @@ DEP_CPP_DEFAU=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\ipedia.h"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -492,6 +493,7 @@ DEP_CPP_DEFAU=\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
+	"..\ars_framework\Src\ParagraphElement.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
@@ -502,12 +504,12 @@ DEP_CPP_DEFAU=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\ipedia.h"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -545,12 +547,12 @@ DEP_CPP_DEFAU=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\ipedia.h"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -580,7 +582,7 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -602,7 +604,7 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -624,7 +626,7 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -646,7 +648,7 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -674,7 +676,7 @@ DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -695,7 +697,7 @@ DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -716,7 +718,7 @@ DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -737,7 +739,7 @@ DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -783,8 +785,8 @@ DEP_CPP_DEFINIT=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ipedia\Src\DefinitionParser.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -823,8 +825,8 @@ DEP_CPP_DEFINIT=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ipedia\Src\DefinitionParser.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -863,8 +865,8 @@ DEP_CPP_DEFINIT=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ipedia\Src\DefinitionParser.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -903,8 +905,8 @@ DEP_CPP_DEFINIT=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ipedia\Src\DefinitionParser.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1068,7 +1070,7 @@ DEP_CPP_FORMA=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1091,7 +1093,7 @@ DEP_CPP_FORMA=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1114,7 +1116,7 @@ DEP_CPP_FORMA=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1137,7 +1139,7 @@ DEP_CPP_FORMA=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1167,7 +1169,7 @@ DEP_CPP_GENER=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1190,7 +1192,7 @@ DEP_CPP_GENER=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1213,7 +1215,7 @@ DEP_CPP_GENER=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1236,7 +1238,7 @@ DEP_CPP_GENER=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1265,7 +1267,7 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1287,7 +1289,7 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1309,7 +1311,7 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1331,7 +1333,7 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1361,16 +1363,21 @@ DEP_CPP_HYPER=\
 	"..\ars_framework\Src\NativeSocks.hpp"\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\HyperLinks.h"\
-	".\PrefsStore.hpp"\
+	".\iPediaApplication.hpp"\
+	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -1394,16 +1401,21 @@ DEP_CPP_HYPER=\
 	"..\ars_framework\Src\NativeSocks.hpp"\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\HyperLinks.h"\
-	".\PrefsStore.hpp"\
+	".\iPediaApplication.hpp"\
+	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -1427,16 +1439,21 @@ DEP_CPP_HYPER=\
 	"..\ars_framework\Src\NativeSocks.hpp"\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\HyperLinks.h"\
-	".\PrefsStore.hpp"\
+	".\iPediaApplication.hpp"\
+	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -1470,11 +1487,11 @@ DEP_CPP_HYPER=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\HyperLinks.h"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -1514,6 +1531,7 @@ DEP_CPP_IPEDI=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\ipedia.h"\
@@ -1521,7 +1539,6 @@ DEP_CPP_IPEDI=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -1554,6 +1571,7 @@ DEP_CPP_IPEDI=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\ipedia.h"\
@@ -1561,7 +1579,6 @@ DEP_CPP_IPEDI=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -1594,6 +1611,7 @@ DEP_CPP_IPEDI=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\ipedia.h"\
@@ -1601,7 +1619,6 @@ DEP_CPP_IPEDI=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -1634,6 +1651,7 @@ DEP_CPP_IPEDI=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\ipedia.h"\
@@ -1641,7 +1659,6 @@ DEP_CPP_IPEDI=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -1684,6 +1701,7 @@ DEP_CPP_IPEDIA=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\DefinitionParser.hpp"\
@@ -1692,7 +1710,6 @@ DEP_CPP_IPEDIA=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1727,6 +1744,7 @@ DEP_CPP_IPEDIA=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\DefinitionParser.hpp"\
@@ -1735,7 +1753,6 @@ DEP_CPP_IPEDIA=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1770,6 +1787,7 @@ DEP_CPP_IPEDIA=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\DefinitionParser.hpp"\
@@ -1778,7 +1796,6 @@ DEP_CPP_IPEDIA=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1813,6 +1830,7 @@ DEP_CPP_IPEDIA=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\DefinitionParser.hpp"\
@@ -1821,7 +1839,6 @@ DEP_CPP_IPEDIA=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1861,11 +1878,11 @@ DEP_CPP_IPEDIAH=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -1899,11 +1916,11 @@ DEP_CPP_IPEDIAH=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -1937,11 +1954,11 @@ DEP_CPP_IPEDIAH=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -1975,11 +1992,11 @@ DEP_CPP_IPEDIAH=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -2018,12 +2035,12 @@ DEP_CPP_LASTR=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -2055,12 +2072,12 @@ DEP_CPP_LASTR=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -2092,12 +2109,12 @@ DEP_CPP_LASTR=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -2129,12 +2146,12 @@ DEP_CPP_LASTR=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -2164,7 +2181,7 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2186,7 +2203,7 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2208,7 +2225,7 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2230,7 +2247,7 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2260,7 +2277,7 @@ DEP_CPP_LISTN=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2283,7 +2300,7 @@ DEP_CPP_LISTN=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2306,7 +2323,7 @@ DEP_CPP_LISTN=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2329,7 +2346,7 @@ DEP_CPP_LISTN=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2398,8 +2415,8 @@ DEP_CPP_LOOKU=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ipedia\Src\LookupHistory.hpp"\
-	".\PrefsStore.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
@@ -2409,8 +2426,8 @@ DEP_CPP_LOOKU=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ipedia\Src\LookupHistory.hpp"\
-	".\PrefsStore.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
@@ -2420,8 +2437,8 @@ DEP_CPP_LOOKU=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ipedia\Src\LookupHistory.hpp"\
-	".\PrefsStore.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -2431,8 +2448,8 @@ DEP_CPP_LOOKU=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ipedia\Src\LookupHistory.hpp"\
-	".\PrefsStore.hpp"\
 	
 
 !ENDIF 
@@ -2473,6 +2490,7 @@ DEP_CPP_LOOKUP=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\iPediaConnection.hpp"\
@@ -2480,7 +2498,6 @@ DEP_CPP_LOOKUP=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2515,6 +2532,7 @@ DEP_CPP_LOOKUP=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\iPediaConnection.hpp"\
@@ -2522,7 +2540,6 @@ DEP_CPP_LOOKUP=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2557,6 +2574,7 @@ DEP_CPP_LOOKUP=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\iPediaConnection.hpp"\
@@ -2564,7 +2582,6 @@ DEP_CPP_LOOKUP=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2599,6 +2616,7 @@ DEP_CPP_LOOKUP=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\iPediaConnection.hpp"\
@@ -2606,7 +2624,6 @@ DEP_CPP_LOOKUP=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2755,7 +2772,7 @@ DEP_CPP_PARAG=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2778,7 +2795,7 @@ DEP_CPP_PARAG=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2801,7 +2818,7 @@ DEP_CPP_PARAG=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2824,7 +2841,7 @@ DEP_CPP_PARAG=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -2862,10 +2879,10 @@ DEP_CPP_PROGR=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\ProgressReporters.h"\
 	".\RenderingPreferences.hpp"\
 	
@@ -2897,10 +2914,10 @@ DEP_CPP_PROGR=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\ProgressReporters.h"\
 	".\RenderingPreferences.hpp"\
 	
@@ -2932,10 +2949,10 @@ DEP_CPP_PROGR=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\ProgressReporters.h"\
 	".\RenderingPreferences.hpp"\
 	
@@ -2967,10 +2984,10 @@ DEP_CPP_PROGR=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\ProgressReporters.h"\
 	".\RenderingPreferences.hpp"\
 	
@@ -3009,10 +3026,10 @@ DEP_CPP_REGIS=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
@@ -3045,10 +3062,10 @@ DEP_CPP_REGIS=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
@@ -3081,10 +3098,10 @@ DEP_CPP_REGIS=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
@@ -3117,10 +3134,10 @@ DEP_CPP_REGIS=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
@@ -3225,15 +3242,20 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\NativeSocks.hpp"\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	".\iPediaApplication.hpp"\
+	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -3255,15 +3277,20 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\NativeSocks.hpp"\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	".\iPediaApplication.hpp"\
+	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -3285,15 +3312,20 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\NativeSocks.hpp"\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	".\PrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	".\iPediaApplication.hpp"\
+	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -3325,10 +3357,10 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -3528,6 +3560,7 @@ DEP_CPP_SM_IP=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\LookupHistory.hpp"\
@@ -3537,20 +3570,17 @@ DEP_CPP_SM_IP=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
-	".\PrefsStore.hpp"\
 	".\ProgressReporters.h"\
 	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
-	
-NODEP_CPP_SM_IP=\
-	".\ibrate.h"\
-	".\ipapi.h"\
-	".\ms.h"\
-	".\niqueid.h"\
-	".\onnmgr.h"\
-	".\pcshell.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"connmgr.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"uniqueid.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
@@ -3583,6 +3613,7 @@ DEP_CPP_SM_IP=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\LookupHistory.hpp"\
@@ -3592,17 +3623,17 @@ DEP_CPP_SM_IP=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
-	".\PrefsStore.hpp"\
+	".\ProgressReporters.h"\
 	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
-	
-NODEP_CPP_SM_IP=\
-	".\ipapi.h"\
-	".\ms.h"\
-	".\niqueid.h"\
-	".\onnmgr.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"connmgr.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"uniqueid.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
@@ -3635,27 +3666,27 @@ DEP_CPP_SM_IP=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\LookupHistory.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
+	".\DefaultArticles.h"\
 	".\HyperLinks.h"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
-	".\PrefsStore.hpp"\
+	".\ProgressReporters.h"\
 	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
-	
-NODEP_CPP_SM_IP=\
-	".\ibrate.h"\
-	".\ipapi.h"\
-	".\ms.h"\
-	".\niqueid.h"\
-	".\onnmgr.h"\
-	".\pcshell.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"connmgr.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"uniqueid.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -3688,6 +3719,7 @@ DEP_CPP_SM_IP=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\LookupHistory.hpp"\
@@ -3697,7 +3729,6 @@ DEP_CPP_SM_IP=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
-	".\PrefsStore.hpp"\
 	".\ProgressReporters.h"\
 	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
@@ -4012,18 +4043,9 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
-	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
-	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	
-NODEP_CPP_WINDE=\
-	".\ibrate.h"\
-	".\ipapi.h"\
-	".\ms.h"\
-	".\niqueid.h"\
-	".\pcshell.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"uniqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
@@ -4033,16 +4055,9 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
-	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
-	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	
-NODEP_CPP_WINDE=\
-	".\ipapi.h"\
-	".\ms.h"\
-	".\niqueid.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"uniqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
@@ -4052,17 +4067,9 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
-	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
-	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
-	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	
-NODEP_CPP_WINDE=\
-	".\ibrate.h"\
-	".\ipapi.h"\
-	".\ms.h"\
-	".\pcshell.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"uniqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
