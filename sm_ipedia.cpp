@@ -1,10 +1,15 @@
 // sm_ipedia.cpp : Defines the entry point for the application.
 //
 
+#include "sm_ipedia.h"
+
+#include <iPediaApplication.hpp>
+#include <Debug.hpp>
 #include <windows.h>
 #include <aygshell.h>
-#include "resource.h"
-#include <Debug.hpp>
+
+iPediaApplication iPediaApplication::instance_;
+
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
 HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
