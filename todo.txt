@@ -1,5 +1,7 @@
 ## 16. on ppc, fix the progress dialog (font doesn't show on ppc 2003/dell axim 
 30 although it does show on emu 2002)
+## 17. add a dialog during InitDataConnection()
+## 18. refresh the display after selecting a menu item
 ## 14. try to eliminate the delay between pressing "Lookup" and showing the progress
        dialog on sm
 

@@ -1,13 +1,11 @@
 #include <windows.h>
-#include <aygshell.h>
 #include <wingdi.h>
-
-#include <sms.h>
-#include <uniqueid.h>
-
 #ifdef WIN32_PLATFORM_WFSP
 #include <tpcshell.h>
 #endif
+
+#include <sms.h>
+#include <uniqueid.h>
 
 #include <WinSysUtils.hpp>
 #include <iPediaApplication.hpp>
@@ -812,6 +810,26 @@ static void OnCreate(HWND hwnd)
 
     app.setMainWindow(hwnd);
 
+    LookupManager* lookupManager=app.getLookupManager(true);
+    lookupManager->setProgressReporter(new DownloadingProgressReporter());
+    g_RenderingProgressReporter = new RenderingProgressReporter(hwnd, g_progressRect, _T("Formatting article..."));
+    g_definition->setRenderingProgressReporter(g_RenderingProgressReporter);
+    g_definition->setHyperlinkHandler(&app.hyperlinkHandler());
+    
+    g_RegistrationProgressReporter = new RenderingProgressReporter(hwnd, g_progressRect, _T("Registering application..."));
+
+    g_articleCountSet = app.preferences().articleCount;
+    
+    g_about->setHyperlinkHandler(&app.hyperlinkHandler());
+    g_tutorial->setHyperlinkHandler(&app.hyperlinkHandler());
+    g_register->setHyperlinkHandler(&app.hyperlinkHandler());
+    g_wikipedia->setHyperlinkHandler(&app.hyperlinkHandler());
+
+    prepareAbout(g_about);
+    prepareHowToRegister(g_register);
+    prepareTutorial(g_tutorial);
+    prepareWikipedia(g_wikipedia);
+
     // create the menu bar
     SHMENUBARINFO mbi = {0};
     mbi.cbSize = sizeof(mbi);
@@ -832,25 +850,25 @@ static void OnCreate(HWND hwnd)
     OverrideBackButton(mbi.hwndMB);
 
 #ifdef WIN32_PLATFORM_PSPC
-        ZeroMemory(&g_sai, sizeof(g_sai));
-        g_sai.cbSize = sizeof(g_sai);
-    
-        // size the main window taking into account SIP state and menu bar size
-        SIPINFO si = {0};
-        si.cbSize = sizeof(si);
-        SHSipInfo(SPI_GETSIPINFO, 0, (PVOID)&si, FALSE);
-    
-        int visibleDx = RectDx(&si.rcVisibleDesktop);
-        int visibleDy = RectDy(&si.rcVisibleDesktop);
-    
-        if ( FDesktopIncludesMenuBar(&si) )
-        {
-            RECT rectMenuBar;
-            GetWindowRect(mbi.hwndMB, &rectMenuBar);
-            int menuBarDy = RectDy(&rectMenuBar);
-            visibleDy -= menuBarDy;
-        }
-        SetWindowPos(hwnd, NULL, 0, 0, visibleDx, visibleDy, SWP_NOMOVE | SWP_NOZORDER);
+    ZeroMemory(&g_sai, sizeof(g_sai));
+    g_sai.cbSize = sizeof(g_sai);
+
+    // size the main window taking into account SIP state and menu bar size
+    SIPINFO si = {0};
+    si.cbSize = sizeof(si);
+    SHSipInfo(SPI_GETSIPINFO, 0, (PVOID)&si, FALSE);
+
+    int visibleDx = RectDx(&si.rcVisibleDesktop);
+    int visibleDy = RectDy(&si.rcVisibleDesktop);
+
+    if ( FDesktopIncludesMenuBar(&si) )
+    {
+        RECT rectMenuBar;
+        GetWindowRect(mbi.hwndMB, &rectMenuBar);
+        int menuBarDy = RectDy(&rectMenuBar);
+        visibleDy -= menuBarDy;
+    }
+    SetWindowPos(hwnd, NULL, 0, 0, visibleDx, visibleDy, SWP_NOMOVE | SWP_NOZORDER);
 #endif
 
     g_hwndEdit = CreateWindow(
@@ -887,26 +905,6 @@ static void OnCreate(HWND hwnd)
         NULL);
 
     SetScrollBar(g_about);
-
-    LookupManager* lookupManager=app.getLookupManager(true);
-    lookupManager->setProgressReporter(new DownloadingProgressReporter());
-    g_RenderingProgressReporter = new RenderingProgressReporter(hwnd, g_progressRect, _T("Formatting article..."));
-    g_definition->setRenderingProgressReporter(g_RenderingProgressReporter);
-    g_definition->setHyperlinkHandler(&app.hyperlinkHandler());
-    
-    g_RegistrationProgressReporter = new RenderingProgressReporter(hwnd, g_progressRect, _T("Registering application..."));
-
-    g_articleCountSet = app.preferences().articleCount;
-    
-    g_about->setHyperlinkHandler(&app.hyperlinkHandler());
-    g_tutorial->setHyperlinkHandler(&app.hyperlinkHandler());
-    g_register->setHyperlinkHandler(&app.hyperlinkHandler());
-    g_wikipedia->setHyperlinkHandler(&app.hyperlinkHandler());
-
-    prepareAbout(g_about);
-    prepareHowToRegister(g_register);
-    prepareTutorial(g_tutorial);
-    prepareWikipedia(g_wikipedia);
 
     SetMenu(hwnd);
     SetFocus(g_hwndEdit);
@@ -1062,6 +1060,16 @@ static void DoDisplayAlert(HWND hwnd, WPARAM wp, LPARAM lp, bool fCustom)
     SetUIState(true);
 }
 
+static void DrawTextInRect(Graphics& gr, ArsLexis::Rectangle& rect, const char_t *text)
+{
+    uint_t length = tstrlen(text);
+    uint_t dx = rect.dx();
+    gr.charsInWidth(text, length, dx);
+    uint_t dy = gr.fontHeight();
+    Point p(rect.x(), rect.y()+(rect.dy()-dy)/2);
+    gr.drawText(text, length, p);
+}
+
 static void OnPaint(HWND hwnd)
 {
     PAINTSTRUCT ps;
@@ -1130,6 +1138,18 @@ static void OnPaint(HWND hwnd)
         }
     }
 
+/*    RECT r = { 10, 40, 10+180, 40+40 };
+    DrawFancyRectangle(hdc, &r);
+
+    Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
+ 
+    Graphics::FontSetter setFont(gr, Font());
+    Graphics::ColorSetter setBg(gr, Graphics::colorBackground, RGB(255,0,0));
+    Graphics::ColorSetter setFg(gr, Graphics::colorText, RGB(255,255,255));
+
+    ArsLexis::Rectangle ar = r;
+    DrawTextInRect(gr, ar, _T("This is a test")); */
+
     EndPaint (hwnd, &ps);
 }
 
@@ -1156,7 +1176,7 @@ static void OnSize(HWND hwnd, LPARAM lp)
     g_progressRect.top  = (dy-45)/2;
     g_progressRect.right = g_progressRect.left + 155;
 #ifdef WIN32_PLATFORM_PSPC
-    g_progressRect.bottom = g_progressRect.top + 55;
+    g_progressRect.bottom = g_progressRect.top + 50;
 #else
     g_progressRect.bottom = g_progressRect.top + 45;
 #endif
