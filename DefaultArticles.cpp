@@ -92,7 +92,13 @@ void prepareAbout(Definition *def)
 
     elems.push_back(new LineBreakElement(1,3*divider*divider));
 
+#ifdef WIN32_PLATFORM_PSPC
+    const char_t* version=_T("Ver 1.0")
+#else
+    // smartphone version has been slightly updated to be 1.01
     const char_t* version=_T("Ver 1.01")
+#endif
+
 #ifdef DEBUG
         _T(" (debug)")
 #endif
@@ -212,13 +218,13 @@ void prepareTutorial(Definition *def)
     text->setJustification(DefinitionElement::justifyLeft);
     text->setEffects(fxBold);
     text->setParent(parent);    
-    elems.push_back(text=new FormattedTextElement(_T(" Let's assume you want to read an encyclopedia article on Seattle. Enter 'Seattle' in the text field at the top of the screen and press ")
 #ifdef WIN32_PLATFORM_PSPC
-        _T("'Search' ")
+    text = new FormattedTextElement(_T(" Let's assume you want to read an encyclopedia article on Seattle. Enter 'Seattle' in the text field at the top of the screen and press 'Search'"));
+    elems.push_back(text);
 #else
-        _T("'Go' ")
+    text = new FormattedTextElement(_T(" Let's assume you want to read an encyclopedia article on Seattle. Enter 'Seattle' in the text field at the top of the screen and press 'Go'"));
+    elems.push_back(text);
 #endif
-        _T("(or center button on 5-way navigator).")));
     text->setJustification(DefinitionElement::justifyLeft);
     text->setParent(parent);    
     elems.push_back(new LineBreakElement(2,3));

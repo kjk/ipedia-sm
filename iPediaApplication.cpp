@@ -23,8 +23,8 @@ using namespace ArsLexis;
 
 #define serverIpediaArslexis _T("ipedia.arslexis.com:9000")
 
-#define serverToUse serverIpediaArslexis
-//#define serverToUse serverKjkLaptop3
+#define SERVER_TO_USE serverIpediaArslexis
+//#define SERVER_TO_USE serverKjkLaptop3
 
 const ErrorInfo ErrorsTable[] =
 {
@@ -160,7 +160,7 @@ iPediaApplication::iPediaApplication():
     history_(new LookupHistory()),
     ticksPerSecond_(1000),
     lookupManager_(0),
-    server_(serverToUse),
+    server_(SERVER_TO_USE),
     fArticleCountChecked(false)
 {
 #ifdef INTERNAL_BUILD
@@ -169,6 +169,10 @@ iPediaApplication::iPediaApplication():
     log_.addSink(new HostFileLogSink(_T("\\var\\log\\iPedia.log")), log_.logEverything);
     log_.addSink(new DebuggerLogSink(), log_.logWarning);
 #endif    
+#endif
+#ifndef _PALM_OS
+    // wince only
+    GetSystemTime(&lastArticleCountCheckTime);
 #endif
 }
 

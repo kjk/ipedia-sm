@@ -1,6 +1,8 @@
 #ifndef __WIN_IPEDIA_APPLICATION_HPP__
 #define __WIN_IPEDIA_APPLICATION_HPP__
 
+#include <Windows.h>
+
 #include "iPediaHyperlinkHandler.hpp"
 #include <Logging.hpp>
 #include <RenderingPreferences.hpp>
@@ -58,6 +60,11 @@ protected:
 
 public:
     bool fArticleCountChecked;
+
+#ifndef _PALM_OS
+    // wince only
+    SYSTEMTIME lastArticleCountCheckTime;
+#endif
 
     void savePreferences();
     void loadPreferences();
