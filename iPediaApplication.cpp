@@ -411,7 +411,7 @@ iPediaApplication& GetApp()
     return iPediaApplication::instance();
 }
 
-iPediaApplication::Preferences& GetPrefs();
+iPediaApplication::Preferences& GetPrefs()
 {
     return iPediaApplication::instance().preferences();
 }
