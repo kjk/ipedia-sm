@@ -22,7 +22,7 @@
 
 #include <windows.h>
 #include <aygshell.h>
-#ifndef WIN32_PLATFORM_PSPC
+#ifdef WIN32_PLATFORM_WFSP
 #include <tpcshell.h>
 #endif
 #include <wingdi.h>
@@ -265,7 +265,7 @@ HANDLE    g_hConnection = NULL;
 static bool fInitConnection()
 {
 #ifdef WIN32_PLATFORM_PSPC
-	return true; // not needed on Pocket PC
+    return true; // not needed on Pocket PC
 #endif
     if (NULL!=g_hConnection)
         return true;
@@ -435,20 +435,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_SETTINGCHANGE:
         {
             SHACTIVATEINFO sai;
-			if (SPI_SETSIPINFO == wp){
-				memset(&sai, 0, sizeof(SHACTIVATEINFO));
-				SHHandleWMSettingChange(hwnd, -1 , 0, &sai);
-			}
-			break;
-        }	
-		case WM_ACTIVATE:
+            if (SPI_SETSIPINFO == wp){
+                memset(&sai, 0, sizeof(SHACTIVATEINFO));
+                SHHandleWMSettingChange(hwnd, -1 , 0, &sai);
+            }
+            break;
+        }
+        case WM_ACTIVATE:
         {
             SHACTIVATEINFO sai;
-			if (SPI_SETSIPINFO == wp){
-				memset(&sai, 0, sizeof(SHACTIVATEINFO));
-				SHHandleWMActivate(hwnd, wp, lp, &sai, 0);
-			}
-			break;
+            if (SPI_SETSIPINFO == wp){
+                memset(&sai, 0, sizeof(SHACTIVATEINFO));
+                SHHandleWMActivate(hwnd, wp, lp, &sai, 0);
+            }
+            break;
         }
         case WM_SIZE:
         {
@@ -497,12 +497,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             Graphics gr(GetDC(g_hwndMain), g_hwndMain);
             switch(HIWORD(lp))
             {
+#ifdef WIN32_PLATFORM_WFSP
                 case VK_TBACK:
-                    #ifndef WIN32_PLATFORM_PSPC
                     if ( 0 != (MOD_KEYUP & LOWORD(lp)))
                         SHSendBackToFocusWindow( msg, wp, lp );
-                    #endif
                     break;
+#endif
                 case VK_TDOWN:
                     scrollDefinition(1, scrollPage, true);
                     break;
