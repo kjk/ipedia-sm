@@ -225,9 +225,11 @@ static void OnLinkedArticles(HWND hwnd)
         if (currEl->isTextElement())
         {
             GenericTextElement *txtEl=(GenericTextElement*)currEl;
-            if ((txtEl->isHyperlink()) &&
+            /*if ((txtEl->isHyperlink()) &&
                 ((txtEl->hyperlinkProperties()->type==hyperlinkTerm) ||
-                 (txtEl->hyperlinkProperties()->type==hyperlinkExternal)))
+                 (txtEl->hyperlinkProperties()->type==hyperlinkExternal)))*/
+            if ((txtEl->isHyperlink()) &&
+                (txtEl->hyperlinkProperties()->type==hyperlinkTerm))
             {
                 articleTitle = txtEl->hyperlinkProperties()->resource.c_str();
                 strList.push_back(articleTitle);
@@ -764,6 +766,56 @@ static void DoSearch(HWND hwnd)
     DoSimpleSearch(hwnd,term);
 }
 
+// this will be called either as a result of invoking menu item
+// or getAvailableLangs() query to the server (which we issue ourselves,
+// so it's kind of a recursion)
+static void DoChangeDatabase()
+{
+    iPediaApplication& app=GetApp();
+    if (app.fLookupInProgress())
+        return;
+    if (!fInitConnection())
+        return;
+    LookupManager* lookupManager=app.getLookupManager(true);
+
+    String availableLangs = app.preferences().availableLangs;
+    if (availableLangs.empty())
+    {
+        // if we don't have available langs, issue a request asking for it
+        LookupManager* lookupManager=app.getLookupManager(true);
+        if (lookupManager && !lookupManager->lookupInProgress())
+            lookupManager->getAvailableLangs();
+        return;
+    }
+
+#ifdef 0
+    // TODO: this is from palm
+    char_t **strList = StringListFromString(availableLangs, " ", app().strListSize);
+    const char_t* fullName;
+    String nameToDisplay;
+
+    for (int i=0; i<app().strListSize; i++)
+    {
+        fullName = GetLangNameByLangCode(strList[i]);
+        if (NULL != fullName)
+            nameToDisplay.assign(fullName);
+        else
+            nameToDisplay.assign(_T("Unknown"));
+
+        nameToDisplay.append(_T(" ("));
+        nameToDisplay.append(strList[i]);
+        nameToDisplay.append(_T(")"));
+
+        delete [] strList[i];
+        strList[i] = StringCopy(nameToDisplay);
+    }
+
+    app().strList = strList;
+    int sel = showStringListForm(app().strList, app().strListSize);
+    doDbSelected(sel);
+#endif
+}
+
 static void DoRegister(HWND hwnd, const String& oldRegCode)
 {
     String newRegCode;
@@ -977,6 +1029,10 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case ID_NEXT_BTN:
             OnPaint(hwnd);
             MoveHistoryForward();
+            break;
+
+        case IDM_MENU_CHANGE_DATABASE:
+            DoChangeDatabase();
             break;
 
         case IDM_MENU_RESULTS:
@@ -1222,6 +1278,29 @@ static void DoHandleLookupFinished(HWND hwnd, WPARAM wp, LPARAM lp)
         case LookupFinishedEventData::outcomeRegCodeInvalid:
             DoHandleInvalidRegCode(hwnd);
             break;
+
+        case LookupFinishedEventData::outcomeDatabaseSwitched:
+            // recalc about info and show about screen
+            //setDisplayMode(showAbout);            
+            //termInputField_.replace("");
+            //update();
+            break;
+
+        case LookupFinishedEventData::outcomeAvailableLangs:
+            assert(!app.preferences().availableLangs.empty());
+            if (app.preferences().availableLangs.empty())
+            {
+                // this shouldn't happen but if it does, we want to break
+                // to avoid infinite loop (changeDatabase() will issue request
+                // to get available langs whose result we handle here
+                break;
+            }
+            DoChangeDatabase();
+            break;
+
+        // TODO: why is outcomeNotFound handled in palm's MainForm.cpp and not by us?
+        //case LookupFinishedEventData::outcomeNotFound:
+
     }
 
     SetupAboutWindow();

@@ -495,7 +495,6 @@ DEP_CPP_DEFAU=\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\ParagraphElement.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
@@ -512,6 +511,7 @@ DEP_CPP_DEFAU=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -846,6 +846,7 @@ DEP_CPP_DEFINIT=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\HorizontalLineElement.hpp"\
+	"..\ars_framework\Src\LangNames.hpp"\
 	"..\ars_framework\Src\Library.hpp"\
 	"..\ars_framework\Src\LineBreakElement.hpp"\
 	"..\ars_framework\Src\ListNumberElement.hpp"\
@@ -856,7 +857,6 @@ DEP_CPP_DEFINIT=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\ParagraphElement.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
@@ -953,13 +953,13 @@ DEP_CPP_ENTER=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	
-NODEP_CPP_ENTER=\
-	".\ibrate.h"\
-	".\ipapi.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -1081,24 +1081,24 @@ DEP_CPP_EXTSE=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
 	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
+	".\ExtSearchResultsDlg.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
-	
-NODEP_CPP_EXTSE=\
-	".\LastResults.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"tpcshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -1198,7 +1198,6 @@ DEP_CPP_FIELD=\
 	"..\ars_framework\Src\Logging.hpp"\
 	"..\ars_framework\Src\NativeSocks.hpp"\
 	"..\ars_framework\Src\NetLibrary.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
@@ -1674,11 +1673,11 @@ DEP_CPP_IPEDI=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
 	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
@@ -1692,6 +1691,7 @@ DEP_CPP_IPEDI=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -1848,7 +1848,6 @@ DEP_CPP_IPEDIA=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
@@ -1868,6 +1867,7 @@ DEP_CPP_IPEDIA=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -2017,11 +2017,11 @@ DEP_CPP_IPEDIAH=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
 	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
@@ -2032,6 +2032,7 @@ DEP_CPP_IPEDIAH=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -2070,6 +2071,49 @@ DEP_CPP_IPEDIAH=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\LangNames.cpp
+
+!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+
+DEP_CPP_LANGN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\LangNames.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+
+DEP_CPP_LANGN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\LangNames.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+
+DEP_CPP_LANGN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\LangNames.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+
+DEP_CPP_LANGN=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\LangNames.hpp"\
 	
 
 !ENDIF 
@@ -2353,6 +2397,7 @@ DEP_CPP_LOOKU=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\PrefsStore.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ipedia\Src\LookupHistory.hpp"\
@@ -2488,7 +2533,6 @@ DEP_CPP_LOOKUP=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
@@ -2507,6 +2551,7 @@ DEP_CPP_LOOKUP=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -2631,15 +2676,16 @@ DEP_CPP_LOOKUPM=\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
 	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -2865,11 +2911,11 @@ DEP_CPP_PROGR=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
 	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
@@ -2879,6 +2925,7 @@ DEP_CPP_PROGR=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\ProgressReporters.h"\
 	".\RenderingPreferences.hpp"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -3087,11 +3134,11 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
 	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
@@ -3101,6 +3148,7 @@ DEP_CPP_RENDER=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -3259,20 +3307,22 @@ DEP_CPP_SIMPL=\
 DEP_CPP_SIMPL=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Library.hpp"\
 	"..\ars_framework\Src\Logging.hpp"\
 	"..\ars_framework\Src\NativeSocks.hpp"\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
 	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -3434,7 +3484,6 @@ DEP_CPP_SM_IP=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
@@ -3450,22 +3499,17 @@ DEP_CPP_SM_IP=\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\LookupHistory.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
+	".\DefaultArticles.hpp"\
+	".\ExtSearchResultsDlg.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\ProgressReporters.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
-	
-NODEP_CPP_SM_IP=\
-	".\DefaultArticles.h"\
-	".\ibrate.h"\
-	".\ipapi.h"\
-	".\LastResults.h"\
-	".\ms.h"\
-	".\niqueid.h"\
-	".\onnmgr.h"\
-	".\pcshell.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"uniqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -3694,6 +3738,7 @@ DEP_CPP_SOCKETC=\
 	"..\ars_framework\Src\Application.hpp"\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Library.hpp"\
 	"..\ars_framework\Src\Logging.hpp"\
@@ -3767,13 +3812,12 @@ DEP_CPP_STRIN=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	
-NODEP_CPP_STRIN=\
-	".\ibrate.h"\
-	".\ipapi.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -3921,10 +3965,8 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
-	
-NODEP_CPP_WINDE=\
-	".\ms.h"\
-	".\niqueid.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"uniqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -4182,9 +4224,11 @@ DEP_CPP_WINPR=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -4235,7 +4279,14 @@ DEP_CPP_WINSY=\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"connmgr.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	{$(INCLUDE)}"winuserm.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"

@@ -83,6 +83,8 @@
 
 #define IDM_MENU_REVERSE_LINKS          164
 
+#define IDM_MENU_CHANGE_DATABASE        165
+
 #define IDC_STRING_LIST                 1000
 
 // Next default values for new objects

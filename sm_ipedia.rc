@@ -53,7 +53,7 @@ END
 #endif
 
 #ifdef WIN32_PLATFORM_PSPC
-
+//pocket pc
 IDR_MENU_MAIN MENU DISCARDABLE 
 BEGIN
     POPUP "&Dummy"
@@ -66,6 +66,8 @@ BEGIN
         MENUITEM "Random article",          IDM_MENU_RANDOM
         MENUITEM SEPARATOR 
         MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
+        MENUITEM SEPARATOR 
+        MENUITEM "Switch database",         IDM_MENU_CHANGE_DATABASE
 #ifdef DEBUG
         MENUITEM SEPARATOR
         MENUITEM "Quit",                    IDOK
@@ -84,7 +86,7 @@ BEGIN
 END
 
 #else
-
+// smartphone
 IDR_MENU_MAIN MENU DISCARDABLE 
 BEGIN
     POPUP "&Dummy"
@@ -96,13 +98,14 @@ BEGIN
         MENUITEM "Previous",                IDM_MENU_PREV
         MENUITEM "Next",                    IDM_MENU_NEXT
         MENUITEM "Random article",          IDM_MENU_RANDOM
+        MENUITEM "Switch database",         IDM_MENU_CHANGE_DATABASE
         //MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
         MENUITEM "Register",                IDM_MENU_REGISTER
         POPUP "About"
         BEGIN
             MENUITEM "ArsLexis home",       IDM_MENU_HOME
             MENUITEM "Check updates",       IDM_MENU_UPDATES
-            MENUITEM "About",            	IDM_MENU_ABOUT
+            MENUITEM "About",               IDM_MENU_ABOUT
         END
 #ifdef DEBUG
         MENUITEM "Stress mode",             IDM_MENU_STRESS_MODE

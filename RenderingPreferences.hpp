@@ -11,7 +11,8 @@ enum HyperlinkType
 {
     hyperlinkBookmark,
     hyperlinkTerm,
-    hyperlinkExternal
+    hyperlinkExternal,
+    hyperlinkDefault = hyperlinkBookmark
 };
 
 enum ElementStyle
