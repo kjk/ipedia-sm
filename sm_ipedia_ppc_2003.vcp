@@ -1,27 +1,27 @@
-# Microsoft eMbedded Visual Tools Project File - Name="sm_ipedia" - Package Owner=<4>
+# Microsoft eMbedded Visual Tools Project File - Name="sm_ipedia_2003" - Package Owner=<4>
 # Microsoft eMbedded Visual Tools Generated Build File, Format Version 6.02
 # ** DO NOT EDIT **
 
-# TARGTYPE "Win32 (WCE x86) Application" 0x8301
-# TARGTYPE "Win32 (WCE ARM) Application" 0x8501
+# TARGTYPE "Win32 (WCE ARMV4) Application" 0xa301
+# TARGTYPE "Win32 (WCE emulator) Application" 0xa601
 
-CFG=sm_ipedia - Win32 (WCE ARM) Debug
+CFG=sm_ipedia_2003 - Win32 (WCE ARMV4) Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "sm_ipedia_ppc.vcn".
+!MESSAGE NMAKE /f "sm_ipedia_ppc_2003.vcn".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "sm_ipedia_ppc.vcn" CFG="sm_ipedia - Win32 (WCE ARM) Debug"
+!MESSAGE NMAKE /f "sm_ipedia_ppc_2003.vcn" CFG="sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "sm_ipedia - Win32 (WCE ARM) Release" (based on "Win32 (WCE ARM) Application")
-!MESSAGE "sm_ipedia - Win32 (WCE ARM) Debug" (based on "Win32 (WCE ARM) Application")
-!MESSAGE "sm_ipedia - Win32 (WCE x86) Release" (based on "Win32 (WCE x86) Application")
-!MESSAGE "sm_ipedia - Win32 (WCE x86) Debug" (based on "Win32 (WCE x86) Application")
+!MESSAGE "sm_ipedia_2003 - Win32 (WCE ARMV4) Release" (based on "Win32 (WCE ARMV4) Application")
+!MESSAGE "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug" (based on "Win32 (WCE ARMV4) Application")
+!MESSAGE "sm_ipedia_2003 - Win32 (WCE emulator) Release" (based on "Win32 (WCE emulator) Application")
+!MESSAGE "sm_ipedia_2003 - Win32 (WCE emulator) Debug" (based on "Win32 (WCE emulator) Application")
 !MESSAGE 
 
 # Begin Project
@@ -30,7 +30,7 @@ CFG=sm_ipedia - Win32 (WCE ARM) Debug
 # PROP Scc_LocalPath ""
 # PROP ATL_Project 2
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -63,7 +63,7 @@ RSC=rc.exe
 # ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -96,7 +96,7 @@ RSC=rc.exe
 # ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -128,7 +128,7 @@ LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
 # ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -165,10 +165,10 @@ LINK32=link.exe
 
 # Begin Target
 
-# Name "sm_ipedia - Win32 (WCE ARM) Release"
-# Name "sm_ipedia - Win32 (WCE ARM) Debug"
-# Name "sm_ipedia - Win32 (WCE x86) Release"
-# Name "sm_ipedia - Win32 (WCE x86) Debug"
+# Name "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
+# Name "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
+# Name "sm_ipedia_2003 - Win32 (WCE emulator) Release"
+# Name "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
@@ -176,7 +176,7 @@ LINK32=link.exe
 
 SOURCE=..\ars_framework\Src\BulletElement.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_BULLE=\
 	"..\ars_framework\Src\BulletElement.hpp"\
@@ -186,7 +186,7 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_BULLE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -209,7 +209,7 @@ DEP_CPP_BULLE=\
 	".\RenderingPreferences.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_BULLE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -229,7 +229,7 @@ NODEP_CPP_BULLE=\
 	".\tdint.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_BULLE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -259,18 +259,18 @@ DEP_CPP_BULLE=\
 
 SOURCE=..\ars_framework\Src\CommonGeometry.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_COMMO=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_COMMO=\
 	"..\ars_framework\Src\Geometry.hpp"\
@@ -284,9 +284,9 @@ DEP_CPP_COMMO=\
 
 SOURCE=..\ars_framework\Src\CommonGraphics.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_COMMON=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -302,9 +302,9 @@ DEP_CPP_COMMON=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_COMMON=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -327,7 +327,7 @@ DEP_CPP_COMMON=\
 
 SOURCE=.\DefaultArticles.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_DEFAU=\
 	".\iPediaApplication.hpp"\
@@ -338,7 +338,7 @@ NODEP_CPP_DEFAU=\
 	".\Definition.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_DEFAU=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -380,7 +380,7 @@ DEP_CPP_DEFAU=\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_DEFAU=\
 	".\iPediaApplication.hpp"\
@@ -391,7 +391,7 @@ NODEP_CPP_DEFAU=\
 	".\Definition.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_DEFAU=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -440,7 +440,7 @@ DEP_CPP_DEFAU=\
 
 SOURCE=..\ars_framework\Src\Definition.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\Definition.hpp"\
@@ -449,7 +449,7 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -471,7 +471,7 @@ DEP_CPP_DEFIN=\
 	".\RenderingPreferences.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -490,7 +490,7 @@ NODEP_CPP_DEFIN=\
 	".\tdint.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -519,7 +519,7 @@ DEP_CPP_DEFIN=\
 
 SOURCE=..\ars_framework\Src\DefinitionElement.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\Definition.hpp"\
@@ -527,7 +527,7 @@ DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -548,7 +548,7 @@ DEP_CPP_DEFINI=\
 	".\RenderingPreferences.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -566,7 +566,7 @@ NODEP_CPP_DEFINI=\
 	".\tdint.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -594,7 +594,7 @@ DEP_CPP_DEFINI=\
 
 SOURCE=..\ipedia\Src\DefinitionParser.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_DEFINIT=\
 	"..\ipedia\Src\DefinitionParser.hpp"\
@@ -608,7 +608,7 @@ NODEP_CPP_DEFINIT=\
 	"..\ipedia\Src\ParagraphElement.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_DEFINIT=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -648,7 +648,7 @@ DEP_CPP_DEFINIT=\
 	".\RenderingPreferences.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_DEFINIT=\
 	"..\ipedia\Src\DefinitionParser.hpp"\
@@ -662,7 +662,7 @@ NODEP_CPP_DEFINIT=\
 	"..\ipedia\Src\ParagraphElement.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_DEFINIT=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -709,9 +709,9 @@ DEP_CPP_DEFINIT=\
 
 SOURCE=..\ars_framework\Src\FieldPayloadProtocolConnection.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_FIELD=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -731,9 +731,9 @@ DEP_CPP_FIELD=\
 	"..\ars_framework\Src\Utility.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_FIELD=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -760,9 +760,9 @@ DEP_CPP_FIELD=\
 
 SOURCE=..\ars_framework\Src\FontEffects.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_FONTE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -772,9 +772,9 @@ DEP_CPP_FONTE=\
 	"..\ars_framework\Src\Utility.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_FONTE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -791,7 +791,7 @@ DEP_CPP_FONTE=\
 
 SOURCE=..\ars_framework\Src\FormattedTextElement.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_FORMA=\
 	"..\ars_framework\Src\Definition.hpp"\
@@ -802,7 +802,7 @@ DEP_CPP_FORMA=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_FORMA=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -825,7 +825,7 @@ DEP_CPP_FORMA=\
 	".\RenderingPreferences.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_FORMA=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -845,7 +845,7 @@ NODEP_CPP_FORMA=\
 	".\tdint.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_FORMA=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -875,7 +875,7 @@ DEP_CPP_FORMA=\
 
 SOURCE=..\ars_framework\Src\GenericTextElement.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_GENER=\
 	"..\ars_framework\Src\Definition.hpp"\
@@ -884,7 +884,7 @@ DEP_CPP_GENER=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_GENER=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -907,7 +907,7 @@ DEP_CPP_GENER=\
 	".\RenderingPreferences.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_GENER=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -926,7 +926,7 @@ NODEP_CPP_GENER=\
 	".\tdint.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_GENER=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -956,7 +956,7 @@ DEP_CPP_GENER=\
 
 SOURCE=..\ars_framework\Src\HorizontalLineElement.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\Definition.hpp"\
@@ -965,7 +965,7 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -987,7 +987,7 @@ DEP_CPP_HORIZ=\
 	".\RenderingPreferences.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1006,7 +1006,7 @@ NODEP_CPP_HORIZ=\
 	".\tdint.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1035,14 +1035,14 @@ DEP_CPP_HORIZ=\
 
 SOURCE=.\HyperLinks.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_HYPER=\
 	".\HyperLinks.h"\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_HYPER=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1075,14 +1075,14 @@ DEP_CPP_HYPER=\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_HYPER=\
 	".\HyperLinks.h"\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_HYPER=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1122,9 +1122,9 @@ DEP_CPP_HYPER=\
 
 SOURCE=.\iPediaApplication.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_IPEDI=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1164,9 +1164,9 @@ DEP_CPP_IPEDI=\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_IPEDI=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1213,7 +1213,7 @@ DEP_CPP_IPEDI=\
 
 SOURCE=..\ipedia\Src\iPediaConnection.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_IPEDIA=\
 	"..\ipedia\Src\DefinitionParser.hpp"\
@@ -1227,7 +1227,7 @@ NODEP_CPP_IPEDIA=\
 	"..\ipedia\Src\ipedia_Rsc.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_IPEDIA=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1270,7 +1270,7 @@ DEP_CPP_IPEDIA=\
 	".\RenderingPreferences.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_IPEDIA=\
 	"..\ipedia\Src\DefinitionParser.hpp"\
@@ -1284,7 +1284,7 @@ NODEP_CPP_IPEDIA=\
 	"..\ipedia\Src\ipedia_Rsc.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_IPEDIA=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1334,7 +1334,7 @@ DEP_CPP_IPEDIA=\
 
 SOURCE=.\iPediaHyperlinkHandler.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_IPEDIAH=\
 	".\iPediaApplication.hpp"\
@@ -1347,7 +1347,7 @@ NODEP_CPP_IPEDIAH=\
 	".\LookupManager.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_IPEDIAH=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1385,7 +1385,7 @@ DEP_CPP_IPEDIAH=\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_IPEDIAH=\
 	".\iPediaApplication.hpp"\
@@ -1398,7 +1398,7 @@ NODEP_CPP_IPEDIAH=\
 	".\LookupManager.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_IPEDIAH=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1443,14 +1443,14 @@ DEP_CPP_IPEDIAH=\
 
 SOURCE=.\LastResults.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_LASTR=\
 	".\LastResults.h"\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_LASTR=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1487,14 +1487,14 @@ DEP_CPP_LASTR=\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_LASTR=\
 	".\LastResults.h"\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_LASTR=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1538,7 +1538,7 @@ DEP_CPP_LASTR=\
 
 SOURCE=..\ars_framework\Src\LineBreakElement.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_LINEB=\
 	"..\ars_framework\Src\Definition.hpp"\
@@ -1548,7 +1548,7 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_LINEB=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1570,7 +1570,7 @@ DEP_CPP_LINEB=\
 	".\RenderingPreferences.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_LINEB=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1589,7 +1589,7 @@ NODEP_CPP_LINEB=\
 	".\tdint.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_LINEB=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1618,7 +1618,7 @@ DEP_CPP_LINEB=\
 
 SOURCE=..\ars_framework\Src\ListNumberElement.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_LISTN=\
 	"..\ars_framework\Src\Definition.hpp"\
@@ -1628,7 +1628,7 @@ DEP_CPP_LISTN=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_LISTN=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1651,7 +1651,7 @@ DEP_CPP_LISTN=\
 	".\RenderingPreferences.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_LISTN=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1671,7 +1671,7 @@ NODEP_CPP_LISTN=\
 	".\tdint.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_LISTN=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1701,9 +1701,9 @@ DEP_CPP_LISTN=\
 
 SOURCE=..\ars_framework\Src\Logging.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_LOGGI=\
 	"..\ars_framework\Src\Application.hpp"\
@@ -1714,9 +1714,9 @@ DEP_CPP_LOGGI=\
 	"..\ars_framework\Src\Utility.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_LOGGI=\
 	"..\ars_framework\Src\Application.hpp"\
@@ -1734,13 +1734,13 @@ DEP_CPP_LOGGI=\
 
 SOURCE=..\ipedia\Src\LookupHistory.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_LOOKU=\
 	"..\ipedia\Src\LookupHistory.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_LOOKU=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1751,13 +1751,13 @@ DEP_CPP_LOOKU=\
 	".\PrefsStore.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_LOOKU=\
 	"..\ipedia\Src\LookupHistory.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_LOOKU=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1775,7 +1775,7 @@ DEP_CPP_LOOKU=\
 
 SOURCE=..\ipedia\Src\LookupManager.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_LOOKUP=\
 	"..\ipedia\Src\iPediaApplication.hpp"\
@@ -1789,7 +1789,7 @@ NODEP_CPP_LOOKUP=\
 	"..\ipedia\Src\ipedia_Rsc.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_LOOKUP=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1831,7 +1831,7 @@ DEP_CPP_LOOKUP=\
 	".\RenderingPreferences.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_LOOKUP=\
 	"..\ipedia\Src\iPediaApplication.hpp"\
@@ -1845,7 +1845,7 @@ NODEP_CPP_LOOKUP=\
 	"..\ipedia\Src\ipedia_Rsc.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_LOOKUP=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1894,9 +1894,9 @@ DEP_CPP_LOOKUP=\
 
 SOURCE=..\ars_framework\Src\LookupManagerBase.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_LOOKUPM=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1924,9 +1924,9 @@ DEP_CPP_LOOKUPM=\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_LOOKUPM=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1961,7 +1961,7 @@ DEP_CPP_LOOKUPM=\
 
 SOURCE=..\ars_framework\Src\ParagraphElement.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_PARAG=\
 	"..\ars_framework\Src\Definition.hpp"\
@@ -1971,7 +1971,7 @@ DEP_CPP_PARAG=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_PARAG=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -1994,7 +1994,7 @@ DEP_CPP_PARAG=\
 	".\RenderingPreferences.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_PARAG=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2014,7 +2014,7 @@ NODEP_CPP_PARAG=\
 	".\tdint.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_PARAG=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2044,13 +2044,13 @@ DEP_CPP_PARAG=\
 
 SOURCE=.\PrefsStore.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_PREFS=\
 	".\PrefsStore.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_PREFS=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2081,13 +2081,13 @@ NODEP_CPP_PREFS=\
 	".\ygshell.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_PREFS=\
 	".\PrefsStore.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_PREFS=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2125,7 +2125,7 @@ NODEP_CPP_PREFS=\
 
 SOURCE=.\Registration.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_REGIS=\
 	".\Registration.h"\
@@ -2135,7 +2135,7 @@ NODEP_CPP_REGIS=\
 	".\BaseTypes.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_REGIS=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2171,7 +2171,7 @@ DEP_CPP_REGIS=\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_REGIS=\
 	".\Registration.h"\
@@ -2181,7 +2181,7 @@ NODEP_CPP_REGIS=\
 	".\BaseTypes.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_REGIS=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2224,13 +2224,13 @@ DEP_CPP_REGIS=\
 
 SOURCE=..\ars_framework\Src\Rendering.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_RENDE=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_RENDE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2247,13 +2247,13 @@ DEP_CPP_RENDE=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_RENDE=\
 	"..\ars_framework\Src\Rendering.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_RENDE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2277,14 +2277,14 @@ DEP_CPP_RENDE=\
 
 SOURCE=.\RenderingPreferences.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_RENDER=\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_RENDER=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2314,14 +2314,14 @@ DEP_CPP_RENDER=\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_RENDER=\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_RENDER=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2358,9 +2358,9 @@ DEP_CPP_RENDER=\
 
 SOURCE=..\ars_framework\Src\Resolver.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_RESOL=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2375,9 +2375,9 @@ DEP_CPP_RESOL=\
 	"..\ars_framework\Src\Utility.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_RESOL=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2399,9 +2399,9 @@ DEP_CPP_RESOL=\
 
 SOURCE=..\ars_framework\Src\SimpleSocketConnection.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_SIMPL=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2422,9 +2422,9 @@ DEP_CPP_SIMPL=\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_SIMPL=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2452,7 +2452,7 @@ DEP_CPP_SIMPL=\
 
 SOURCE=.\sm_ipedia.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_SM_IP=\
 	".\sm_ipedia.h"\
@@ -2463,7 +2463,7 @@ NODEP_CPP_SM_IP=\
 	".\ygshell.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_SM_IP=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2515,7 +2515,7 @@ NODEP_CPP_SM_IP=\
 	".\ygshell.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_SM_IP=\
 	".\sm_ipedia.h"\
@@ -2526,7 +2526,7 @@ NODEP_CPP_SM_IP=\
 	".\ygshell.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_SM_IP=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2585,9 +2585,9 @@ NODEP_CPP_SM_IP=\
 
 SOURCE=..\ars_framework\Src\Socket.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_SOCKE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2602,9 +2602,9 @@ DEP_CPP_SOCKE=\
 	"..\ars_framework\Src\Utility.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_SOCKE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2626,9 +2626,9 @@ DEP_CPP_SOCKE=\
 
 SOURCE=..\ars_framework\Src\SocketAddress.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_SOCKET=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2640,9 +2640,9 @@ DEP_CPP_SOCKET=\
 	"..\ars_framework\Src\Utility.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_SOCKET=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2661,9 +2661,9 @@ DEP_CPP_SOCKET=\
 
 SOURCE=..\ars_framework\Src\SocketConnection.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_SOCKETC=\
 	"..\ars_framework\Src\Application.hpp"\
@@ -2681,9 +2681,9 @@ DEP_CPP_SOCKETC=\
 	"..\ars_framework\Src\Utility.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_SOCKETC=\
 	"..\ars_framework\Src\Application.hpp"\
@@ -2708,9 +2708,9 @@ DEP_CPP_SOCKETC=\
 
 SOURCE=..\ars_framework\Src\Text.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_TEXT_=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2719,9 +2719,9 @@ DEP_CPP_TEXT_=\
 	"..\ars_framework\Src\Text.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_TEXT_=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2737,9 +2737,9 @@ DEP_CPP_TEXT_=\
 
 SOURCE=..\ars_framework\Src\Utility.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_UTILI=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2748,9 +2748,9 @@ DEP_CPP_UTILI=\
 	"..\ars_framework\Src\Utility.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_UTILI=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2766,7 +2766,7 @@ DEP_CPP_UTILI=\
 
 SOURCE=..\ars_framework\Src\WindowsCE\WinDeviceInfo.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 NODEP_CPP_WINDE=\
 	".\ipapi.h"\
@@ -2775,7 +2775,7 @@ NODEP_CPP_WINDE=\
 	".\ygshell.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_WINDE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2794,9 +2794,9 @@ NODEP_CPP_WINDE=\
 	".\ygshell.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_WINDE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2822,7 +2822,7 @@ NODEP_CPP_WINDE=\
 
 SOURCE=..\ars_framework\Src\WindowsCE\WinFont.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 DEP_CPP_WINFO=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
@@ -2831,7 +2831,7 @@ NODEP_CPP_WINFO=\
 	"..\ars_framework\Src\WindowsCE\FontEffects.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_WINFO=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2841,7 +2841,7 @@ DEP_CPP_WINFO=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 DEP_CPP_WINFO=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
@@ -2850,7 +2850,7 @@ NODEP_CPP_WINFO=\
 	"..\ars_framework\Src\WindowsCE\FontEffects.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_WINFO=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2867,26 +2867,26 @@ DEP_CPP_WINFO=\
 
 SOURCE=..\ars_framework\Src\WindowsCE\WinGeometry.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
 NODEP_CPP_WINGE=\
 	"..\ars_framework\Src\WindowsCE\Geometry.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_WINGE=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
 NODEP_CPP_WINGE=\
 	"..\ars_framework\Src\WindowsCE\Geometry.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_WINGE=\
 	"..\ars_framework\Src\Geometry.hpp"\
@@ -2900,9 +2900,9 @@ DEP_CPP_WINGE=\
 
 SOURCE=..\ars_framework\Src\WindowsCE\WinGraphics.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_WINGR=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2916,9 +2916,9 @@ DEP_CPP_WINGR=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_WINGR=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2939,9 +2939,9 @@ DEP_CPP_WINGR=\
 
 SOURCE=..\ars_framework\Src\WindowsCE\WinNetLibrary.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_WINNE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2954,9 +2954,9 @@ DEP_CPP_WINNE=\
 	"..\ars_framework\Src\Utility.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_WINNE=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2976,9 +2976,9 @@ DEP_CPP_WINNE=\
 
 SOURCE=..\ars_framework\Src\WindowsCE\WinSysUtils.cpp
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
 DEP_CPP_WINSY=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -2989,9 +2989,9 @@ DEP_CPP_WINSY=\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 DEP_CPP_WINSY=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
@@ -3213,13 +3213,13 @@ SOURCE=..\ars_framework\Src\WindowsCE\WinSysUtils.hpp
 
 SOURCE=.\sm_ipedia.rc
 
-!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
 
-!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
 
 # ADD BASE RSC /l 0x409
 # ADD RSC /l 0x409 /d "PPC"

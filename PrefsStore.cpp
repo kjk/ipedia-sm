@@ -267,7 +267,7 @@ to ignore the case when a preference item is missing.
             }
             items_.insert(std::pair<int, PrefItem>(prefItem.uniqueId,prefItem));
         }
-        while(true);
+        while (true);
         return errNone;
     }
 
