@@ -14,11 +14,12 @@ class LookupManager;
 class LookupHistory;
 struct LookupFinishedEventData;
 
-#define serverLocalhost        _T("192.168.0.1:9000")
-//#define serverLocalhost    _T("arslex.no-ip.info:9000")
-#define serverIpediaArslexis   _T("ipedia.arslexis.com:9000")
+#define serverMarek          _T("arslex.no-ip.info:9000")
+#define serverKjk            _T("dict-pc.arslexis.com:9000")
+#define serverLocalhost      _T("192.168.0.1:9000")
+#define serverIpediaArslexis _T("ipedia.arslexis.com:9000")
 
-#define serverToUse serverLocalhost
+#define serverToUse serverKjk
 
 class iPediaApplication //: public ArsLexis::Application 
 {

@@ -74,7 +74,7 @@ ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
         _T("Unable to complete request due to server error.")
         ),
         
-        ErrorsTableEntry( invalidAuthorizationAlert,
+        ErrorsTableEntry( invalidRegCodeAlert,
         _T("Invalid Authorization"),
         _T("Unable to complete request due to invalid authorization data. Please check if you entered serial number correctly (using menu 'Register').")
         ),
@@ -89,7 +89,7 @@ ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
         _T("Thank you for registering iPedia.")
         ),
         
-        ErrorsTableEntry( trialExpiredAlert,
+        ErrorsTableEntry( lookupLimitReachedAlert,
         _T("Expired"),
         _T("Your unregistered trial version expired. Please register to remove daily requests limit.")
         ),
