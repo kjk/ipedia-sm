@@ -1138,7 +1138,7 @@ static void OnPaint(HWND hwnd)
         }
     }
 
-/*    RECT r = { 10, 40, 10+180, 40+40 };
+    /* RECT r = { 10, 40, 10+180, 40+40 };
     DrawFancyRectangle(hdc, &r);
 
     Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
