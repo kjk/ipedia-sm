@@ -33,7 +33,7 @@ RenderingPreferences::RenderingPreferences():
     }
     hyperlinkDecorations_[hyperlinkTerm].textColor=RGB(0,0,250);
     hyperlinkDecorations_[hyperlinkExternal].textColor=RGB(200,20,20);     
-    
+    hyperlinkDecorations_[hyperlinkBookmark].textColor=RGB(0,0,180);     
     logfnt.lfWeight=800;
     logfnt.lfHeight-=1;
     styles_[styleHeader].font=WinFont(CreateFontIndirect(&logfnt));

@@ -15,6 +15,9 @@
 #include <LookupManagerBase.hpp>
 
 extern HWND hwndMain;
+extern HINSTANCE g_hInst;
+extern ArsLexis::String recentWord;
+extern ArsLexis::String searchWord;
 
 class RenderingProgressReporter: public Definition::RenderingProgressReporter
 {

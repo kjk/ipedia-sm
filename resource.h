@@ -23,6 +23,19 @@
 #define ID_EDIT                         112
 #define ID_SCROLL                       113
 
+#define IDD_LAST_RESULTS                114
+#define IDC_LAST_RESULTS_LIST           115
+#define IDC_REFINE_EDIT                 116
+
+#define IDS_REFINE                      117
+#define IDS_CANCEL                      118
+#define ID_REFINE                       119
+#define ID_CANCEL                       120
+#define IDS_SELECT		                121
+#define ID_SELECT		                122
+#define IDR_LAST_RESULTS_REFINE_MENUBAR 123
+#define IDR_LAST_RESULTS_SEARCH_MENUBAR 124
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
