@@ -24,6 +24,8 @@
 #include <EnterRegCodeDialog.hpp>
 #include <StringListDialog.hpp>
 
+#include <LangNames.hpp>
+
 #include "ProgressReporters.h"
 #include "ExtSearchResultsDlg.hpp"
 #include "DefaultArticles.hpp"
@@ -766,10 +768,18 @@ static void DoSearch(HWND hwnd)
     DoSimpleSearch(hwnd,term);
 }
 
+static void DoAbout(HWND hwnd)
+{
+    SetDisplayMode(showAbout);
+    SetMenu(hwnd);
+    SetScrollBar(g_about);
+    InvalidateRect(hwnd, NULL, FALSE);
+}
+
 // this will be called either as a result of invoking menu item
 // or getAvailableLangs() query to the server (which we issue ourselves,
 // so it's kind of a recursion)
-static void DoChangeDatabase()
+static void DoChangeDatabase(HWND hwnd)
 {
     iPediaApplication& app=GetApp();
     if (app.fLookupInProgress())
@@ -788,32 +798,57 @@ static void DoChangeDatabase()
         return;
     }
 
-#if 0
-    // TODO: this is from palm
-    char_t **strList = StringListFromString(availableLangs, " ", app().strListSize);
-    const char_t* fullName;
-    String nameToDisplay;
+    CharPtrList_t   strList;
+    int             strListSize;
+    char_t *        langName = NULL;
+    String          nameToDisplay;
+    char_t **       strListChar;
 
-    for (int i=0; i<app().strListSize; i++)
+    String      sep = _T(" ");
+    strListChar = StringListFromString(availableLangs, sep, strListSize);
+
+    for (int i=0; i<strListSize; i++)
     {
-        fullName = GetLangNameByLangCode(strList[i]);
-        if (NULL != fullName)
-            nameToDisplay.assign(fullName);
+        langName = (char_t*)GetLangNameByLangCode(strListChar[i]);
+        if (NULL != langName)
+            nameToDisplay.assign(langName);
         else
             nameToDisplay.assign(_T("Unknown"));
 
         nameToDisplay.append(_T(" ("));
-        nameToDisplay.append(strList[i]);
+        nameToDisplay.append(strListChar[i]);
         nameToDisplay.append(_T(")"));
 
-        delete [] strList[i];
-        strList[i] = StringCopy(nameToDisplay);
+        strList.push_back(StringCopy(nameToDisplay));
     }
 
-    app().strList = strList;
-    int sel = showStringListForm(app().strList, app().strListSize);
-    doDbSelected(sel);
-#endif
+    FreeStringList(strListChar, strListSize);
+
+    String  selectedString;
+    bool    fSelected;
+    fSelected = FGetStringFromListRemoveDups(hwnd, strList, selectedString);
+
+    FreeStringsFromCharPtrList(strList);
+
+    if (!fSelected)
+        return;
+
+    langName = (char_t*) selectedString.c_str();
+    // a hack: lang is what is inside "(" and ")"
+    while (*langName && (*langName!=_T('(')))
+        ++langName;
+    assert(*langName);
+    langName = langName+1;
+    langName[2] = _T('\0');
+
+    lookupManager = app.getLookupManager(true);
+    assert(NULL != lookupManager);
+
+    if (lookupManager && !lookupManager->lookupInProgress())
+    {
+        lookupManager->switchDatabase(langName);
+    }
+    DoAbout(hwnd);
 }
 
 static void DoRegister(HWND hwnd, const String& oldRegCode)
@@ -918,6 +953,14 @@ static void OnPaint(HWND hwnd)
     EndPaint (hwnd, &ps);
 }
 
+static void DoTutorial(HWND hwnd)
+{
+    SetDisplayMode(showTutorial);
+    SetMenu(hwnd);
+    SetScrollBar(g_about);
+    InvalidateRect(hwnd,NULL,FALSE);
+}
+
 static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     iPediaApplication& app = GetApp();
@@ -971,17 +1014,11 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         
         case IDM_MENU_ABOUT:
-            SetDisplayMode(showAbout);
-            SetMenu(hwnd);
-            SetScrollBar(g_about);
-            InvalidateRect(hwnd,NULL,FALSE);
+            DoAbout(hwnd);
             break;
-        
+
         case IDM_MENU_TUTORIAL:
-            SetDisplayMode(showTutorial);
-            SetMenu(hwnd);
-            SetScrollBar(g_about);
-            InvalidateRect(hwnd,NULL,FALSE);
+            DoTutorial(hwnd);
             break;
         
         case IDM_EXT_SEARCH:
@@ -1032,7 +1069,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_MENU_CHANGE_DATABASE:
-            DoChangeDatabase();
+            DoChangeDatabase(hwnd);
             break;
 
         case IDM_MENU_RESULTS:
@@ -1295,7 +1332,7 @@ static void DoHandleLookupFinished(HWND hwnd, WPARAM wp, LPARAM lp)
                 // to get available langs whose result we handle here
                 break;
             }
-            DoChangeDatabase();
+            DoChangeDatabase(hwnd);
             break;
 
         // TODO: why is outcomeNotFound handled in palm's MainForm.cpp and not by us?

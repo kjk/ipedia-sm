@@ -67,7 +67,7 @@ BEGIN
         MENUITEM SEPARATOR 
         MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
         MENUITEM SEPARATOR 
-        MENUITEM "Switch database",         IDM_MENU_CHANGE_DATABASE
+        MENUITEM "Change language",         IDM_MENU_CHANGE_DATABASE
 #ifdef DEBUG
         MENUITEM SEPARATOR
         MENUITEM "Quit",                    IDOK
@@ -98,7 +98,7 @@ BEGIN
         MENUITEM "Previous",                IDM_MENU_PREV
         MENUITEM "Next",                    IDM_MENU_NEXT
         MENUITEM "Random article",          IDM_MENU_RANDOM
-        MENUITEM "Switch database",         IDM_MENU_CHANGE_DATABASE
+        MENUITEM "Change language",         IDM_MENU_CHANGE_DATABASE
         //MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
         MENUITEM "Register",                IDM_MENU_REGISTER
         POPUP "About"

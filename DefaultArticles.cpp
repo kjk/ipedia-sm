@@ -1,11 +1,13 @@
-#include "sm_ipedia.h"
-#include "iPediaApplication.hpp"
 #include <FormattedTextElement.hpp>
 #include <ParagraphElement.hpp>
 #include <FontEffects.hpp>
 #include <LineBreakElement.hpp>
-#include <ipedia.h>
 #include <text.hpp>
+#include <ipedia.h>
+#include <LangNames.hpp>
+
+#include "iPediaApplication.hpp"
+#include "sm_ipedia.h"
 
 using namespace ArsLexis;
 
@@ -68,6 +70,37 @@ static void randomArticleActionCallback(void *data)
     SendMessage(iPediaApplication::instance().getMainWindow(), WM_COMMAND, IDM_MENU_RANDOM, 0);
 }
 
+static void prepareArticleCountEl(GenericTextElement *articleCountElement, long articleCount, const ArsLexis::String& dbTime)
+{
+    assert(NULL!=articleCountElement);
+
+    assert(-1 != articleCount);
+    assert(8 == dbTime.length());
+    char_t buffer[32];
+    int len = formatNumber(articleCount, buffer, sizeof(buffer));
+    assert(len != -1 );
+    String articleCountText;
+    articleCountText.append(buffer, len);
+    articleCountText.append(_T(" articles. "));
+
+    iPediaApplication& app = GetApp();
+    const String& langCode = app.preferences().currentLang;
+    const char_t* langName = ArsLexis::GetLangNameByLangCode(langCode);
+    if (NULL == langName)
+        langName = _T("Unknown");
+        
+    articleCountText.append(langName);
+
+    articleCountText.append(_T(" encyclopedia last updated on "));
+    articleCountText.append(dbTime, 0, 4);
+    articleCountText.append(1, _T('-'));
+    articleCountText.append(dbTime, 4, 2);
+    articleCountText.append(1, _T('-'));
+    articleCountText.append(dbTime, 6, 2);
+    articleCountElement->setText(articleCountText);
+
+}
+
 void prepareAbout(Definition *def)
 {
     int divider = 2;
@@ -93,10 +126,9 @@ void prepareAbout(Definition *def)
     elems.push_back(new LineBreakElement(1,3*divider*divider));
 
 #ifdef WIN32_PLATFORM_PSPC
-    const char_t* version=_T("Ver 1.0")
+    const char_t* version=_T("Ver 1.2")
 #else
-    // smartphone version has been slightly updated to be 1.01
-    const char_t* version=_T("Ver 1.01")
+    const char_t* version=_T("Ver 1.2")
 #endif
 
 #ifdef DEBUG
@@ -155,12 +187,15 @@ void prepareAbout(Definition *def)
     text->setActionCallback( wikipediaActionCallback, NULL);
 
     elems.push_back(new LineBreakElement(1,2*divider));
-    elems.push_back(g_articleCountElement=new FormattedTextElement(_T(" ")));
-    if (-1!=g_articleCountSet)
+
+    g_articleCountElement=new FormattedTextElement(_T(" "));
+
+    if (-1 != app.preferences().articleCount)
     {
-        iPediaApplication& app=iPediaApplication::instance();
-        updateArticleCountEl(g_articleCountSet,app.preferences().databaseTime);
+        prepareArticleCountEl(g_articleCountElement, app.preferences().articleCount, app.preferences().databaseTime);
     }
+
+    elems.push_back(g_articleCountElement);
     g_articleCountElement->setJustification(DefinitionElement::justifyCenter);
 
 #ifdef WIN32_PLATFORM_PSPC
@@ -200,7 +235,7 @@ void prepareTutorial(Definition *def)
     FontEffects fxBold;
     fxBold.setWeight(FontEffects::weightBold);
 
-    elems.push_back(text=new FormattedTextElement(_T("Go back to main screen.")));
+    elems.push_back(text=new FormattedTextElement(_T("Home.")));
     text->setJustification(DefinitionElement::justifyLeft);
     text->setParent(parent);
     text->setHyperlink(_T("Main screen"), hyperlinkTerm);
@@ -307,7 +342,7 @@ void prepareTutorial(Definition *def)
     elems.push_back(new LineBreakElement(2,3));
 
     elems.push_back(parent=new ParagraphElement());    
-    elems.push_back(text=new FormattedTextElement(_T("Go back to main screen.")));
+    elems.push_back(text=new FormattedTextElement(_T("Home.")));
     text->setJustification(DefinitionElement::justifyLeft);
     text->setParent(parent);    
     text->setHyperlink(_T("Main screen"), hyperlinkTerm);
@@ -322,7 +357,7 @@ static void registerActionCallback(void *data)
     SendMessage(iPediaApplication::instance().getMainWindow(), WM_COMMAND, IDM_MENU_REGISTER, 0);
 }
 
-// TODO: make those on-demand only to save memory
+// TODO: make those on-demand only, to save memory
 void prepareHowToRegister(Definition *def)
 {
     Definition::Elements_t elems;
@@ -332,6 +367,12 @@ void prepareHowToRegister(Definition *def)
 
     FontEffects fxBold;
     fxBold.setWeight(FontEffects::weightBold);
+
+    elems.push_back(text=new FormattedTextElement(_T("Home.")));
+    text->setJustification(DefinitionElement::justifyLeft);
+    text->setHyperlink(_T("Main screen"), hyperlinkTerm);
+    text->setActionCallback( aboutActionCallback, NULL);
+    elems.push_back(new LineBreakElement(2,3));
 
     elems.push_back(text=new FormattedTextElement(_T("Unregistered version of iPedia limits how many articles can be viewed in one day (there are no limits on random articles.)")));
     elems.push_back(new LineBreakElement());
@@ -369,7 +410,9 @@ void prepareHowToRegister(Definition *def)
     elems.push_back(text=new FormattedTextElement(_T(" to enter registration code. ")));
 #endif
 
-    elems.push_back(text=new FormattedTextElement(_T("Go back to main screen.")));
+    elems.push_back(new LineBreakElement());
+
+    elems.push_back(text=new FormattedTextElement(_T("Home.")));
     text->setJustification(DefinitionElement::justifyLeft);
     text->setHyperlink(_T("Main screen"), hyperlinkTerm);
     text->setActionCallback( aboutActionCallback, NULL );
@@ -387,6 +430,12 @@ void prepareWikipedia(Definition *def)
     FontEffects fxBold;
     fxBold.setWeight(FontEffects::weightBold);
 
+    elems.push_back(text=new FormattedTextElement(_T("Home.")));
+    text->setJustification(DefinitionElement::justifyLeft);
+    text->setHyperlink(_T("Main screen"), hyperlinkTerm);
+    text->setActionCallback( aboutActionCallback, NULL);
+    elems.push_back(new LineBreakElement(2,3));
+
     elems.push_back(text=new FormattedTextElement(_T("All the articles in iPedia come from WikiPedia project and are licensed under ")));
     elems.push_back(text=new FormattedTextElement(_T("GNU Free Documentation License")));
     text->setHyperlink(_T("http://www.gnu.org/copyleft/fdl.html"), hyperlinkExternal);
@@ -399,7 +448,7 @@ void prepareWikipedia(Definition *def)
     elems.push_back(text=new FormattedTextElement(_T(" website. ")));
     elems.push_back(new LineBreakElement());
 
-    elems.push_back(text=new FormattedTextElement(_T("Go back to main screen.")));
+    elems.push_back(text=new FormattedTextElement(_T("Home.")));
     text->setJustification(DefinitionElement::justifyLeft);
     text->setHyperlink(_T("Main screen"), hyperlinkTerm);
     text->setActionCallback( aboutActionCallback, NULL );
