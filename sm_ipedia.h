@@ -9,6 +9,16 @@
 
 #define MENU_HEIGHT 26
 
+#ifdef WIN32_PLATFORM_PSPC
+#define MAIN_MENU_BUTTON _T("Main")
+#define REGISTER_MENU_ITEM _T("Options/Register")
+#define UPDATES_MENU_ITEM _T("Options/Check updates")
+#else
+#define MAIN_MENU_BUTTON _T("Menu")
+#define REGISTER_MENU_ITEM _T("Menu/Register")
+#define UPDATES_MENU_ITEM _T("Options/About/Check updates")
+#endif
+
 //extern HWND             g_hwndMain;
 //extern HINSTANCE        g_hInst;
 extern Definition *     g_definition;

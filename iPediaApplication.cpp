@@ -45,7 +45,7 @@ const iPediaApplication::ErrorInfo iPediaApplication::ErrorsTable[] =
 
     ErrorInfo(invalidRegCodeAlert,
     _T("Invalid registration code"),
-    _T("Invalid registration code sent. Please check registration code (using menu 'Options/Register'). Please contact support@arslexis.com if the problem persists.")),
+    _T("Invalid registration code sent. Please check registration code (using menu '") REGISTER_MENU_ITEM _T("'). Please contact support@arslexis.com if the problem persists.")),
 
     ErrorInfo(invalidCookieAlert,
     _T("Invalid cookie"),
@@ -61,11 +61,11 @@ const iPediaApplication::ErrorInfo iPediaApplication::ErrorsTable[] =
 
     ErrorInfo(lookupLimitReachedAlert,
     _T("Trial expired"),
-    _T("Your unregistered version expired. Please register by purchasing registration code and entering it using menu 'Options/Register'. Do you want to enter it now ?")),
+    _T("Your unregistered version expired. Please register by purchasing registration code and entering it using menu '") REGISTER_MENU_ITEM _T("'. Do you want to enter it now ?")),
 
     ErrorInfo(forceUpgradeAlert,
     _T("Upgrade required"),
-    _T("You need to upgrade iPedia to a newer version. Use menu 'Options/Check for updates' or press Update button to download newer version.")),
+    _T("You need to upgrade iPedia to a newer version. Use menu '") UPDATES_MENU_ITEM  _T("' or press Update button to download newer version.")),
 
     ErrorInfo(unsupportedDeviceAlert,
     _T("Unsupported device"),

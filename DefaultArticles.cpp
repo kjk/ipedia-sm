@@ -209,12 +209,6 @@ void prepareTutorial()
     text->setEffects(fxBold);
     text->setParent(parent);    
 
-#ifdef WIN32_PLATFORM_PSPC
-#define MAIN_MENU_BUTTON _T("Main")
-#else
-#define MAIN_MENU_BUTTON _T("Menu")
-#endif
-
     elems.push_back(text=new FormattedTextElement(_T(" Let's assume you want to find all articles that mention Seattle. Enter 'Seattle' in the text field and use '")  MAIN_MENU_BUTTON _T("/Extended search' menu item. In response you'll receive a list of articles that contain word 'Seattle'.")));
     text->setJustification(DefinitionElement::justifyLeft);
     text->setParent(parent);    

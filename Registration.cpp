@@ -117,8 +117,8 @@ bool InitRegistrationDlg(HWND hDlg)
         //SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)prefs.regCode.c_str());
     //else
     g_hRegistrationDlg = hDlg;
+    SHSipPreference(hwndEdit, SIP_UP);
     SetFocus(hwndEdit);
-    SHSipPreference(g_hRegistrationDlg, SIP_UP);
     
     return true;
 }

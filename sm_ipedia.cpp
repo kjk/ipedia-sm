@@ -69,11 +69,12 @@ DisplayMode g_displayMode = showAbout;
 GenericTextElement* g_articleCountElement = NULL;
 long g_articleCountSet = -1;
 
-bool g_forceLayoutRecalculation = false;
-bool g_forceAboutRecalculation = false;
+bool  g_forceLayoutRecalculation = false;
+bool  g_forceAboutRecalculation  = false;
+bool  g_recalculationInProgress = false;
+DWORD g_recalculationData  = 0;
 
 RenderingProgressReporter* rep;
-//RenderingPreferences* prefs= new RenderingPreferences();
 LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
 void CopyToClipboard();
@@ -96,13 +97,20 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 void paint(HWND hwnd, HDC hdc, RECT rcpaint);
 void handleExtendSelection(HWND hwnd, int x, int y, bool finish);
 
-void repaintDefiniton(HWND hwnd, int scrollDelta = 0);
+void repaintDefiniton(int scrollDelta = 0);
 void moveHistoryForward();
 void moveHistoryBack();
 void setScrollBar(Definition* definition);
 void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar);
 void SimpleOrExtendedSearch(HWND hwnd, bool simple);
 static void DoRegister(const String& initCode);
+
+DWORD WINAPI formattingThreadProc(LPVOID lpParameter)
+{
+    repaintDefiniton();
+    g_recalculationInProgress = false;
+    return 0;
+}
 
 DisplayMode displayMode()
 {return g_displayMode;}
@@ -505,11 +513,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         g_definition->replaceElements(lookupManager->lastDefinitionElements());
                         g_forceLayoutRecalculation=true;
                         SendMessage(g_hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)lookupManager->lastInputTerm().c_str());
-                        int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
-                        SendMessage(g_hwndEdit, EM_SETSEL, 0,len);
+                        //int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
+                        SendMessage(g_hwndEdit, EM_SETSEL, 0, -1);
                     }
                     setScrollBar(g_definition);
                     setDisplayMode(showArticle);
+                    SetFocus(g_hwndEdit);
                     InvalidateRect(app.getMainWindow(), NULL, FALSE);
                     break;
                 }
@@ -562,7 +571,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     }
                 }
             }   
-            
             setupAboutWindow();
             lookupManager->handleLookupFinishedInForm(data);
             setMenu(hwnd);
@@ -792,9 +800,7 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
     if (lookupManager && lookupManager->lookupInProgress() &&
         (rout && rin.topLeft) && (rout.extent.x>=rin.extent.x)
         && (rout.extent.y>=rin.extent.y))
-    {
             onlyProgress = true;
-    }
 
     rect.top    += 22;
     rect.left   += 2;
@@ -802,15 +808,17 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
     rect.bottom -= (2+g_menuDy);
     Graphics gr(hdc, hwnd);
 
-    if (!onlyProgress)
+    if (!onlyProgress&&!g_recalculationInProgress)
     {
         Definition &def = currentDefinition();
-        repaintDefiniton(hwnd);
-        if (g_forceLayoutRecalculation) 
-            setScrollBar(&def);
-        if (g_forceLayoutRecalculation)
-            PostMessage(app.getMainWindow(),WM_COMMAND, IDM_ENABLE_UI, 0);
-        g_forceLayoutRecalculation = false;
+        if(g_forceLayoutRecalculation)
+        {
+            DWORD threadID;
+            g_recalculationInProgress = true;
+            CreateThread(NULL, 0, formattingThreadProc, &g_recalculationData, 0, &threadID);
+        }
+        else
+            repaintDefiniton();
     }
 
     if (lookupManager && lookupManager->lookupInProgress() && !g_fRegistration)
@@ -826,6 +834,7 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
             
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+    iPediaApplication& app=iPediaApplication::instance();
     switch(msg)
     {
         case WM_KEYDOWN:
@@ -835,7 +844,6 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 case VK_TACTION:
                     if (g_uiEnabled)
                     {
-                        iPediaApplication& app=iPediaApplication::instance();
                         SendMessage(app.getMainWindow(),WM_COMMAND, ID_SEARCH, 0);
                     }
                     return 0; 
@@ -849,19 +857,16 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         }
         /*
-        I thought it would be more useful, but it's only 
-        irritating me
         case WM_SETFOCUS:
         {            
-            SHSipPreference(g_hwndMain, SIP_UP);
+            SHSipPreference(app.getMainWindow(), SIP_UP);
             break;
         }
         case WM_KILLFOCUS:
         {
-            SHSipPreference(g_hwndMain, SIP_DOWN);
+            SHSipPreference(app.getMainWindow(), SIP_DOWN);
 		    break;
-        }
-        */
+        }*/
     }
     return CallWindowProc(g_oldEditWndProc, hwnd, msg, wp, lp);
 }
@@ -1003,8 +1008,13 @@ void handleExtendSelection(HWND hwnd, int x, int y, bool finish)
 void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
 {
     iPediaApplication &app = iPediaApplication::instance();
+    const LookupManager* lookupManager = app.getLookupManager();
     Definition &def = currentDefinition();
     if (def.empty())
+        return;
+    if (lookupManager && lookupManager->lookupInProgress())
+        return;
+    if (g_recalculationInProgress)
         return;
     switch(unit)
     {
@@ -1021,26 +1031,24 @@ void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
             units = units - def.firstShownLine();
             break;
     }
-    repaintDefiniton(app.getMainWindow(), units);
+    repaintDefiniton(units);
 }
 
-void repaintDefiniton(HWND hwnd, int scrollDelta)
+void repaintDefiniton(int scrollDelta)
 {
     iPediaApplication& app = iPediaApplication::instance();
     const RenderingPreferences& prefs = app.preferences().renderingPreferences;
     Definition &def=currentDefinition();
     RECT rect;
     GetClientRect (app.getMainWindow(), &rect);
+    ArsLexis::Rectangle bounds=rect;
+    
     rect.top    +=22;
     rect.left   +=2;
     rect.right  -=2+g_scrollBarDx;
     rect.bottom -=2+g_menuDy;
-
-    RECT b;
-    GetClientRect(app.getMainWindow(), &b);
-    ArsLexis::Rectangle bounds=b;
     ArsLexis::Rectangle defRect=rect;
-
+    
     Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
     bool doubleBuffer=true;
     if ( (true == g_forceAboutRecalculation) && (displayMode() == showAbout) )
@@ -1080,6 +1088,9 @@ void repaintDefiniton(HWND hwnd, int scrollDelta)
             def.render(gr, defRect, prefs, g_forceLayoutRecalculation);
     
     setScrollBar(&def);
+    if (g_forceLayoutRecalculation)
+        PostMessage(app.getMainWindow(),WM_COMMAND, IDM_ENABLE_UI, 0);
+    g_forceLayoutRecalculation = false;
 }
 
 void CopyToClipboard()
@@ -1118,9 +1129,9 @@ static void handleMoveHistory(bool forward)
         if (!g_definition->empty())
         {
             setDisplayMode(showArticle);
-            SendMessage(g_hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)lookupManager->lastInputTerm().c_str());
-            int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
-            SendMessage(g_hwndEdit, EM_SETSEL, 0,len);
+            //SendMessage(g_hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)lookupManager->lastInputTerm().c_str());
+            //int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
+            //SendMessage(g_hwndEdit, EM_SETSEL, 0, -1);
             setScrollBar(g_definition);
             InvalidateRect(app.getMainWindow(), NULL, false);
             return;
@@ -1156,7 +1167,7 @@ void SimpleOrExtendedSearch(HWND hwnd, bool simple)
     int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
     TCHAR *buf = new TCHAR[len+1];
     len = SendMessage(g_hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
-    SendMessage(g_hwndEdit, EM_SETSEL, 0,len);
+    //SendMessage(g_hwndEdit, EM_SETSEL, 0, -1);
     String term(buf); 
     delete buf;
     if (term.empty()) 

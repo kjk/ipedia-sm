@@ -97,7 +97,7 @@ public:
     
     enum Event
     {
-        appDisplayAlertEvent=WM_USER,
+        appDisplayAlertEvent=WM_APP,
         appDisplayCustomAlertEvent,
         appLookupEventFirst,
         appLookupEventLast=appLookupEventFirst+reservedLookupEventsCount,
@@ -163,7 +163,7 @@ public:
 
     };
     void getErrorMessage(int alertId, bool customAlert, ArsLexis::String &out);
-    void iPediaApplication::getErrorTitle(int alertId, ArsLexis::String &out);
+    void getErrorTitle(int alertId, ArsLexis::String &out);
 
     bool InitInstance (HINSTANCE hInstance, int CmdShow );
     BOOL InitApplication ( HINSTANCE hInstance );    

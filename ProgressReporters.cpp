@@ -4,7 +4,7 @@
 
 using ArsLexis::Graphics;
 
-const uint_t CommonProgressReporter::refreshDelay = 250; 
+const uint_t CommonProgressReporter::refreshDelay = 100; 
 
 CommonProgressReporter::CommonProgressReporter():
     ticksAtStart_(0),
@@ -93,6 +93,7 @@ void CommonProgressReporter::DrawProgressBar(Graphics& gr, uint_t percent, const
     FillRect(gr.handle(), &nativeRec, hbr);
     DeleteObject(hbr);
 }
+
 void CommonProgressReporter::DrawProgressInfo(const ArsLexis::LookupProgressReportingSupport &support, ArsLexis::Graphics &offscreen, const ArsLexis::Rectangle &bounds, bool percentProgEnabled)
 {
     DrawProgressRect(offscreen.handle(),bounds);
@@ -165,7 +166,6 @@ void RenderingProgressReporter::reportProgress(uint_t percent)
     support.setPercentProgress(percent);
     support.setStatusText(waitText_);
 
-    //assert( hwndMain_ == g_hwndMain);
     Graphics gr(GetDC(hwndMain_), hwndMain_);
     
     ArsLexis::Rectangle bounds(progressArea_);
