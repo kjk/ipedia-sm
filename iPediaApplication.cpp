@@ -18,7 +18,8 @@ iPediaApplication::iPediaApplication():
     lookupManager_(0),
     server_(serverToUse),
     stressMode_(false),
-    hasHighDensityFeatures_(false)
+    hasHighDensityFeatures_(false),
+    fArticleCountChecked(false)
 {
 #ifdef INTERNAL_BUILD
     log_.addSink(new MemoLogSink(), log_.logError);

@@ -9,15 +9,30 @@
 
 IDR_MAIN_MENUBAR RCDATA
 BEGIN
+
 	IDR_MENU_MAIN,
-	2,
-	I_IMAGENONE, ID_SEARCH, TBSTATE_ENABLED, 
+    #ifdef PPC
+    4,
+	I_IMAGENONE, ID_PREV_BTN, TBSTATE_ENABLED, 
+	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+	IDS_PREV_BTN, 0, NOMENU,
+    
+	I_IMAGENONE, ID_NEXT_BTN, TBSTATE_ENABLED, 
+	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+	IDS_NEXT_BTN, 0, NOMENU,
+    #else
+    2,
+    #endif
+    
+    I_IMAGENONE, ID_SEARCH, TBSTATE_ENABLED, 
 	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
 	IDS_SEARCH, 0, NOMENU,
+    
 
-	I_IMAGENONE, ID_MENU_BTN, TBSTATE_ENABLED, 
+    I_IMAGENONE, ID_MENU_BTN, TBSTATE_ENABLED, 
 	TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
 	IDS_MENU_BTN, 0, 0,
+
 END
 
 IDR_MENU_MAIN MENU DISCARDABLE 
@@ -27,10 +42,12 @@ BEGIN
         MENUITEM "Hyperlinks",              IDM_MENU_HYPERS
         MENUITEM "Extended search",         IDM_EXT_SEARCH          
         MENUITEM "Ext. search results",     IDM_MENU_RESULTS
-        
+#ifndef PPC
         MENUITEM "Previous",                IDM_MENU_PREV
         MENUITEM "Next",                    IDM_MENU_NEXT
+#endif
         MENUITEM "Random article",          IDM_MENU_RANDOM
+        MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
         MENUITEM "Register",                IDM_MENU_REGISTER
         POPUP "About"
 	    BEGIN
@@ -97,13 +114,19 @@ END
 
 STRINGTABLE DISCARDABLE
 BEGIN
+    #ifdef PPC
 	IDS_SEARCH		    "Search"
+    #else
+    IDS_SEARCH		    "Go"
+    #endif
     IDS_SELECT		    "Select"
     IDS_REGISTER        "Register"
     IDS_MENU_BTN        "Menu"
 	IDS_REFINE          "Refine"
     IDS_LATER           "Later"
 	IDS_CANCEL          "Cancel"
+    IDS_PREV_BTN        "Previous"
+    IDS_NEXT_BTN        "Next"
 END
 
 IDD_LAST_RESULTS DIALOG 

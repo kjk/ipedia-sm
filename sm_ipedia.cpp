@@ -38,7 +38,7 @@ bool g_fRegistration = false;
 
 int  g_scrollBarDx = 0;
 int  g_menuDy = 0;
-
+bool g_lbuttondown = false;
 enum ScrollUnit
 {
     scrollLine,
@@ -49,6 +49,7 @@ enum ScrollUnit
 };
 
 const int ErrorsTableEntries = 24;
+
 ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
 {
         ErrorsTableEntry( romIncompatibleAlert,
@@ -149,7 +150,6 @@ ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
         _T("The iPedia server is not available. Please contact support@arslexis.com if the problem persists."))
 };
 
-
 static RECT g_progressRect = { 0, 0, 0, 0 };
 
 TCHAR szAppName[] = TEXT("iPedia");
@@ -161,6 +161,8 @@ Definition *g_definition = new Definition();
 static bool g_forceLayoutRecalculation=false;
 RenderingProgressReporter* rep; 
 RenderingPreferences* prefs= new RenderingPreferences();
+LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+void CopyToClipboard();
 
 static int  g_stressModeCnt = 0;
 bool rec=false;
@@ -190,9 +192,10 @@ void DrawProgressBar(Graphics& gr, uint_t percent, const ArsLexis::Rectangle& bo
 void DrawProgressRect(HDC hdc, const ArsLexis::Rectangle& bounds);
 void handleExtendSelection(HWND hwnd, int x, int y, bool finish);
 void DrawAboutInfo(HDC hdc, RECT rect);
+void repaintDefiniton(HWND hwnd, int scrollDelta = 0);
+void handleMoveHistory(bool forward);
 void setScrollBar(Definition* definition);
 void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar);
-
 
 HANDLE    g_hConnection = NULL;
 // try to establish internet connection.
@@ -205,7 +208,7 @@ static bool fInitConnection()
 #ifdef PPC
 	return true; // not needed on Pocket PC
 #endif
-    if (NULL!=g_hConnection)
+    //if (NULL!=g_hConnection)
         return true;
 
     CONNMGR_CONNECTIONINFO ccInfo;
@@ -318,7 +321,6 @@ void OnCreate(HWND hwnd)
     SetFocus(g_hwndEdit);
 
 }
-LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -380,14 +382,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         }    
         
         case WM_LBUTTONDOWN:
+            g_lbuttondown = true;
             handleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), false);
             break;
         
         case WM_MOUSEMOVE:
-            handleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), false);
+            if(g_lbuttondown)
+                handleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), false);
             break;
         
         case WM_LBUTTONUP:
+            g_lbuttondown = false;
             handleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), true);
             break;
         case WM_VSCROLL:
@@ -588,6 +593,10 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (wp)
         {   
+            case IDM_MENU_CLIPBOARD:
+                CopyToClipboard();
+                break;
+
             case IDM_MENU_STRESS_MODE:
                 g_stressModeCnt = 100;
                 SendMessage(hwnd, WM_COMMAND, IDM_MENU_RANDOM, 0);
@@ -694,6 +703,7 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             }
             case IDM_MENU_REGISTER:
             {
+                CopyToClipboard();
                 if (!fInitConnection())
                     break;
                 newRegCode_ = app.preferences().regCode;
@@ -710,30 +720,16 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     newRegCode_ = _T("");
                 break;
             }
-            
+            case ID_PREV_BTN:
+            case ID_NEXT_BTN:
+            {
+                handleMoveHistory(wp == ID_NEXT_BTN);
+                break;
+            }
             case IDM_MENU_PREV:
             case IDM_MENU_NEXT:
             {
-                if (g_isAboutVisible) 
-                {
-                    g_isAboutVisible = false;
-                    if (!g_definition->empty())
-                    {
-                        SendMessage(g_hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)lookupManager->lastInputTerm().c_str());
-                        int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
-                        SendMessage(g_hwndEdit, EM_SETSEL, 0,len);
-                    }
-                    setScrollBar(g_definition);
-                    InvalidateRect(hwnd, NULL, false);
-                    break;
-                }
-                if (lookupManager && !lookupManager->lookupInProgress())
-                {
-                    if (!fInitConnection())
-                        break;
-                    lookupManager->moveHistory(!(wp-IDM_MENU_NEXT));
-                    setUI(false);
-                }
+                handleMoveHistory(wp == IDM_MENU_NEXT);
                 break;
             }
             case IDM_MENU_RESULTS:
@@ -865,10 +861,9 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
     
     iPediaApplication& app=iPediaApplication::instance();
     LookupManager* lookupManager=app.getLookupManager(true);
-    //Definition::Elements_t defels_=lookupManager->lastDefinitionElements();
 
     bool onlyProgress=false;
-    //FillRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+
     if (lookupManager && lookupManager->lookupInProgress() &&
         (rout && rin.topLeft) && (rout.extent.x>=rin.extent.x)
         && (rout.extent.y>=rin.extent.y))
@@ -888,41 +883,12 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
             DrawAboutInfo(hdc, rect);
         else
         {
-            RECT b;
-            GetClientRect(hwnd, &b);
-            ArsLexis::Rectangle bounds=b;
-            ArsLexis::Rectangle defRect=rect;
-            bool doubleBuffer=true;
-            HDC offscreenDc=::CreateCompatibleDC(hdc);
-            if (offscreenDc) {
-                HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
-                if (bitmap) {
-                    HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-                    {
-                        Graphics offscreen(offscreenDc, NULL);
-                        g_definition->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
-                        offscreen.copyArea(defRect, gr, defRect.topLeft);
-                    }
-                    ::SelectObject(offscreenDc, oldBitmap);
-                    ::DeleteObject(bitmap);
-                }
-                else
-                    doubleBuffer=false;
-                ::DeleteDC(offscreenDc);
-            }
-            else
-                doubleBuffer=false;
-            if (!doubleBuffer)
-                g_definition->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
+            repaintDefiniton(hwnd);
             if (g_forceLayoutRecalculation) 
                 setScrollBar(g_definition);
             if (g_forceLayoutRecalculation)
                 PostMessage(g_hwndMain,WM_COMMAND, IDM_ENABLE_UI, 0);
-                //setUI(true);
-                /*MSG msg;
-                while(PeekMessage(&msg, g_hwndMain,0 ,0, PM_NOREMOVE)
-                    GetMessage(&msg, g_hwndMain,0 ,0, PM_NOREMOVE);*/
-            g_forceLayoutRecalculation=false;
+            g_forceLayoutRecalculation = false;
         }
     }
 
@@ -983,7 +949,7 @@ void DrawAboutInfo(HDC hdc, RECT rect)
     
     SelectObject(hdc, fnt3);
     //tmpRect.top += (fontDy*3);
-    tmpRect.top += (long)((tmpRect.bottom - tmpRect.top)*0.222) ;
+    tmpRect.top += ((tmpRect.bottom - tmpRect.top)*18/100) ;
     DrawText(hdc, TEXT("ArsLexis iPedia 1.0"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
     // tmpRect.top += fontDy+6;
     
@@ -999,7 +965,7 @@ void DrawAboutInfo(HDC hdc, RECT rect)
         DrawText(hdc, _T("Unregistred"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
     else
         DrawText(hdc, _T("Registred"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
-    tmpRect.top += 16;
+    tmpRect.top += 26;
     DrawText(hdc, articleCountText.c_str(), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
     tmpRect.top += 16;
     DrawText(hdc, databaseDateText.c_str(), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
@@ -1152,6 +1118,20 @@ void SmartPhoneProgressReported::showProgress(const ArsLexis::LookupProgressRepo
     DefaultLookupProgressReporter::showProgress(support, gr, progressArea, false);
 }
 
+void setMenuBarButtonState(int buttonID, bool state)
+{
+    TBBUTTONINFO    buttonInfo;
+    
+    ZeroMemory( &buttonInfo, sizeof( TBBUTTONINFO ) );
+    buttonInfo.cbSize   = sizeof( TBBUTTONINFO );
+    buttonInfo.dwMask   = TBIF_STATE;
+    if (state)
+        buttonInfo.fsState = TBSTATE_ENABLED;
+    else
+        buttonInfo.fsState = TBSTATE_INDETERMINATE;
+    SendMessage( g_hWndMenuBar, TB_SETBUTTONINFO, buttonID, (LPARAM)(LPTBBUTTONINFO)&buttonInfo );
+}
+
 void setMenu(HWND hwnd)
 {
     HWND hwndMB = SHFindMenuBar (hwnd);
@@ -1169,6 +1149,16 @@ void setMenu(HWND hwnd)
             lookupManager->hasPreviousHistoryTerm()||
             (g_isAboutVisible&&!g_definition->empty())?MF_ENABLED:MF_GRAYED);
         EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_GRAYED);
+        EnableMenuItem(hMenu, IDM_MENU_CLIPBOARD, g_definition->empty()?
+            MF_GRAYED:MF_ENABLED);
+        #ifdef PPC
+        if(g_uiEnabled)
+        {
+            setMenuBarButtonState(ID_NEXT_BTN, lookupManager->hasNextHistoryTerm());
+            setMenuBarButtonState(ID_PREV_BTN, lookupManager->hasPreviousHistoryTerm());
+        }
+        #endif
+
         Definition::ElementPosition_t pos;
         for(pos=g_definition->firstElementPosition();
             pos!=g_definition->lastElementPosition();
@@ -1213,7 +1203,7 @@ void setupAboutWindow()
 }
 
 // Try to launch IE with a given url
-bool GotoURL(LPCTSTR lpszUrl)
+BOOL GotoURL(LPCTSTR lpszUrl)
 {
     SHELLEXECUTEINFO sei;
     memset(&sei, 0, sizeof(SHELLEXECUTEINFO));
@@ -1228,17 +1218,22 @@ bool GotoURL(LPCTSTR lpszUrl)
 
 void setUI(bool enabled)
 {
-    TBBUTTONINFO    buttonInfo;
-
-    ZeroMemory( &buttonInfo, sizeof( TBBUTTONINFO ) );
-    buttonInfo.cbSize   = sizeof( TBBUTTONINFO );
-    buttonInfo.dwMask   = TBIF_STATE;
-    if (enabled)
-        buttonInfo.fsState = TBSTATE_ENABLED;
+    iPediaApplication& app=iPediaApplication::instance();
+    LookupManager* lookupManager=app.getLookupManager(true);
+    setMenuBarButtonState(ID_MENU_BTN, enabled);
+    setMenuBarButtonState(ID_SEARCH, enabled);
+    #ifdef PPC
+    if(enabled)
+    {
+        setMenuBarButtonState(ID_NEXT_BTN, lookupManager->hasNextHistoryTerm());
+        setMenuBarButtonState(ID_PREV_BTN, lookupManager->hasPreviousHistoryTerm());
+    }
     else
-        buttonInfo.fsState = TBSTATE_INDETERMINATE;
-    SendMessage( g_hWndMenuBar, TB_SETBUTTONINFO, ID_MENU_BTN, (LPARAM)(LPTBBUTTONINFO)&buttonInfo );
-    SendMessage( g_hWndMenuBar, TB_SETBUTTONINFO, ID_SEARCH, (LPARAM)(LPTBBUTTONINFO)&buttonInfo );
+    {
+        setMenuBarButtonState(ID_NEXT_BTN, false);
+        setMenuBarButtonState(ID_PREV_BTN, false);
+    }
+    #endif
     g_uiEnabled = enabled;
 }
 
@@ -1248,7 +1243,7 @@ void handleExtendSelection(HWND hwnd, int x, int y, bool finish)
     const LookupManager* lookupManager=app.getLookupManager();
     if (lookupManager && lookupManager->lookupInProgress())
         return;
-    //Definition& def=currentDefinition();
+
     if (g_definition->empty())
         return;
     ArsLexis::Point point(x,y);
@@ -1275,22 +1270,39 @@ void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
             units = units - g_definition->firstShownLine();
             break;
     }
+    repaintDefiniton(g_hwndMain, units);
+}
+
+void repaintDefiniton(HWND hwnd, int scrollDelta)
+{
+    RECT rect;
+    GetClientRect (g_hwndMain, &rect);
+    rect.top    +=22;
+    rect.left   +=2;
+    rect.right  -=2+g_scrollBarDx;
+    rect.bottom -=2+g_menuDy;
+
     RECT b;
-    GetClientRect (g_hwndMain, &b);
+    GetClientRect(g_hwndMain, &b);
     ArsLexis::Rectangle bounds=b;
-    ArsLexis::Rectangle defRect=bounds;
-    defRect.explode(2, 22, -9, -24);
+    ArsLexis::Rectangle defRect=rect;
+
     Graphics gr(GetDC(g_hwndMain), g_hwndMain);
     bool doubleBuffer=true;
     
     HDC offscreenDc=::CreateCompatibleDC(gr.handle());
-    if (offscreenDc) {
+    if (offscreenDc) 
+    {
         HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
-        if (bitmap) {
+        if (bitmap) 
+        {
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
             {
                 Graphics offscreen(offscreenDc, NULL);
-                g_definition->scroll(offscreen,*prefs, units);
+                if (0 != scrollDelta)
+                    g_definition->scroll(offscreen,*prefs, scrollDelta);
+                else
+                    g_definition->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
                 offscreen.copyArea(defRect, gr, defRect.topLeft);
             }
             ::SelectObject(offscreenDc, oldBitmap);
@@ -1303,8 +1315,61 @@ void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
     else
         doubleBuffer=false;
     if (!doubleBuffer)
-        g_definition->scroll(gr,*prefs, units);
+        if (0 != scrollDelta)
+            g_definition->scroll(gr,*prefs, scrollDelta);
+        else
+            g_definition->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
     
     setScrollBar(g_definition);
+}
 
+void CopyToClipboard()
+{
+    if (g_definition->empty())
+        return;
+    if(!OpenClipboard(g_hwndMain))
+        return;
+    if(!EmptyClipboard())
+    {
+        CloseClipboard();
+        return;
+    }
+    
+    String text;
+    g_definition->selectionToText(text);
+    
+    char_t *hLocal;
+    int len = text.length();
+    hLocal = (char_t*) LocalAlloc (LPTR, len*2+2);
+    
+    memcpy(hLocal, text.c_str(), len*2);
+
+    SetClipboardData(CF_UNICODETEXT, hLocal);
+    CloseClipboard();
+}
+
+void handleMoveHistory(bool forward)
+{
+    iPediaApplication& app=iPediaApplication::instance();
+    LookupManager* lookupManager=app.getLookupManager(true);
+    if (g_isAboutVisible) 
+    {
+        g_isAboutVisible = false;
+        if (!g_definition->empty())
+        {
+            SendMessage(g_hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)lookupManager->lastInputTerm().c_str());
+            int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
+            SendMessage(g_hwndEdit, EM_SETSEL, 0,len);
+        }
+        setScrollBar(g_definition);
+        InvalidateRect(g_hwndMain, NULL, false);
+        return;
+    }
+    if (lookupManager && !lookupManager->lookupInProgress())
+    {
+        if (!fInitConnection())
+            return;
+        lookupManager->moveHistory(forward);
+        setUI(false);
+    }
 }

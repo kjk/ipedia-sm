@@ -21,7 +21,7 @@ struct LookupFinishedEventData;
 #define serverLocalhost2     _T("127.0.0.1:9000")
 #define serverIpediaArslexis _T("ipedia.arslexis.com:9000")
 
-#define serverToUse serverKjkLaptop
+#define serverToUse serverLocalhost
 
 class iPediaApplication //: public ArsLexis::Application 
 {
@@ -34,7 +34,6 @@ class iPediaApplication //: public ArsLexis::Application
     
     typedef std::list<ArsLexis::String> CustomAlerts_t;
     CustomAlerts_t customAlerts_;
-
     void loadPreferences();
 
     HWND hwndMain_;    
@@ -44,6 +43,7 @@ protected:
     bool handleApplicationEvent(ArsLexis::EventType& event);
 
 public:
+    bool fArticleCountChecked;
 
     void savePreferences();
 
@@ -96,7 +96,7 @@ public:
     enum {
         reservedLookupEventsCount=3
     };
-
+    
     enum Event
     {
         appDisplayAlertEvent=WM_USER,

@@ -58,6 +58,11 @@
 #define IDM_ENABLE_UI                   141
 #define IDM_MENU_STRESS_MODE            142
 #define IDC_STATIC_REG_CODE             143
+#define IDM_MENU_CLIPBOARD              144
+#define IDS_PREV_BTN                    145
+#define IDS_NEXT_BTN                    146
+#define ID_PREV_BTN                     147
+#define ID_NEXT_BTN                     148
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
