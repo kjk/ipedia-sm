@@ -419,13 +419,15 @@ static void RepaintDefiniton(int scrollDelta)
     GetClientRect(app.getMainWindow(), &clientRect);
     ArsLexis::Rectangle bounds = clientRect;
 
-    ArsLexis::Rectangle defRect = clientRect;
-    defRect.top    += 24;
-    defRect.left   += 2;
-    defRect.right  -= 2 + GetScrollBarDx();
-    defRect.bottom -= 2 + g_menuDy;
-    
-    Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
+    RECT defRectTmp = clientRect;
+    defRectTmp.top    += 24;
+    defRectTmp.left   += 2;
+    defRectTmp.right  -= 2 + GetScrollBarDx();
+    defRectTmp.bottom -= 2 + g_menuDy;
+
+    ArsLexis::Rectangle defRect = defRectTmp;
+
+		Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
     if ( (true == g_forceAboutRecalculation) && (displayMode() == showAbout) )
     {
         g_forceLayoutRecalculation = true;
