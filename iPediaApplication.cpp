@@ -54,7 +54,7 @@ LookupManager* iPediaApplication::getLookupManager(bool create)
 DWORD iPediaApplication::waitForEvent()
 {
     loadPreferences();
-    setupAboutWindow();    
+    setupAboutWindow();
     setMenu(hwndMain_);
     InvalidateRect(hwndMain_,NULL,FALSE);
 

@@ -48,39 +48,6 @@ void setDisplayMode(DisplayMode mode);
 DisplayMode displayMode();
 Definition& currentDefinition();
 
-class CommonProgressReporter
-{
-protected:
-    DWORD ticksAtUpdate_;
-    DWORD ticksAtStart_;
-    uint_t lastPercent_;
-    bool showProgress_:1;
-    bool afterTrigger_:1;
-    CommonProgressReporter();
-    void update(uint_t percent);
-    void setTicksAtUpdate(DWORD ticks)
-    {ticksAtUpdate_ = ticks;}
-    bool shallShow()
-    {return showProgress_;}
-};
-
-class RenderingProgressReporter: public Definition::RenderingProgressReporter, CommonProgressReporter
-{
-    HWND hwndMain_;
-    ArsLexis::String waitText_;
-    
-public:
-    
-    RenderingProgressReporter(HWND hwnd);
-    
-    virtual void reportProgress(uint_t percent);
-};
-
-class SmartPhoneProgressReported: public ArsLexis::DefaultLookupProgressReporter, CommonProgressReporter
-{
-    void showProgress(const ArsLexis::LookupProgressReportingSupport& support, ArsLexis::Graphics& gr, const ArsLexis::Rectangle& bounds, bool clearBkg=true);
-};
-
 struct ErrorsTableEntry
 {
     int errorCode;
