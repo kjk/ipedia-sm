@@ -27,6 +27,7 @@
 #include <Text.hpp>
 
 #include <EnterRegCodeDialog.hpp>
+#include <StringListDialog.hpp>
 
 #include "ProgressReporters.h"
 #include "LastResults.h"
@@ -623,9 +624,98 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return lResult;
 }
 
+void OnHyperlinks(HWND hwnd)
+{
+     if (currentDefinition().empty())
+       return;
+    
+    StrList_t strList;
+
+    Definition::ElementPosition_t posCur;
+    Definition::ElementPosition_t posStart = currentDefinition().firstElementPosition();
+    Definition::ElementPosition_t posEnd   = currentDefinition().lastElementPosition();
+    DefinitionElement *currEl;
+    const char_t *articleTitle;
+    for (posCur=posStart; posCur!=posEnd; posCur++)
+    {
+        currEl = *posCur;
+        if (currEl->isTextElement())
+        {
+            GenericTextElement *txtEl=(GenericTextElement*)currEl;
+            if ((txtEl->isHyperlink()) &&
+                ((txtEl->hyperlinkProperties()->type==hyperlinkTerm) ||
+                 (txtEl->hyperlinkProperties()->type==hyperlinkExternal)))
+            {
+                articleTitle = txtEl->hyperlinkProperties()->resource.c_str();
+                strList.push_back(articleTitle);
+            }
+        }
+    }
+
+    String selectedString;
+    bool fSelected = FGetStringFromListRemoveDups(hwnd, strList, selectedString);
+    if (!fSelected)
+        return;
+
+    assert (!selectedString.empty());
+
+    GenericTextElement *txtElMatching = NULL;
+    for (posCur=posStart; posCur!=posEnd; posCur++)
+    {
+        currEl = *posCur;
+        if (currEl->isTextElement())
+        {
+            GenericTextElement *txtEl=(GenericTextElement*)currEl;
+            if ((txtEl->isHyperlink()) &&
+                ((txtEl->hyperlinkProperties()->type==hyperlinkTerm) ||
+                 (txtEl->hyperlinkProperties()->type==hyperlinkExternal)))
+            {
+                if (txtEl->hyperlinkProperties()->resource == selectedString)
+                {
+                    txtElMatching = txtEl;
+                    break;
+                }
+            }
+        }
+    }
+
+    assert(NULL!=txtElMatching);
+
+    if (NULL!=txtElMatching)
+    {
+        // TODO: is this necessary?
+        g_searchWord.assign(selectedString);
+        g_recentWord.assign(selectedString);
+        
+        txtElMatching->performAction(currentDefinition());
+    }
+}
+
+void OnLastResults(HWND hwnd)
+{
+    iPediaApplication& app=GetApp();
+    LookupManager* lookupManager=app.getLookupManager(true);
+    if ( (NULL==lookupManager) || lookupManager->lookupInProgress())
+        return;
+
+    int res = DialogBox(app.getApplicationHandle(), MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc);
+
+    if (LR_DO_LOOKUP_IF_DIFFERENT==res)
+    {
+        lookupManager->lookupIfDifferent(g_searchWord);
+        setUIState(false);
+        InvalidateRect(hwnd,NULL,FALSE);
+    } else if (LR_DO_SEARCH==res)
+    {
+        lookupManager->lookupIfDifferent(g_searchWord);
+        setUIState(false);
+        InvalidateRect(hwnd,NULL,FALSE);
+    }
+}    
+
 LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    iPediaApplication& app=iPediaApplication::instance();
+    iPediaApplication& app=GetApp();
     LookupManager* lookupManager=app.getLookupManager(true);
 
     if ( (NULL==lookupManager) || lookupManager->lookupInProgress())
@@ -693,31 +783,17 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         
         case IDM_MENU_HYPERS:
-        {
-            // TODO: do we need fInitConnection() here?
-            if (!fInitConnection())
-                break;
-            Definition &def = currentDefinition();
-            if (!def.empty())
-                DialogBox(app.getApplicationHandle(), MAKEINTRESOURCE(IDD_HYPERLINKS), hwnd,HyperlinksDlgProc);
+            OnHyperlinks(hwnd);
             break;
-        }
         case IDM_MENU_RANDOM:
-        {
             if (!fInitConnection())
                 break;
-            if (lookupManager && !lookupManager->lookupInProgress())
-            {
-                setUIState(false);
-                lookupManager->lookupRandomTerm();
-            }
+            setUIState(false);
+            lookupManager->lookupRandomTerm();
             break;
-        }
         case IDM_MENU_REGISTER:
-        {
             OnRegister(hwnd);
             break;
-        }
         case IDM_MENU_PREV:
             // intentionally fall through
         case ID_PREV_BTN:
@@ -731,22 +807,9 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_MENU_RESULTS:
-        {
-            int res=DialogBox(app.getApplicationHandle(), MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc);
-            if (res)
-            {
-                if (lookupManager && !lookupManager->lookupInProgress())
-                {
-                    if (1==res)
-                        lookupManager->lookupIfDifferent(g_searchWord);
-                    else
-                        lookupManager->search(g_searchWord);
-                    setUIState(false);
-                }
-                InvalidateRect(hwnd,NULL,FALSE);
-            }
+            OnLastResults(hwnd);
             break;
-        }
+
         default:
         lResult  = DefWindowProc(hwnd, msg, wp, lp);
     }
@@ -981,6 +1044,9 @@ void setupAboutWindow()
 
 void setUIState(bool enabled)
 {
+    // TODO: for testing, always enable
+    enabled = true;
+
     iPediaApplication& app=iPediaApplication::instance();
     LookupManager* lookupManager=app.getLookupManager(true);
 

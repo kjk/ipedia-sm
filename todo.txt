@@ -2,11 +2,13 @@
 ## 2. ability to cancel request e.g. during transfer we change to a form with only
 "Cancel" button and progress report.
 ## 3. fix the icon
-## 6. use StringListDialog common with iNoah
+## 7. improve (de-couple) LastResults.cpp dialog
+## 8. rendering bug, see "The Doors (album)" at the end list of Personnel
 
         *  DONE   *
 
-## 5. common enter reg code dialog with iNoah (2004-08-12)
+## 6. use StringListDialog common with iNoah for showing 'list hyperlinks'
+(2004-08-15)
 
 ## 4. registration bug
 Repro:
@@ -18,3 +20,7 @@ but not launch query
 Problem was: if a reg code field was empty, we wouldn't send 
 Verify-Registration-Code field in a query, so the server would just echo 
 Transaction-ID back and we didn't handle that in any way.
+(2004-08-15)
+
+## 5. common enter reg code dialog with iNoah (2004-08-12)
+

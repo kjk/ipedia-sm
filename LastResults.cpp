@@ -136,7 +136,7 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
             switch (wp)
             {
                 case ID_CANCEL:
-                    EndDialog(hDlg, 0);
+                    EndDialog(hDlg, LR_CANCEL_PRESSED);
                     break;
 
                 case ID_REFINE:
@@ -151,7 +151,7 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                         SendMessage(ctrl, LB_GETTEXT, idx, (LPARAM) buf);
                         g_searchWord.assign(buf);
                         delete buf;
-                        EndDialog(hDlg, 1);
+                        EndDialog(hDlg, LR_DO_LOOKUP_IF_DIFFERENT);
                         break;
                     }
                     else                
@@ -167,7 +167,7 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                             g_recentWord += buf;
                             g_searchWord.assign(g_recentWord);
                             delete buf;
-                            EndDialog(hDlg, 2);
+                            EndDialog(hDlg, LR_DO_SEARCH);
                             break;
                         }
                     }

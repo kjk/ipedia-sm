@@ -76,6 +76,11 @@
 #define IDM_MENU_TUTORIAL               159
 #define IDM_LATER                       160
 
+#define IDR_STRING_LIST_MENUBAR         161
+#define IDD_STRING_LIST                 162
+
+#define IDC_STRING_LIST                 1000
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
