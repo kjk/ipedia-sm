@@ -10,7 +10,7 @@ static WNDPROC oldResultsListWndProc = NULL;
 static WNDPROC oldResultsEditWndProc = NULL;
 static HWND    g_hLastResultsDlg  = NULL;
 
-static StrList_t g_strList;
+static CharPtrList_t g_strList;
 
 #define HOT_KEY_ACTION 0x32
 #define HOT_KEY_UP     0x33
@@ -247,7 +247,7 @@ enum RefineDlgResult {
     REFINE_DLG_CANCEL
 };
 
-RefineDlgResult DoRefineDlg(HWND hwnd, StrList_t strList, String& strOut)
+RefineDlgResult DoRefineDlg(HWND hwnd, CharPtrList_t strList, String& strOut)
 {
     g_strList = strList;
 

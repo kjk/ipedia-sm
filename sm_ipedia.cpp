@@ -198,7 +198,7 @@ void OnLinkedArticles(HWND hwnd)
      if (currentDefinition().empty())
        return;
     
-    StrList_t strList;
+    CharPtrList_t strList;
 
     Definition::ElementPosition_t posCur;
     Definition::ElementPosition_t posStart = currentDefinition().firstElementPosition();
