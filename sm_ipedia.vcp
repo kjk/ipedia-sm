@@ -233,7 +233,7 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -368,7 +368,7 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -429,7 +429,7 @@ DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -545,7 +545,7 @@ DEP_CPP_DEFINIT=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ipedia\Src\DefinitionParser.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -695,7 +695,7 @@ DEP_CPP_FORMA=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -761,7 +761,7 @@ DEP_CPP_GENER=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -826,7 +826,7 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -834,22 +834,13 @@ DEP_CPP_HORIZ=\
 # End Source File
 # Begin Source File
 
-SOURCE=..\ipedia\Src\iPediaApplication.cpp
+SOURCE=.\iPediaApplication.cpp
 
 !IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
 
-DEP_CPP_IPEDI=\
-	"..\ipedia\Src\iPediaApplication.hpp"\
-	"..\ipedia\Src\LookupHistory.hpp"\
-	"..\ipedia\Src\LookupManager.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
-	
 NODEP_CPP_IPEDI=\
-	"..\ipedia\Src\BaseTypes.hpp"\
-	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\Definition.hpp"\
-	"..\ipedia\Src\Graphics.hpp"\
-	"..\ipedia\Src\WinFont.h"\
+	".\LookupHistory.hpp"\
+	".\LookupManager.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
@@ -857,7 +848,6 @@ NODEP_CPP_IPEDI=\
 DEP_CPP_IPEDI=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
-	"..\ars_framework\Src\Definition.hpp"\
 	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
@@ -865,13 +855,11 @@ DEP_CPP_IPEDI=\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\Library.hpp"\
 	"..\ars_framework\Src\Logging.hpp"\
-	"..\ars_framework\Src\LookupManagerBase.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\NativeSocks.hpp"\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
-	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
@@ -881,29 +869,19 @@ DEP_CPP_IPEDI=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	"..\ipedia\Src\iPediaApplication.hpp"\
-	"..\ipedia\Src\LookupHistory.hpp"\
-	"..\ipedia\Src\LookupManager.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\iPediaApplication.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 NODEP_CPP_IPEDI=\
-	"..\ipedia\Src\WinFont.h"\
+	".\LookupHistory.hpp"\
+	".\LookupManager.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
 
-DEP_CPP_IPEDI=\
-	"..\ipedia\Src\iPediaApplication.hpp"\
-	"..\ipedia\Src\LookupHistory.hpp"\
-	"..\ipedia\Src\LookupManager.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
-	
 NODEP_CPP_IPEDI=\
-	"..\ipedia\Src\BaseTypes.hpp"\
-	"..\ipedia\Src\Debug.hpp"\
-	"..\ipedia\Src\Definition.hpp"\
-	"..\ipedia\Src\Graphics.hpp"\
-	"..\ipedia\Src\WinFont.h"\
+	".\LookupHistory.hpp"\
+	".\LookupManager.hpp"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -935,10 +913,10 @@ DEP_CPP_IPEDI=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	"..\ipedia\Src\iPediaApplication.hpp"\
 	"..\ipedia\Src\LookupHistory.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\iPediaApplication.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -1055,10 +1033,10 @@ DEP_CPP_IPEDIA=\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\DefinitionParser.hpp"\
 	"..\ipedia\Src\ipedia.h"\
-	"..\ipedia\Src\iPediaApplication.hpp"\
 	"..\ipedia\Src\iPediaConnection.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\iPediaApplication.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -1125,7 +1103,7 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -1194,7 +1172,7 @@ DEP_CPP_LISTN=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -1269,12 +1247,9 @@ DEP_CPP_LOOKU=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
-	"..\ars_framework\Src\PrefsStore.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ipedia\Src\LookupHistory.hpp"\
-	
-NODEP_CPP_LOOKU=\
-	"..\ars_framework\Src\PalmOS.h"\
+	".\PrefsStore.hpp"\
 	
 
 !ENDIF 
@@ -1388,11 +1363,11 @@ DEP_CPP_LOOKUP=\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
-	"..\ipedia\Src\iPediaApplication.hpp"\
 	"..\ipedia\Src\iPediaConnection.hpp"\
 	"..\ipedia\Src\LookupHistory.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\iPediaApplication.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -1523,7 +1498,7 @@ DEP_CPP_PARAG=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\RenderingPreferences.hpp"\
 	
 
 !ENDIF 
@@ -1573,13 +1548,13 @@ DEP_CPP_RENDE=\
 # End Source File
 # Begin Source File
 
-SOURCE=..\ipedia\Src\RenderingPreferences.cpp
+SOURCE=.\RenderingPreferences.cpp
 
 !IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
 
-NODEP_CPP_RENDER=\
-	"..\ipedia\Src\FontEffects.hpp"\
-	"..\ipedia\Src\WinFont.h"\
+DEP_CPP_RENDER=\
+	".\RenderingPreferences.hpp"\
+	".\sm_ipedia.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
@@ -1589,16 +1564,22 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\FontEffects.hpp"\
-	
-NODEP_CPP_RENDER=\
-	"..\ipedia\Src\WinFont.h"\
+	"..\ars_framework\Src\Geometry.hpp"\
+	"..\ars_framework\Src\Graphics.hpp"\
+	"..\ars_framework\Src\NativeGeometry.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	".\RenderingPreferences.hpp"\
+	".\sm_ipedia.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
 
-NODEP_CPP_RENDER=\
-	"..\ipedia\Src\FontEffects.hpp"\
-	"..\ipedia\Src\WinFont.h"\
+DEP_CPP_RENDER=\
+	".\RenderingPreferences.hpp"\
+	".\sm_ipedia.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
@@ -1615,7 +1596,8 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\RenderingPreferences.hpp"\
+	".\sm_ipedia.h"\
 	
 
 !ENDIF 
@@ -1769,8 +1751,8 @@ DEP_CPP_SM_IP=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	"..\ipedia\Src\iPediaApplication.hpp"\
-	"..\ipedia\Src\RenderingPreferences.hpp"\
+	".\iPediaApplication.hpp"\
+	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
@@ -2174,6 +2156,10 @@ SOURCE=..\ars_framework\Src\WindowsCE\WinSysUtils.cpp
 
 !IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
 
+NODEP_CPP_WINSY=\
+	"..\ars_framework\Src\WindowsCE\sm_ipedia.h"\
+	
+
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
 
 DEP_CPP_WINSY=\
@@ -2187,6 +2173,10 @@ DEP_CPP_WINSY=\
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
 
+NODEP_CPP_WINSY=\
+	"..\ars_framework\Src\WindowsCE\sm_ipedia.h"\
+	
+
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
 
 DEP_CPP_WINSY=\
@@ -2196,6 +2186,7 @@ DEP_CPP_WINSY=\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	".\sm_ipedia.h"\
 	
 
 !ENDIF 
@@ -2267,7 +2258,7 @@ SOURCE=..\ars_framework\Src\HorizontalLineElement.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\ipedia\Src\iPediaApplication.hpp
+SOURCE=.\iPediaApplication.hpp
 # End Source File
 # Begin Source File
 
@@ -2323,7 +2314,7 @@ SOURCE=..\ars_framework\Src\Rendering.hpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\ipedia\Src\RenderingPreferences.hpp
+SOURCE=.\RenderingPreferences.hpp
 # End Source File
 # Begin Source File
 
