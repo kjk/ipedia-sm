@@ -2,9 +2,6 @@
 #include <aygshell.h>
 #include <wingdi.h>
 
-#include <objbase.h>
-#include <initguid.h>
-#include <connmgr.h>
 #include <sms.h>
 #include <uniqueid.h>
 
@@ -12,7 +9,7 @@
 #include <tpcshell.h>
 #endif
 
-#include <SysUtils.hpp>
+#include <WinSysUtils.hpp>
 #include <iPediaApplication.hpp>
 #include <LookupManager.hpp>
 #include <LookupManagerBase.hpp>
@@ -128,7 +125,6 @@ Definition& currentDefinition()
     return (*g_about);
 }
 
-HANDLE    g_hConnection = NULL;
 // try to establish internet connection.
 // If can't (e.g. because tcp/ip stack is not working), display a dialog box
 // informing about that and return false
@@ -136,47 +132,14 @@ HANDLE    g_hConnection = NULL;
 // Can be called multiple times - will do nothing if connection is already established.
 static bool fInitConnection()
 {
-#ifdef WIN32_PLATFORM_PSPC
-    return true; // not needed on Pocket PC
-#endif
-    if (NULL!=g_hConnection)
+    if (InitDataConnection)
         return true;
-    CONNMGR_CONNECTIONINFO ccInfo = {0};
-    ccInfo.cbSize      = sizeof(ccInfo);
-    ccInfo.dwParams    = CONNMGR_PARAM_GUIDDESTNET;
-    ccInfo.dwFlags     = CONNMGR_FLAG_PROXY_HTTP;
-    ccInfo.dwPriority  = CONNMGR_PRIORITY_USERINTERACTIVE;
-    ccInfo.guidDestNet = IID_DestNetInternet;
-    
-    DWORD dwStatus  = 0;
-    DWORD dwTimeout = 5000;     // connection timeout: 5 seconds
-    HRESULT res = ConnMgrEstablishConnectionSync(&ccInfo, &g_hConnection, dwTimeout, &dwStatus);
 
-    if (FAILED(res))
-    {
-        //assert(NULL==g_hConnection);
-        g_hConnection = NULL;
-    }
-
-    if (NULL==g_hConnection)
-    {
-        String errorMsg = _T("Unable to connect");
-        errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
-        iPediaApplication& app = GetApp();
-        MessageBox(app.getMainWindow(), errorMsg.c_str(), _T("Error"), MB_OK | MB_ICONERROR | MB_APPLMODAL | MB_SETFOREGROUND );
-        return false;
-    }
-    else
-        return true;
-}
-
-static void deinitConnection()
-{
-    if (NULL != g_hConnection)
-    {
-        ConnMgrReleaseConnection(g_hConnection,1);
-        g_hConnection = NULL;
-    }
+    String errorMsg = _T("Unable to connect");
+    errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
+    iPediaApplication& app = GetApp();
+    MessageBox(app.getMainWindow(), errorMsg.c_str(), _T("Error"), MB_OK | MB_ICONERROR | MB_APPLMODAL | MB_SETFOREGROUND );
+    return false;
 }
 
 void OnLinkedArticles(HWND hwnd)
@@ -1398,7 +1361,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     int retVal = app.runEventLoop();
 
-    deinitConnection();
+    DeinitDataConnection();
     return retVal;
 }
 
