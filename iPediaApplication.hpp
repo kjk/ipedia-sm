@@ -100,7 +100,11 @@ public:
         ArsLexis::String regCode;
         
         long articleCount;
-        
+
+        ArsLexis::String currentLang;
+
+        ArsLexis::String availableLangs;
+
         Preferences():
             articleCount(-1)
         {}
@@ -127,6 +131,7 @@ public:
         appLookupEventFirst,
         appLookupEventLast=appLookupEventFirst+reservedLookupEventsCount,
         appForceUpgrade,
+        appLangNotAvailable,
         appFirstAvailableEvent
     };
     

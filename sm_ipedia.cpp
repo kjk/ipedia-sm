@@ -711,16 +711,6 @@ static void DoExtSearchResults(HWND hwnd)
     }
 }    
 
-void replaceCharInString(char_t *str, char_t orig, char_t replacement)
-{
-    while (_T('\0')!=*str)
-    {
-        if (*str==orig)
-            *str = replacement;
-        ++str;
-    }
-}
-
 static void OnReverseLinks(HWND hwnd)
 {
     if (currentDefinition().empty())
