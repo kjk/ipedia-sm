@@ -1210,7 +1210,7 @@ void setupAboutWindow()
 }
 
 // Try to launch IE with a given url
-BOOL GotoURL(LPCTSTR lpszUrl)
+bool GotoURL(LPCTSTR lpszUrl)
 {
     SHELLEXECUTEINFO sei;
     memset(&sei, 0, sizeof(SHELLEXECUTEINFO));
