@@ -34,16 +34,10 @@ using ArsLexis::String;
 using ArsLexis::Graphics;
 using ArsLexis::char_t;
 
-const int ErrorsTableEntries = 24;
-bool      g_fRegistration = false;
+bool g_fRegistration = false;
 
-int scrollBarWidth = GetSystemMetrics(SM_CXVSCROLL);            
-int menuHeight =
-#ifdef PPC
-    GetSystemMetrics(SM_CYMENU);
-#else
-    0;
-#endif
+int  g_scrollBarDx = 0;
+int  g_menuDy = 0;
 
 enum ScrollUnit
 {
@@ -54,12 +48,9 @@ enum ScrollUnit
     scrollPosition
 };
 
-
-
-
+const int ErrorsTableEntries = 25;
 ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
 {
-    
         ErrorsTableEntry( romIncompatibleAlert,
         _T("System incompatible"),
         _T("System Version 4.0 or greater is required to run iPedia.")),  
@@ -106,7 +97,7 @@ ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
         
         ErrorsTableEntry( lookupLimitReachedAlert,
         _T("Trial expired"),
-        _T("Your unregistered version expired. Please register.")),
+        _T("Your unregistered version expired. Please register purchasing registration code and entering it using menu 'Register'.")),
         
         ErrorsTableEntry( unsupportedDeviceAlert,
         _T("Unsupported device"),
@@ -159,8 +150,10 @@ ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
 };
 
 
-WNDPROC g_oldEditWndProc;
-LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+static RECT g_progressRect = { 0, 0, 0, 0 };
+
+TCHAR szAppName[] = TEXT("iPedia");
+TCHAR szTitle[]   = TEXT("iPedia");
 
 iPediaApplication iPediaApplication::instance_;
 
@@ -168,10 +161,8 @@ Definition *g_definition = new Definition();
 static bool g_forceLayoutRecalculation=false;
 RenderingProgressReporter* rep; 
 RenderingPreferences* prefs= new RenderingPreferences();
-void setScrollBar(Definition* definition);
-void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar);
 
-int  stressModeCnt = 0;
+static int  g_stressModeCnt = 0;
 bool rec=false;
 
 bool g_isAboutVisible = false;
@@ -179,33 +170,31 @@ bool g_isAboutVisible = false;
 void setUI(bool enable = true);
 bool g_uiEnabled = true;
 
-HWND g_hWndMenuBar;   // Current active menubar
-
 String articleCountText;
 String databaseDateText;
 String dateText;
 String recentWord;
 String searchWord;
 
-HINSTANCE g_hInst = NULL;  // Local copy of hInstance
-HWND      g_hwndMain = NULL;    // Handle to Main window returned from CreateWindow
+HINSTANCE g_hInst       = NULL;
+HWND      g_hwndMain    = NULL;
+HWND      g_hwndEdit    = NULL;
+HWND      g_hwndScroll  = NULL;
+HWND      g_hWndMenuBar = NULL;   // Current active menubar
+WNDPROC   g_oldEditWndProc = NULL;
+
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
 void paint(HWND hwnd, HDC hdc, RECT rcpaint);
 void DrawProgressBar(Graphics& gr, uint_t percent, const ArsLexis::Rectangle& bounds);
 void DrawProgressRect(HDC hdc, const ArsLexis::Rectangle& bounds);
 void handleExtendSelection(HWND hwnd, int x, int y, bool finish);
 void DrawAboutInfo(HDC hdc, RECT rect);
+void setScrollBar(Definition* definition);
+void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar);
 
-RECT progressRect = { 0, 0, 0, 0 };
-
-TCHAR szAppName[] = TEXT("iPedia");
-TCHAR szTitle[]   = TEXT("iPedia");
-//TCHAR szMessage[] = TEXT("Enter article name and press Search.");
-HWND g_hwndEdit;
-HWND g_hwndScroll;
 
 HANDLE    g_hConnection = NULL;
-
 // try to establish internet connection.
 // If can't (e.g. because tcp/ip stack is not working), display a dialog box
 // informing about that and return false
@@ -266,6 +255,12 @@ static void deinitConnection()
 
 void OnCreate(HWND hwnd)
 {
+    g_scrollBarDx = GetSystemMetrics(SM_CXVSCROLL);
+    g_menuDy = 0;
+#ifdef PPC
+    g_menuDy = GetSystemMetrics(SM_CYMENU);
+#endif
+
     // create the menu bar
     SHMENUBARINFO mbi;
     ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
@@ -339,11 +334,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             int height = HIWORD(lp);
             int width = LOWORD(lp);
             MoveWindow(g_hwndEdit, 2, 2, LOWORD(lp)-4, 20, TRUE);
-            MoveWindow(g_hwndScroll,width-scrollBarWidth , 28 , scrollBarWidth, height-28-menuHeight, FALSE);
-            progressRect.left = (width - scrollBarWidth - 155)/2;
-            progressRect.top = (height-45)/2;
-            progressRect.right = progressRect.left + 155;   
-            progressRect.bottom = progressRect.top + 45;  
+            MoveWindow(g_hwndScroll,width-g_scrollBarDx , 28 , g_scrollBarDx, height-28-g_menuDy, FALSE);
+            g_progressRect.left = (width - g_scrollBarDx - 155)/2;
+            g_progressRect.top = (height-45)/2;
+            g_progressRect.right = g_progressRect.left + 155;   
+            g_progressRect.bottom = g_progressRect.top + 45;  
             break;
         }
         case WM_SETFOCUS:
@@ -463,7 +458,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case LookupManager::lookupStartedEvent:
         case LookupManager::lookupProgressEvent:
         {
-            InvalidateRect(g_hwndMain, &progressRect, FALSE);
+            InvalidateRect(g_hwndMain, &g_progressRect, FALSE);
             break;
         }
 
@@ -588,15 +583,15 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         switch (wp)
         {   
             case IDM_MENU_STRESS_MODE:
-                stressModeCnt=100;
+                g_stressModeCnt = 100;
                 SendMessage(hwnd, WM_COMMAND, IDM_MENU_RANDOM, 0);
                 break;
                 
             case IDM_ENABLE_UI:
                 setUI(true);
-                if (stressModeCnt>0)
+                if (g_stressModeCnt>0)
                 {
-                    stressModeCnt--;
+                    g_stressModeCnt--;
                     SendMessage(hwnd, WM_COMMAND, IDM_MENU_RANDOM, 0);
                 }
                 break;
@@ -837,16 +832,16 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 void setScrollBar(Definition* definition)
 {
-    int frst=0;
+    int first=0;
     int total=0;
     int shown=0;
-    if ((definition!=NULL) && (!definition->empty()))
+    if ((NULL!=definition) && (!definition->empty()))
     {
-        frst=definition->firstShownLine();
+        first=definition->firstShownLine();
         total=definition->totalLinesCount();
         shown=definition->shownLinesCount();
     }
-    SetScrollPos(g_hwndScroll, SB_CTL, frst, TRUE);
+    SetScrollPos(g_hwndScroll, SB_CTL, first, TRUE);
     SetScrollRange(g_hwndScroll, SB_CTL, 0, total-shown, TRUE);
 }
 
@@ -860,7 +855,7 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
     RECT rect;
     GetClientRect (hwnd, &rect);
     ArsLexis::Rectangle rin(rcpaint);
-    ArsLexis::Rectangle rout(progressRect);
+    ArsLexis::Rectangle rout(g_progressRect);
     
     iPediaApplication& app=iPediaApplication::instance();
     LookupManager* lookupManager=app.getLookupManager(true);
@@ -869,14 +864,16 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
     bool onlyProgress=false;
     //FillRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
     if (lookupManager && lookupManager->lookupInProgress() &&
-        (rout&&rin.topLeft) && (rout.extent.x>=rin.extent.x)
+        (rout && rin.topLeft) && (rout.extent.x>=rin.extent.x)
         && (rout.extent.y>=rin.extent.y))
+    {
             onlyProgress = true;
+    }
 
-    rect.top    +=22;
-    rect.left   +=2;
-    rect.right  -=2+scrollBarWidth;
-    rect.bottom -=2+menuHeight;
+    rect.top    += 22;
+    rect.left   += 2;
+    rect.right  -= (2+g_scrollBarDx);
+    rect.bottom -= (2+g_menuDy);
     Graphics gr(hdc, hwnd);
 
     if (!onlyProgress)
@@ -932,14 +929,14 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
     if (lookupManager && lookupManager->lookupInProgress() && !g_fRegistration)
     {
         Graphics gr(GetDC(g_hwndMain), g_hwndMain);    
-        ArsLexis::Rectangle progressArea(progressRect);
+        ArsLexis::Rectangle progressArea(g_progressRect);
         lookupManager->showProgress(gr, progressArea);
     }
 
     if (lookupManager && lookupManager->lookupInProgress() && g_fRegistration)
     {
         Graphics gr(GetDC(g_hwndMain), g_hwndMain);    
-        ArsLexis::Rectangle progressArea(progressRect);
+        ArsLexis::Rectangle progressArea(g_progressRect);
         DrawProgressRect(gr.handle(), progressArea);
         DrawProgressBar(gr, 0, progressArea);
         int h = progressArea.height();
@@ -1080,7 +1077,7 @@ void RenderingProgressReporter::reportProgress(uint_t percent)
     assert( hwndMain_ == g_hwndMain);
     Graphics gr(GetDC(hwndMain_), hwndMain_);
     
-    ArsLexis::Rectangle bounds(progressRect);
+    ArsLexis::Rectangle bounds(g_progressRect);
     DrawProgressRect(gr.handle(),bounds);
 
     DrawProgressBar(gr, percent, bounds);
