@@ -237,7 +237,7 @@ void OnCreate(HWND hwnd)
     g_hwndSearchButton = CreateWindow(
         _T("button"),  
         _T("Search"),
-        WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON ,//| BS_OWNERDRAW,
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON ,//| BS_OWNERDRAW,
         CW_USEDEFAULT, CW_USEDEFAULT, 
         CW_USEDEFAULT, CW_USEDEFAULT,
         hwnd, (HMENU)ID_SEARCH_BTN, app.getApplicationHandle(), NULL);

@@ -1,7 +1,3 @@
-## 1. shorter connection timeout so that when the server is down, doesn't wait so long?
-## 2. ability to cancel request e.g. during transfer we change to a form with only
-"Cancel" button and progress report.
-## 7. improve (de-couple) LastResults.cpp dialog
 ## 9. sm, in "Extended search result", don't select any string in a list if we're 
 in the text field.
 ## 10. fix "hyperlinks" list in PPC build
@@ -9,8 +5,26 @@ in the text field.
        to main screen, SIP changes are not reflected.
 ## 14. try to eliminate the delay between pressing "Lookup" and showing the progress
        dialog on sm
+## 16. on ppc, fix the progress dialog (font doesn't show on ppc 2003/dell axim 
+30 although it does show on emu 2002)
+## 17. make a separate pocket pc 2003 build
+
+    * POSSIBLY AFTER V1 *
+## 1. ability to change fonts (like in iNoah/sm)
+## 2. home screen plugin (e.g. display recent article)
+## 3. bookmarks
+## 4. cache recent articles in memory so that one can navigate history
+      without re-downloading the article
+## 5. display russian tekst (see e.g. "nabokov")
+## 6. speedup formatting
+## 7. shorter connection timeout so that when the server is down, doesn't wait so long?
+## 8. ability to cancel request e.g. during transfer we change to a form with only
+"Cancel" button and progress report.
+## 9. improve (de-couple) LastResults.cpp dialog
 
         *  DONE   *
+
+## 15. on ppc, "Search" button is not default (2004-08-17)
 
 ## 11. fix "enter reg code" dialog in PPC build (2004-08-16)
 
