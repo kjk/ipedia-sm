@@ -68,7 +68,11 @@
 #define IDS_OPTIONS_MENU_BTN            151
 #define ID_MAIN_MENU_BTN                152
 #define IDS_MAIN_MENU_BTN               153
-
+#define IDB_TOOLBAR                     154
+#define ID_SEARCH_BTN2                  155
+#define IDB_SEARCH_BTN_UP               156
+#define IDB_SEARCH_BTN_DOWN             157
+#define IDB_SEARCH_BTN_DISABLED         158
 
 // Next default values for new objects
 // 

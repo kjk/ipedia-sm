@@ -9,7 +9,7 @@ Owner: Krzysztof Kowalczyk (krzysztofk@pobox.com)
 #include <Debug.hpp>
 #include <iPediaApplication.hpp>
 #include <aygshell.h>
-#ifndef PPC
+#ifndef WIN32_PLATFORM_PSPC
 #include <tpcshell.h>
 #include <winuserm.h>
 #endif
@@ -34,7 +34,7 @@ Owner: Krzysztof Kowalczyk (krzysztofk@pobox.com)
 //! @todo implement IsValidPrefRecord()
 #define IsValidPrefRecord(recData) true
 
-#ifndef PPC
+#ifndef WIN32_PLATFORM_PSPC
     #define STORE_FOLDER CSIDL_APPDATA
 #else
     #define STORE_FOLDER CSIDL_PROGRAMS

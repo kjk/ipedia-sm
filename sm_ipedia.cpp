@@ -186,6 +186,10 @@ HWND      g_hwndEdit         = NULL;
 HWND      g_hwndScroll       = NULL;
 HWND      g_hWndMenuBar      = NULL;   // Current active menubar
 HWND      g_hwndSearchButton = NULL;
+HBITMAP   g_searchBtnUpBmp             = NULL;
+HBITMAP   g_searchBtnDownBmp             = NULL;
+HBITMAP   g_searchBtnDiasabledBmp             = NULL;
+
 WNDPROC   g_oldEditWndProc   = NULL;
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -269,6 +273,10 @@ void OnCreate(HWND hwnd)
     g_menuDy = 0;
 #ifdef WIN32_PLATFORM_PSPC
     g_menuDy = GetSystemMetrics(SM_CYMENU);
+    g_searchBtnUpBmp = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_SEARCH_BTN_UP)); 
+    g_searchBtnDownBmp = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_SEARCH_BTN_DOWN)); 
+    g_searchBtnDiasabledBmp = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_SEARCH_BTN_DISABLED));  
+
 #endif
 
     // create the menu bar
@@ -277,6 +285,11 @@ void OnCreate(HWND hwnd)
     mbi.cbSize = sizeof(SHMENUBARINFO);
     mbi.hwndParent = hwnd;
     mbi.nToolBarId = IDR_MAIN_MENUBAR;
+#ifdef WIN32_PLATFORM_PSPC
+    mbi.nBmpId     = IDB_TOOLBAR;
+    mbi.cBmpImages = 3;	
+#endif
+
     mbi.hInstRes = g_hInst;
 
     if (!SHCreateMenuBar(&mbi)) {
@@ -297,7 +310,7 @@ void OnCreate(HWND hwnd)
     g_hwndSearchButton = CreateWindow(
         _T("button"),  
         _T("Search"),
-        WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+        WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
         CW_USEDEFAULT, CW_USEDEFAULT, 
         CW_USEDEFAULT, CW_USEDEFAULT,
         hwnd, (HMENU)ID_SEARCH_BTN, g_hInst, NULL);
@@ -351,6 +364,43 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             OnCreate(hwnd);
             break;
 
+#ifdef WIN32_PLATFORM_PSPC
+        case WM_DRAWITEM:
+        {
+            HDC hdcMem; 
+            LPDRAWITEMSTRUCT lpdis;
+            lpdis = (LPDRAWITEMSTRUCT) lp; 
+            hdcMem = CreateCompatibleDC(lpdis->hDC); 
+            if (lpdis->itemState & ODS_DISABLED)
+                SelectObject(hdcMem, g_searchBtnDiasabledBmp);
+            else
+            {
+                if (lpdis->itemState & ODS_SELECTED)  // if selected 
+                    SelectObject(hdcMem, g_searchBtnDownBmp); 
+                else 
+                    SelectObject(hdcMem, g_searchBtnUpBmp); 
+            };
+ 
+            // Destination 
+            StretchBlt( 
+                lpdis->hDC,         // destination DC 
+                lpdis->rcItem.left, // x upper left 
+                lpdis->rcItem.top,  // y upper left 
+ 
+                // The next two lines specify the width and 
+                // height. 
+                lpdis->rcItem.right - lpdis->rcItem.left, 
+                lpdis->rcItem.bottom - lpdis->rcItem.top, 
+                hdcMem,    // source device context 
+                0, 0,      // x and y upper left 
+                20,        // source bitmap width 
+                20,        // source bitmap height 
+                SRCCOPY);  // raster operation 
+ 
+            DeleteDC(hdcMem); 
+            return TRUE; 
+        }
+#endif
         case WM_SETTINGCHANGE:
         {
             SHACTIVATEINFO sai;
@@ -377,7 +427,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             int width = LOWORD(lp);
             
 #ifdef WIN32_PLATFORM_PSPC
-            int searchButtonDX = 50;
+            int searchButtonDX = 20;
             int searchButtonX = LOWORD(lp) - searchButtonDX - 2;
 
             MoveWindow(g_hwndSearchButton, searchButtonX, 2, searchButtonDX, 20, TRUE);
@@ -627,6 +677,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             DestroyWindow(hwnd);
             break;
         case WM_DESTROY:
+            DeleteObject(g_searchBtnUpBmp);
+            DeleteObject(g_searchBtnDownBmp);
+            DeleteObject(g_searchBtnDiasabledBmp);
             PostQuitMessage(0);
         break;
 
@@ -690,6 +743,7 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 break;
                 
             case ID_SEARCH_BTN:
+            case ID_SEARCH_BTN2:
             case ID_SEARCH:
             // intentional fall-through
                 SimpleOrExtendedSearch(hwnd, true);
@@ -1189,6 +1243,7 @@ void setMenu(HWND hwnd)
         EnableMenuItem(hMenu, IDM_MENU_CLIPBOARD, clipboardEnabled);
 
 #ifdef WIN32_PLATFORM_PSPC
+        setMenuBarButtonState(ID_SEARCH_BTN2, g_uiEnabled);
         if (g_uiEnabled)
         {
             setMenuBarButtonState(ID_NEXT_BTN, lookupManager->hasNextHistoryTerm());
@@ -1272,6 +1327,7 @@ void setUI(bool enabled)
         setMenuBarButtonState(ID_NEXT_BTN, false);
         setMenuBarButtonState(ID_PREV_BTN, false);
     }
+    setMenuBarButtonState(ID_SEARCH_BTN2, enabled);
     EnableWindow(g_hwndSearchButton, enabled);
 #else
     setMenuBarButtonState(ID_MENU_BTN, enabled);
@@ -1332,9 +1388,9 @@ void repaintDefiniton(HWND hwnd, int scrollDelta)
     ArsLexis::Rectangle defRect=rect;
 
     Graphics gr(GetDC(g_hwndMain), g_hwndMain);
-    bool doubleBuffer=true;
+    bool doubleBuffer=false;
     
-    HDC offscreenDc=::CreateCompatibleDC(gr.handle());
+    /*HDC offscreenDc=::CreateCompatibleDC(gr.handle());
     if (offscreenDc) 
     {
         HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
@@ -1357,7 +1413,7 @@ void repaintDefiniton(HWND hwnd, int scrollDelta)
         ::DeleteDC(offscreenDc);
     }
     else
-        doubleBuffer=false;
+        doubleBuffer=false;*/
     if (!doubleBuffer)
         if (0 != scrollDelta)
             g_definition->scroll(gr,*prefs, scrollDelta);
