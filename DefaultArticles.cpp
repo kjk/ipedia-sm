@@ -93,13 +93,9 @@ void prepareAbout(Definition *def)
     elems.push_back(new LineBreakElement(1,3*divider*divider));
 
     const char_t* version=_T("Ver ") appVersion
-#ifdef INTERNAL_BUILD
-    _T(" (internal)")
-#endif
-/*
 #ifdef DEBUG
         _T(" (debug)")
-#endif*/
+#endif
     ;
     elems.push_back(text=new FormattedTextElement(version));
     text->setJustification(DefinitionElement::justifyCenter);

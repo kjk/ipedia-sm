@@ -1437,6 +1437,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
     int retVal = app.runEventLoop();
 
     DeinitDataConnection();
+    
+    delete g_definition;
+    delete g_about;
+    delete g_register;
+    delete g_tutorial;
+    delete g_wikipedia;
+
     return retVal;
 }
 
