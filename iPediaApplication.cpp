@@ -160,7 +160,7 @@ iPediaApplication::iPediaApplication():
     history_(new LookupHistory()),
     ticksPerSecond_(1000),
     lookupManager_(0),
-    server_(SERVER_TO_USE),
+    serverAddress(SERVER_TO_USE),
     fArticleCountChecked(false)
 {
 #ifdef INTERNAL_BUILD

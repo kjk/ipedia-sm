@@ -788,7 +788,7 @@ static void DoChangeDatabase()
         return;
     }
 
-#ifdef 0
+#if 0
     // TODO: this is from palm
     char_t **strList = StringListFromString(availableLangs, " ", app().strListSize);
     const char_t* fullName;

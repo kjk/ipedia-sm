@@ -1,12 +1,16 @@
-#include "RenderingPreferences.hpp"
-#include "sm_ipedia.h"
-#include "iPediaApplication.hpp"
-#include <WinPrefsStore.hpp>
 #include <BaseTypes.hpp>
+#include <WinPrefsStore.hpp>
+
+#include "sm_ipedia.h"
+
+#include "iPediaApplication.hpp"
+
+#include "RenderingPreferences.hpp"
 
 using ArsLexis::FontEffects;
 using ArsLexis::Graphics;
 using ArsLexis::Font;
+using ArsLexis::WinFont;
 using ArsLexis::status_t;
 
 RenderingPreferences::RenderingPreferences():

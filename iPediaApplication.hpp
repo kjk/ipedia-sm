@@ -46,7 +46,6 @@ class iPediaApplication
     iPediaHyperlinkHandler  hyperlinkHandler_;
     LookupHistory*          history_;
     LookupManager*          lookupManager_;
-    ArsLexis::String        server_;
     HINSTANCE               hInst_;
     
     typedef std::list<ArsLexis::String> CustomAlerts_t;
@@ -60,6 +59,8 @@ protected:
 
 public:
     bool fArticleCountChecked;
+
+    char_t *                serverAddress;
 
 #ifndef _PALM_OS
     // wince only
@@ -144,12 +145,6 @@ public:
     
     ArsLexis::Logger& log() const
     {return log_;}
-    
-    void setServer(const ArsLexis::String& server)
-    {server_=server;}
-    
-    const ArsLexis::String& server() const
-    {return server_;}
     
     static iPediaApplication& instance()
     {return instance_;}
