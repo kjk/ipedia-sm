@@ -31,7 +31,7 @@
 #include <uniqueid.h>
 
 const int ErrorsTableEntries = 16;
-
+bool registration = false;
 ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
 {   
     ErrorsTableEntry(
@@ -132,6 +132,8 @@ ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
 };
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+void setMenu(HWND hwnd);
+
 WNDPROC oldEditWndProc;
 
 iPediaApplication iPediaApplication::instance_;
@@ -139,6 +141,7 @@ iPediaApplication iPediaApplication::instance_;
 Definition *definition_ = new Definition();
 RenderingProgressReporter* rep; 
 RenderingPreferences* prefs= new RenderingPreferences();
+
 static bool g_forceLayoutRecalculation=false;
 bool rec=false;
 void setScrollBar(Definition* definition_);
@@ -159,6 +162,7 @@ HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
 
 void paint(HWND hwnd, HDC hdc, RECT rcpaint);
 void DrawProgressBar(Graphics& gr, uint_t percent, const ArsLexis::Rectangle& bounds);
+void DrawProgressRect(HDC hdc, const ArsLexis::Rectangle& bounds);
 RECT progressRect = { 7, 80, 162, 125 };
 
 TCHAR szAppName[] = TEXT("iPedia");
@@ -233,6 +237,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             lookupManager->setProgressReporter(new SmartPhoneProgressReported());
             rep = new RenderingProgressReporter(hwnd);
             definition_->setRenderingProgressReporter(rep);
+            setMenu(hwnd);
             break;
         
         }
@@ -247,6 +252,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
         case WM_COMMAND:
         {
+            iPediaApplication& app=iPediaApplication::instance();
+            LookupManager* lookupManager=app.getLookupManager(true);
+            if (lookupManager && !lookupManager->lookupInProgress())
             switch (wp)
             {
                 case IDOK:
@@ -262,8 +270,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
                     SendMessage(hwndEdit, EM_SETSEL, 0,len);
                     String word(buf); 
-                    iPediaApplication& app=iPediaApplication::instance();
-                    LookupManager* lookupManager=app.getLookupManager(true);
                     if (lookupManager && !lookupManager->lookupInProgress())
                         lookupManager->lookupTerm(word);
                     delete buf;
@@ -276,8 +282,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     {
                         if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_HYPERLINKS), hwnd,HyperlinksDlgProc))
                         {
-                            iPediaApplication& app=iPediaApplication::instance();
-                            LookupManager* lookupManager=app.getLookupManager(true);
                             if (lookupManager && !lookupManager->lookupInProgress())
                                 lookupManager->lookupTerm(searchWord);
                             SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)recentWord.c_str());
@@ -291,21 +295,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
                 case IDM_MENU_RANDOM:
                 {
-                    iPediaApplication& app=iPediaApplication::instance();
-                    LookupManager* lookupManager=app.getLookupManager(true);
                     if (lookupManager && !lookupManager->lookupInProgress())
                         lookupManager->lookupRandomTerm();
                     break;
                 }
                 case IDM_MENU_REGISTER:
                 {
-                    iPediaApplication& app=iPediaApplication::instance();
                     newRegCode_ = app.preferences().regCode;
                     if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), hwnd,RegistrationDlgProc))
                     {
-                        LookupManager* lookupManager=app.getLookupManager(true);
                         if (lookupManager && !lookupManager->lookupInProgress())
+                        {
                             lookupManager->verifyRegistrationCode(newRegCode_);
+                            registration = true;
+                        }
                     }
                     else
                         newRegCode_ = _T("");
@@ -315,8 +318,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 case IDM_MENU_PREV:
                 case IDM_MENU_NEXT:
                 {
-                    iPediaApplication& app=iPediaApplication::instance();
-                    LookupManager* lookupManager=app.getLookupManager(true);
                     if (lookupManager && !lookupManager->lookupInProgress())
                         lookupManager->moveHistory(!(wp-IDM_MENU_NEXT));
                     break;
@@ -342,7 +343,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
         		default:
 		        	lResult = DefWindowProc(hwnd, msg, wp, lp);
-            }
+            };
             break;
         }
         case WM_PAINT:
@@ -463,6 +464,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 
                 case LookupFinishedEventData::outcomeRegCodeInvalid:
                 {
+                    registration = false;
                     iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
                     // TODO: should it be done as a message to ourselves?
                     //UInt16 buttonId;
@@ -485,7 +487,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                             iPediaApplication& app=iPediaApplication::instance();
                             LookupManager* lookupManager=app.getLookupManager(true);
                             if (lookupManager && !lookupManager->lookupInProgress())
+                            {
                                 lookupManager->verifyRegistrationCode(newRegCode_);
+                                registration = false;
+                            }
                         }
                         else
                             newRegCode_ = _T("");
@@ -503,6 +508,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 articleCountText.append(buffer, len);
             }
             lookupManager->handleLookupFinishedInForm(data);
+            setMenu(hwnd);
+
             InvalidateRect(hwnd,NULL,TRUE);
         }
         break;
@@ -674,7 +681,7 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
     rect.bottom -=2;
     Graphics gr(hdc, hwnd);
     
-
+    
 
     if(!onlyProgress)
     {
@@ -744,11 +751,24 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
         rec=false;
     }
 
-    if (lookupManager && lookupManager->lookupInProgress())
+    if (lookupManager && lookupManager->lookupInProgress() && !registration)
     {
         Graphics gr(GetDC(hwndMain), hwndMain);    
         ArsLexis::Rectangle progressArea(progressRect);
         lookupManager->showProgress(gr, progressArea);
+    };
+    if (lookupManager && lookupManager->lookupInProgress() && registration)
+    {
+        Graphics gr(GetDC(hwndMain), hwndMain);    
+        ArsLexis::Rectangle progressArea(progressRect);
+        DrawProgressRect(gr.handle(), progressArea);
+        DrawProgressBar(gr, 0, progressArea);
+        int h = progressArea.height();
+        progressArea.explode(6, h - 20, -12, -h + 15);
+        gr.setFont(WinFont());
+        String str(_T("Registering application..."));
+        gr.drawText(str.c_str(), str.length(), progressArea.topLeft);
+
     }
 }
 
@@ -925,5 +945,40 @@ void SmartPhoneProgressReported::showProgress(const ArsLexis::LookupProgressRepo
     progressArea.explode(6, h - 20, -12, -h + 15);
 
     DefaultLookupProgressReporter::showProgress(support, gr, progressArea, false);
+}
+
+void setMenu(HWND hwnd)
+{
+    HWND hwndMB = SHFindMenuBar (hwnd);
+    if (hwndMB) 
+    {
+        HMENU hMenu;
+        hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
+        iPediaApplication& app=iPediaApplication::instance();
+        LookupManager* lookupManager=app.getLookupManager(true);
+        EnableMenuItem(hMenu, IDM_MENU_RESULTS, 
+            lookupManager->lastSearchResults().empty()?MF_GRAYED:MF_ENABLED);
+        EnableMenuItem(hMenu, IDM_MENU_NEXT, 
+            lookupManager->hasNextHistoryTerm()?MF_ENABLED:MF_GRAYED);
+        EnableMenuItem(hMenu, IDM_MENU_PREV, 
+            lookupManager->hasPreviousHistoryTerm()?MF_ENABLED:MF_GRAYED);
+        EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_GRAYED);
+        Definition::ElementPosition_t pos;
+        for(pos=definition_->firstElementPosition();
+            pos!=definition_->lastElementPosition();
+            pos++)
+        {
+            DefinitionElement *curr=*pos;
+            if(curr->isTextElement())
+            {
+                GenericTextElement *txtEl=(GenericTextElement*)curr;
+                if((txtEl->isHyperlink())&&(txtEl->hyperlinkProperties()->type==hyperlinkTerm))
+                {
+                    EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_ENABLED);
+                    return;
+                }
+            }
+        }
+    }
 }
 // end sm_ipedia.cpp
