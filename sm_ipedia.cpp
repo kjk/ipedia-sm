@@ -274,9 +274,9 @@ void OnLinkedArticles(HWND hwnd)
 
 static void SetScrollBar(Definition* definition)
 {
-    int first=0;
-    int total=0;
-    int shown=0;
+    int first = 0;
+    int total = 0;
+    int shown = 0;
     if ((NULL!=definition) && (!definition->empty()))
     {
         first=definition->firstShownLine();
@@ -742,11 +742,83 @@ static void DoRegister(HWND hwnd, const String& oldRegCode)
     SetUIState(false);
 }
 
-void static DoExtendedSearchMenu(HWND hwnd)
+static void DoExtendedSearchMenu(HWND hwnd)
 {
     String term;
     GetEditWinText(g_hwndEdit, term);            
     DoExtendedSearch(hwnd,term);
+}
+
+static void OnPaint(HWND hwnd)
+{
+    PAINTSTRUCT ps;
+    HDC hdc = BeginPaint (hwnd, &ps);
+
+    RECT rcpaint = ps.rcPaint;
+
+    RECT rect;
+    GetClientRect (hwnd, &rect);
+    ArsLexis::Rectangle rin(rcpaint);
+    ArsLexis::Rectangle rout(g_progressRect);
+    
+    iPediaApplication& app=GetApp();
+    bool fLookupInProgress = app.fLookupInProgress();
+
+    bool onlyProgress=false;
+
+    if (fLookupInProgress &&
+        (rout && rin.topLeft) && (rout.extent.x>=rin.extent.x)
+        && (rout.extent.y>=rin.extent.y))
+    {
+            onlyProgress = true;
+    }
+
+    rect.top    += 22;
+    rect.left   += 2;
+    rect.right  -= (2+GetScrollBarDx());
+    rect.bottom -= 2;
+
+    if ( !onlyProgress && !g_recalculationInProgress)
+    {
+        Definition &def = currentDefinition();
+        if (g_forceLayoutRecalculation)
+        {
+            /*
+            DWORD threadID;
+            g_recalculationInProgress = true;
+            HANDLE hThread;
+            hThread = CreateThread(NULL, 0, formattingThreadProc, &g_recalculationData, 0, &threadID);
+            if (NULL!=hThread)
+                CloseHandle(hThread);*/
+            RepaintDefiniton(0);
+        }
+        else
+        {
+            // TODO: a bit of a hack - we shouldn't be getting repaint if we
+            // started the download
+            if (!fLookupInProgress)
+            {
+                RepaintDefiniton(0);
+            }
+        }
+    }
+
+    if (fLookupInProgress)
+    {
+        if (g_fRegistration)
+        {
+            g_RegistrationProgressReporter->reportProgress(-1);
+        }
+        else
+        {
+            Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());    
+            ArsLexis::Rectangle progressArea(g_progressRect);
+            app.getLookupManager()->showProgress(gr, progressArea);
+        }
+    }
+
+    // ShowEstablishingConnection();
+    EndPaint (hwnd, &ps);
 }
 
 static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -808,6 +880,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         
         case IDM_EXT_SEARCH:
+            OnPaint(hwnd);
             DoExtendedSearchMenu(hwnd);
             break;
         
@@ -817,6 +890,7 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         // intentional fall-through
         case ID_SEARCH:
         // intentional fall-through
+            OnPaint(hwnd);
             DoSearch(hwnd);
             break;
         
@@ -825,22 +899,26 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case IDM_MENU_RANDOM:
+            OnPaint(hwnd);
             DoRandom();
             break;
 
         case IDM_MENU_REGISTER:
+            OnPaint(hwnd);
             DoRegister(hwnd, prefs.regCode);
             break;
 
         case IDM_MENU_PREV:
             // intentionally fall through
         case ID_PREV_BTN:
+            OnPaint(hwnd);
             MoveHistoryBack();
             break;
 
         case IDM_MENU_NEXT:
             // intentionally fall through
         case ID_NEXT_BTN:
+            OnPaint(hwnd);
             MoveHistoryForward();
             break;
 
@@ -1125,78 +1203,6 @@ static void DoDisplayAlert(HWND hwnd, WPARAM wp, LPARAM lp, bool fCustom)
     SetUIState(true);
 }
 
-static void OnPaint(HWND hwnd)
-{
-    PAINTSTRUCT ps;
-    HDC hdc = BeginPaint (hwnd, &ps);
-
-    RECT rcpaint = ps.rcPaint;
-
-    RECT rect;
-    GetClientRect (hwnd, &rect);
-    ArsLexis::Rectangle rin(rcpaint);
-    ArsLexis::Rectangle rout(g_progressRect);
-    
-    iPediaApplication& app=GetApp();
-    bool fLookupInProgress = app.fLookupInProgress();
-
-    bool onlyProgress=false;
-
-    if (fLookupInProgress &&
-        (rout && rin.topLeft) && (rout.extent.x>=rin.extent.x)
-        && (rout.extent.y>=rin.extent.y))
-    {
-            onlyProgress = true;
-    }
-
-    rect.top    += 22;
-    rect.left   += 2;
-    rect.right  -= (2+GetScrollBarDx());
-    rect.bottom -= 2;
-
-    if ( !onlyProgress && !g_recalculationInProgress)
-    {
-        Definition &def = currentDefinition();
-        if (g_forceLayoutRecalculation)
-        {
-            /*
-            DWORD threadID;
-            g_recalculationInProgress = true;
-            HANDLE hThread;
-            hThread = CreateThread(NULL, 0, formattingThreadProc, &g_recalculationData, 0, &threadID);
-            if (NULL!=hThread)
-                CloseHandle(hThread);*/
-            RepaintDefiniton(0);
-        }
-        else
-        {
-            // TODO: a bit of a hack - we shouldn't be getting repaint if we
-            // started the download
-            if (!fLookupInProgress)
-            {
-                RepaintDefiniton(0);
-            }
-        }
-    }
-
-    if (fLookupInProgress)
-    {
-        if (g_fRegistration)
-        {
-            g_RegistrationProgressReporter->reportProgress(-1);
-        }
-        else
-        {
-            Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());    
-            ArsLexis::Rectangle progressArea(g_progressRect);
-            app.getLookupManager()->showProgress(gr, progressArea);
-        }
-    }
-
-    // ShowEstablishingConnection();
-    EndPaint (hwnd, &ps);
-}
-
 static void OnSize(HWND hwnd, LPARAM lp)
 {
     int dx = LOWORD(lp);
@@ -1288,6 +1294,16 @@ static void OnScroll(WPARAM wp)
      }
 }
 
+static void DoForceUpgrade(HWND hwnd)
+{           
+    int res = MessageBox(hwnd, 
+        _T("You need to upgrade iPedia to a newer version. Upgrade now?"),
+        _T("Upgrade required"),
+        MB_YESNO | MB_APPLMODAL | MB_SETFOREGROUND );
+    if (IDYES == res)
+        GotoURL(_T("http://arslexis.com/updates/sm-ipedia-1-0.html"));
+}
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT     lResult = TRUE;
@@ -1369,15 +1385,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case iPediaApplication::appForceUpgrade:
-        {           
-            int res = MessageBox(hwnd, 
-                _T("You need to upgrade iPedia to a newer version. Upgrade now?"),
-                _T("Upgrade required"),
-                MB_YESNO | MB_APPLMODAL | MB_SETFOREGROUND );
-            if (IDYES == res)
-                GotoURL(_T("http://arslexis.com/updates/sm-ipedia-1-0.html"));
+            DoForceUpgrade(hwnd);
             break;
-        }
 
         case iPediaApplication::appDisplayCustomAlertEvent:
             DoDisplayAlert(hwnd, wp, lp, true);
