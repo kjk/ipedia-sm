@@ -149,6 +149,15 @@ DWORD iPediaApplication::waitForEvent()
             Sleep(ticksPerSecond_/20);
         else
         {
+            if (lookupManager_ && 
+                (LookupManager::lookupStartedEvent<=msg.message)
+                && (LookupManager::lookupFinishedEvent>=msg.message))
+            {
+                EventType event;
+                event.eType = msg.message;
+                lookupManager_->handleLookupEvent(event);
+            }
+    
             if(msg.message!=WM_QUIT)
             {
                 TranslateMessage (&msg);
@@ -297,11 +306,6 @@ void iPediaApplication::sendDisplayCustomAlertEvent(ushort_t alertId, const ArsL
 {
     customAlerts_.push_back(text1);
     sendEvent(appDisplayCustomAlertEvent, DisplayAlertEventData(alertId));
-}
-
-void iPediaApplication::sendFinishedLookupEvent(uint_t event, LookupFinishedEventData& data)
-{
-    sendEvent(event, data.outcome, data.serverError, data.error);
 }
 
 void* ArsLexis::allocate(size_t size)

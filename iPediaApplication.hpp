@@ -140,8 +140,6 @@ public:
     
     void sendDisplayCustomAlertEvent(ushort_t alertId, const ArsLexis::String& text1);
     
-    static void sendFinishedLookupEvent(uint_t event, LookupFinishedEventData& data);
-    
     ArsLexis::Logger& log() const
     {return log_;}
     
