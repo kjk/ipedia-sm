@@ -121,11 +121,9 @@ const iPediaApplication::ErrorInfo iPediaApplication::ErrorsTable[] =
 iPediaApplication::iPediaApplication():
     log_( _T("root") ),
     history_(new LookupHistory()),
-    diaNotifyRegistered_(false),
     ticksPerSecond_(1000),
     lookupManager_(0),
     server_(serverToUse),
-    hasHighDensityFeatures_(false),
     fArticleCountChecked(false)
 {
 #ifdef INTERNAL_BUILD
@@ -145,7 +143,7 @@ iPediaApplication::~iPediaApplication()
     if (history_)
         delete history_;
 
-    logAllocation_=false;
+    logAllocation_ = false;
 }
 
 bool iPediaApplication::fLookupInProgress() const
@@ -176,13 +174,16 @@ DWORD iPediaApplication::runEventLoop()
     while (true)
     {
         ArsLexis::SocketConnectionManager* manager=0;
+
         if (lookupManager_)
-            manager=&lookupManager_->connectionManager();
+            manager = &lookupManager_->connectionManager();
+
         if (manager && manager->active())
         {
             if (!PeekMessage(&msg, NULL, 0, 0, FALSE))
                 manager->manageConnectionEvents(ticksPerSecond_/20);
         }
+
         if (!PeekMessage(&msg, NULL, 0, 0, TRUE))
             Sleep(ticksPerSecond_/20);
         else

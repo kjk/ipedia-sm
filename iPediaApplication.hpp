@@ -143,9 +143,6 @@ public:
         return *history_;
     }
     
-    bool hasHighDensityFeatures() const
-    {return hasHighDensityFeatures_;}
-
     iPediaHyperlinkHandler& hyperlinkHandler()
     {return hyperlinkHandler_;}
 
@@ -176,8 +173,6 @@ private:
     
     Preferences preferences_;
     static iPediaApplication instance_;
-    bool diaNotifyRegistered_:1;
-    bool hasHighDensityFeatures_:1;
     bool logAllocation_;  
     static const ErrorInfo ErrorsTable[];
     const ErrorInfo& getErrorInfo(int alertID);
