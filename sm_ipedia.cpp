@@ -66,25 +66,25 @@ HWND hwndScroll;
 //
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    LRESULT		lResult = TRUE;
-	HDC			hdc;
-	
+    LRESULT     lResult = TRUE;
+    HDC         hdc;
 
-	switch(msg)
-	{
-		case WM_CREATE:
+
+    switch(msg)
+    {
+        case WM_CREATE:
         {
             // create the menu bar
-			SHMENUBARINFO mbi;
-			ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
-			mbi.cbSize = sizeof(SHMENUBARINFO);
-			mbi.hwndParent = hwnd;
-			mbi.nToolBarId = IDR_MAIN_MENUBAR;
-			mbi.hInstRes = g_hInst;
+            SHMENUBARINFO mbi;
+            ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
+            mbi.cbSize = sizeof(SHMENUBARINFO);
+            mbi.hwndParent = hwnd;
+            mbi.nToolBarId = IDR_MAIN_MENUBAR;
+            mbi.hInstRes = g_hInst;
 
-			if (!SHCreateMenuBar(&mbi)) {
-				PostQuitMessage(0);
-			}
+            if (!SHCreateMenuBar(&mbi)) {
+                PostQuitMessage(0);
+            }
 
             hwndEdit = CreateWindow(
                 TEXT("edit"),
@@ -120,7 +120,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             lookupManager->setProgressReporter(new SmartPhoneProgressReported());
             rep = new RenderingProgressReporter(hwnd);
             definition_->setRenderingProgressReporter(rep);
-			break;
+            break;
         
         }
         case WM_SIZE:
@@ -128,7 +128,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             MoveWindow(hwndScroll,LOWORD(lp)-5, 28 , 5, HIWORD(lp)-28, false);
             break;
 
-		case WM_SETFOCUS:
+        case WM_SETFOCUS:
             SetFocus(hwndEdit);
             break;
 
@@ -169,18 +169,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 return DefWindowProc(hwnd, msg, wp, lp);
             }
             break;
-		case WM_PAINT:
-		{
+        case WM_PAINT:
+        {
             PAINTSTRUCT	ps;
-			hdc = BeginPaint (hwnd, &ps);
-			/*GetClientRect (hwnd, &rect);
+            hdc = BeginPaint (hwnd, &ps);
+            /*GetClientRect (hwnd, &rect);
             DrawText (hdc, TEXT("Enter article name "),-1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
             rect.top+=38;
             DrawText (hdc, TEXT("and press \"Search\" button."),-1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);*/
             paint(hwnd, hdc, ps.rcPaint);
-			EndPaint (hwnd, &ps);
-    		break;
-		}		
+            EndPaint (hwnd, &ps);
+            break;
+        }
         
         case WM_HOTKEY:
         {
@@ -231,7 +231,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     break;
                 }
             }            
-            assert(0!=articleCountElement_);
+            assert(0!=app.preferences().articleCount);
             articleCountText.assign(_T("Number of articles: "));
             char_t buffer[16];
             int len= tprintf(buffer, _T("%ld"), app.preferences().articleCount);
@@ -239,19 +239,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             InvalidateRect(hwnd,NULL,TRUE);
         }
         break;
-		case WM_CLOSE:
-			DestroyWindow(hwnd);
-		break;
+        case WM_CLOSE:
+            DestroyWindow(hwnd);
+        break;
 
-		case WM_DESTROY:
-			PostQuitMessage(0);
-		break;
+        case WM_DESTROY:
+            PostQuitMessage(0);
+        break;
 
-		default:
-			lResult = DefWindowProc(hwnd, msg, wp, lp);
-		break;
-	}
-	return (lResult);
+        default:
+            lResult = DefWindowProc(hwnd, msg, wp, lp);
+        break;
+    }
+    return (lResult);
 }
 
 
