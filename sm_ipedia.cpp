@@ -208,7 +208,7 @@ static bool fInitConnection()
 #ifdef PPC
 	return true; // not needed on Pocket PC
 #endif
-    //if (NULL!=g_hConnection)
+    if (NULL!=g_hConnection)
         return true;
 
     CONNMGR_CONNECTIONINFO ccInfo;
