@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <aygshell.h>
 #include "resource.h"
+#include <Debug.hpp>
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
 HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
@@ -219,6 +220,16 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		DispatchMessage(&msg);
 	}
 	return (msg.wParam);
+}
+
+void ArsLexis::handleBadAlloc()
+{
+    RaiseException(1,0,0,NULL);    
+}
+
+void ArsLexis::logAllocation(void* ptr, bool free, const char* file, int line)
+{
+
 }
 
 // end sm_ipedia.cpp

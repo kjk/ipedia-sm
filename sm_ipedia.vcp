@@ -228,7 +228,7 @@ DEP_CPP_BULLE=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
@@ -279,10 +279,10 @@ DEP_CPP_COMMON=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	
 NODEP_CPP_COMMON=\
+	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\PalmFont.hpp"\
 	"..\ars_framework\Src\PalmGraphicsInline.hpp"\
 	"..\ars_framework\Src\WinFont.h"\
@@ -300,7 +300,7 @@ DEP_CPP_COMMON=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
@@ -363,7 +363,7 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
@@ -424,12 +424,177 @@ DEP_CPP_DEFINI=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	".\RenderingPreferences.hpp"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\ipedia\Src\DefinitionParser.cpp
+
+!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+
+DEP_CPP_DEFINIT=\
+	"..\ipedia\Src\DefinitionParser.hpp"\
+	
+NODEP_CPP_DEFINIT=\
+	"..\ipedia\Src\BulletElement.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\FormattedTextElement.hpp"\
+	"..\ipedia\Src\HorizontalLineElement.hpp"\
+	"..\ipedia\Src\ListNumberElement.hpp"\
+	"..\ipedia\Src\ParagraphElement.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+
+DEP_CPP_DEFINIT=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\BulletElement.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\FieldPayloadProtocolConnection.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\FormattedTextElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Geometry.hpp"\
+	"..\ars_framework\Src\Graphics.hpp"\
+	"..\ars_framework\Src\HorizontalLineElement.hpp"\
+	"..\ars_framework\Src\Library.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
+	"..\ars_framework\Src\ListNumberElement.hpp"\
+	"..\ars_framework\Src\Logging.hpp"\
+	"..\ars_framework\Src\NativeGeometry.hpp"\
+	"..\ars_framework\Src\NativeSocks.hpp"\
+	"..\ars_framework\Src\NetLibrary.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\ParagraphElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	"..\ars_framework\Src\Resolver.hpp"\
+	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
+	"..\ars_framework\Src\Socket.hpp"\
+	"..\ars_framework\Src\SocketAddress.hpp"\
+	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ipedia\Src\DefinitionParser.hpp"\
+	".\RenderingPreferences.hpp"\
+	
+NODEP_CPP_DEFINIT=\
+	".\WinFont.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+
+DEP_CPP_DEFINIT=\
+	"..\ipedia\Src\DefinitionParser.hpp"\
+	
+NODEP_CPP_DEFINIT=\
+	"..\ipedia\Src\BulletElement.hpp"\
+	"..\ipedia\Src\Definition.hpp"\
+	"..\ipedia\Src\FormattedTextElement.hpp"\
+	"..\ipedia\Src\HorizontalLineElement.hpp"\
+	"..\ipedia\Src\ListNumberElement.hpp"\
+	"..\ipedia\Src\ParagraphElement.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+
+DEP_CPP_DEFINIT=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\BulletElement.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\FieldPayloadProtocolConnection.hpp"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\FormattedTextElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Geometry.hpp"\
+	"..\ars_framework\Src\Graphics.hpp"\
+	"..\ars_framework\Src\HorizontalLineElement.hpp"\
+	"..\ars_framework\Src\Library.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
+	"..\ars_framework\Src\ListNumberElement.hpp"\
+	"..\ars_framework\Src\Logging.hpp"\
+	"..\ars_framework\Src\NativeGeometry.hpp"\
+	"..\ars_framework\Src\NativeSocks.hpp"\
+	"..\ars_framework\Src\NetLibrary.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\ParagraphElement.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	"..\ars_framework\Src\Resolver.hpp"\
+	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
+	"..\ars_framework\Src\Socket.hpp"\
+	"..\ars_framework\Src\SocketAddress.hpp"\
+	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ipedia\Src\DefinitionParser.hpp"\
+	".\RenderingPreferences.hpp"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\FieldPayloadProtocolConnection.cpp
+
+!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+
+DEP_CPP_FIELD=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\FieldPayloadProtocolConnection.hpp"\
+	"..\ars_framework\Src\Library.hpp"\
+	"..\ars_framework\Src\Logging.hpp"\
+	"..\ars_framework\Src\NativeSocks.hpp"\
+	"..\ars_framework\Src\NetLibrary.hpp"\
+	"..\ars_framework\Src\Resolver.hpp"\
+	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
+	"..\ars_framework\Src\Socket.hpp"\
+	"..\ars_framework\Src\SocketAddress.hpp"\
+	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+
+DEP_CPP_FIELD=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\FieldPayloadProtocolConnection.hpp"\
+	"..\ars_framework\Src\Library.hpp"\
+	"..\ars_framework\Src\Logging.hpp"\
+	"..\ars_framework\Src\NativeSocks.hpp"\
+	"..\ars_framework\Src\NetLibrary.hpp"\
+	"..\ars_framework\Src\Resolver.hpp"\
+	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
+	"..\ars_framework\Src\Socket.hpp"\
+	"..\ars_framework\Src\SocketAddress.hpp"\
+	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
 	
 
 !ENDIF 
@@ -525,7 +690,7 @@ DEP_CPP_FORMA=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
@@ -590,7 +755,7 @@ DEP_CPP_GENER=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
@@ -656,11 +821,105 @@ DEP_CPP_HORIZ=\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\HorizontalLineElement.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	".\RenderingPreferences.hpp"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\iPediaApplication.cpp
+
+!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+
+DEP_CPP_IPEDI=\
+	".\iPediaApplication.hpp"\
+	".\RenderingPreferences.hpp"\
+	
+NODEP_CPP_IPEDI=\
+	".\BaseTypes.hpp"\
+	".\Debug.hpp"\
+	".\Graphics.hpp"\
+	".\WinFont.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+
+DEP_CPP_IPEDI=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\Geometry.hpp"\
+	"..\ars_framework\Src\Graphics.hpp"\
+	"..\ars_framework\Src\Library.hpp"\
+	"..\ars_framework\Src\Logging.hpp"\
+	"..\ars_framework\Src\NativeGeometry.hpp"\
+	"..\ars_framework\Src\NativeSocks.hpp"\
+	"..\ars_framework\Src\NetLibrary.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
+	"..\ars_framework\Src\Resolver.hpp"\
+	"..\ars_framework\Src\Socket.hpp"\
+	"..\ars_framework\Src\SocketAddress.hpp"\
+	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	".\iPediaApplication.hpp"\
+	".\RenderingPreferences.hpp"\
+	
+NODEP_CPP_IPEDI=\
+	".\WinFont.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+
+DEP_CPP_IPEDI=\
+	".\iPediaApplication.hpp"\
+	".\RenderingPreferences.hpp"\
+	
+NODEP_CPP_IPEDI=\
+	".\BaseTypes.hpp"\
+	".\Debug.hpp"\
+	".\Graphics.hpp"\
+	".\WinFont.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+
+DEP_CPP_IPEDI=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\Geometry.hpp"\
+	"..\ars_framework\Src\Graphics.hpp"\
+	"..\ars_framework\Src\Library.hpp"\
+	"..\ars_framework\Src\Logging.hpp"\
+	"..\ars_framework\Src\NativeGeometry.hpp"\
+	"..\ars_framework\Src\NativeSocks.hpp"\
+	"..\ars_framework\Src\NetLibrary.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
+	"..\ars_framework\Src\Resolver.hpp"\
+	"..\ars_framework\Src\Socket.hpp"\
+	"..\ars_framework\Src\SocketAddress.hpp"\
+	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	".\iPediaApplication.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -723,7 +982,7 @@ DEP_CPP_LINEB=\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\LineBreakElement.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
@@ -792,7 +1051,7 @@ DEP_CPP_LISTN=\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\ListNumberElement.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
@@ -880,9 +1139,9 @@ DEP_CPP_LOOKU=\
 	"..\ars_framework\Src\Logging.hpp"\
 	"..\ars_framework\Src\LookupManagerBase.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\NativeSocks.hpp"\
 	"..\ars_framework\Src\NetLibrary.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
@@ -952,7 +1211,7 @@ DEP_CPP_PARAG=\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\LineBreakElement.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\ParagraphElement.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
@@ -996,7 +1255,7 @@ DEP_CPP_RENDE=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
@@ -1048,7 +1307,7 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
@@ -1161,6 +1420,9 @@ DEP_CPP_SM_IP=\
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
 
 DEP_CPP_SM_IP=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	{$(INCLUDE)}"vibrate.h"\
@@ -1177,6 +1439,9 @@ DEP_CPP_SM_IP=\
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
 
 DEP_CPP_SM_IP=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	{$(INCLUDE)}"vibrate.h"\
@@ -1459,7 +1724,6 @@ DEP_CPP_WINGR=\
 	"..\ars_framework\Src\FontEffects.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
-	"..\ars_framework\Src\NativeGraphics.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
@@ -1505,6 +1769,39 @@ DEP_CPP_WINNE=\
 !ENDIF 
 
 # End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\WindowsCE\WinSysUtils.cpp
+
+!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+
+DEP_CPP_WINSY=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
+	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+
+DEP_CPP_WINSY=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
+	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	
+
+!ENDIF 
+
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -1531,7 +1828,15 @@ SOURCE=..\ars_framework\Src\DefinitionElement.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\ipedia\Src\DefinitionParser.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\ars_framework\Src\ErrBase.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\FieldPayloadProtocolConnection.hpp
 # End Source File
 # Begin Source File
 
@@ -1556,6 +1861,10 @@ SOURCE=..\ars_framework\Src\Graphics.hpp
 # Begin Source File
 
 SOURCE=..\ars_framework\Src\HorizontalLineElement.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\iPediaApplication.hpp
 # End Source File
 # Begin Source File
 
@@ -1631,6 +1940,10 @@ SOURCE=..\ars_framework\Src\SocketConnection.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\ars_framework\Src\SysUtils.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\ars_framework\Src\Text.hpp
 # End Source File
 # Begin Source File
@@ -1644,6 +1957,10 @@ SOURCE=..\ars_framework\Src\WindowsCE\WinFont.h
 # Begin Source File
 
 SOURCE=..\ars_framework\Src\WindowsCE\WinGraphics.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\WindowsCE\WinSysUtils.hpp
 # End Source File
 # End Group
 # Begin Group "Resource Files"
