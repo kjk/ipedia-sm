@@ -19,7 +19,7 @@ iPediaApplication::iPediaApplication():
     //ticksPerSecond_(SysTicksPerSecond()),
     ticksPerSecond_(1000),
     lookupManager_(0),
-    server_(serverLocalhost),
+    server_(serverToUse),
     stressMode_(false),
     hasHighDensityFeatures_(false)
 {
@@ -83,14 +83,6 @@ status_t iPediaApplication::normalLaunch()
 {
     history_=new LookupHistory();
     loadPreferences();
-#ifdef INTERNAL_BUILD
-    // make it easier for me to run the app
-    // if running on Treo 600 set the default server to my server
-    if (isTreo600())
-    {
-        server_ = serverDictPcArslexis;
-    }
-#endif
     //gotoForm(mainForm);
     //runEventLoop();
     savePreferences();
@@ -109,7 +101,7 @@ LookupManager* iPediaApplication::getLookupManager(bool create)
 {
     if (!lookupManager_ && create)
     {
-        assert(0!=history_);
+        //assert(0!=history_);
         lookupManager_=new LookupManager(*history_);
     }
     return lookupManager_;

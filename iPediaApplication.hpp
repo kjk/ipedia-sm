@@ -16,7 +16,9 @@ struct LookupFinishedEventData;
 
 //#define serverLocalhost        _T("arslex.no-ip.info:9000")
 #define serverLocalhost    _T("192.168.0.1:9000")
-#define serverDictPcArslexis   _T("dict-pc.arslexis.com:9000")
+#define serverIpediaArslexis   _T("ipedia.arslexis.com:9000")
+
+#define serverToUse serverIpediaArslexis
 
 class iPediaApplication //: public ArsLexis::Application 
 {
