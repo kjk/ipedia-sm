@@ -37,7 +37,6 @@ class iPediaApplication //: public ArsLexis::Application
     
     void loadPreferences();
 
-    void savePreferences();
     
     HWND hwndMain_;    
     
@@ -53,13 +52,7 @@ protected:
     
 public:
 
-    //static const tick_t requiredRomVersion=sysMakeROMVersion(3,5,0,sysROMStageDevelopment,0);
-    //static const tick_t creatorId=appFileCreator;
-    //static const ushort_t notEnoughMemoryAlertId=notEnoughMemoryAlert;
-    //static const ushort_t romIncompatibleAlertId=romIncompatibleAlert;
-    
-    //const ArsLexis::DIA_Support& getDIASupport() const
-    //{return diaSupport_;}
+    void savePreferences();
 
     iPediaApplication();
 

@@ -6,6 +6,7 @@
 #include <SysUtils.hpp>
 #include <DeviceInfo.hpp>
 #include <ipedia.h>
+#include <sm_ipedia.h>
 
 using namespace ArsLexis;
 
@@ -106,25 +107,11 @@ LookupManager* iPediaApplication::getLookupManager(bool create)
 
 DWORD iPediaApplication::waitForEvent()
 {
+    loadPreferences();
+    setupAboutWindow();    
+    setMenu(hwndMain_);
+    InvalidateRect(hwndMain_,NULL,TRUE);
     MSG msg;
-    /*
-    ArsLexis::SocketConnectionManager* manager=0;
-    if (lookupManager_)
-        manager=&lookupManager_->connectionManager();
-    if (manager && manager->active())
-    {
-        //setEventTimeout(0);
-        iPediaApplication::waitForEvent(event);
-        if (//nilEvent==event.eType)
-            0==event.eType)
-            manager->manageConnectionEvents(ticksPerSecond_/20);
-    }
-    else
-    {
-        //setEventTimeout(evtWaitForever);
-        iPediaApplication::waitForEvent(event);
-    }
-    */
     while(true)
     {
         ArsLexis::SocketConnectionManager* manager=0;
@@ -160,7 +147,10 @@ DWORD iPediaApplication::waitForEvent()
 		        DispatchMessage(&msg);
             }
             else
+            {
+                savePreferences();
                 return (msg.wParam);
+            }
 
         }
     };

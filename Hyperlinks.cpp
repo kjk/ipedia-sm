@@ -47,14 +47,24 @@ BOOL CALLBACK HyperlinksDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                 {
                     HWND ctrl = GetDlgItem(hDlg, IDC_LIST_HYPERLINKS);
                     int idx = SendMessage(ctrl, LB_GETCURSEL, 0, 0);
-                    int len = SendMessage(ctrl, LB_GETTEXTLEN, idx, 0);
-                    TCHAR *buf = new TCHAR[len+1];
-                    SendMessage(ctrl, LB_GETTEXT, idx, (LPARAM) buf);
-                    searchWord.assign(buf);
-                    recentWord.assign(buf);
-                    delete buf;
-                    EndDialog(hDlg, 1);
-                    break;
+                    GenericTextElement *txtEl=(GenericTextElement*)SendMessage(ctrl, LB_GETITEMDATA, idx, 0);
+                    if(txtEl->hyperlinkProperties()->type==hyperlinkExternal)
+                    {
+                        GotoURL(txtEl->hyperlinkProperties()->resource.c_str());
+                        EndDialog(hDlg, 0);
+                        break;
+                    }
+                    else
+                    {
+                        int len = SendMessage(ctrl, LB_GETTEXTLEN, idx, 0);
+                        TCHAR *buf = new TCHAR[len+1];
+                        SendMessage(ctrl, LB_GETTEXT, idx, (LPARAM) buf);
+                        searchWord.assign(buf);
+                        recentWord.assign(buf);
+                        delete buf;
+                        EndDialog(hDlg, 1);
+                        break;
+                    }
                 }
             }
         }
@@ -107,12 +117,12 @@ BOOL InitHyperlinks(HWND hDlg)
         {
             GenericTextElement *txtEl=(GenericTextElement*)curr;
             if((txtEl->isHyperlink())&&
-                (txtEl->hyperlinkProperties()->type==hyperlinkTerm))
-                SendMessage(
-                ctrl,
-                LB_ADDSTRING,
-                0,
-                (LPARAM)txtEl->text().c_str());
+                ((txtEl->hyperlinkProperties()->type==hyperlinkTerm)||
+                 (txtEl->hyperlinkProperties()->type==hyperlinkExternal)))
+            {
+                int idx = SendMessage(ctrl,LB_ADDSTRING,0,(LPARAM)txtEl->text().c_str());
+                SendMessage(ctrl, LB_SETITEMDATA, idx, (LPARAM) txtEl);
+            }
 
         }
         

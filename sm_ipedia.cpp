@@ -24,116 +24,120 @@
 
 #include <windows.h>
 #include <aygshell.h>
+#ifndef  PPC
 #include <tpcshell.h>
+#endif
 #include <wingdi.h>
 #include <fonteffects.hpp>
 #include <sms.h>
 #include <uniqueid.h>
 #include <Text.hpp>
 
-const int ErrorsTableEntries = 16;
+const int ErrorsTableEntries = 19;
 bool registration = false;
+HANDLE           hConnection = NULL;
+
 ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
 {   
-    ErrorsTableEntry(
-        romIncompatibleAlert,
-        _T("System Incompatible"),
+    ErrorsTableEntry( romIncompatibleAlert,
+        _T("System incompatible"),
         _T("System Version 4.0 or greater is required to run iPedia.")
-    ),
-
-    ErrorsTableEntry(
-        networkUnavailableAlert,
-        _T("Network Unavailable"),
+        ),
+        
+        ErrorsTableEntry( networkUnavailableAlert,
+        _T("Network unavailable"),
         _T("Unable to initialize network subsystem.")
-    ),
-    
-    ErrorsTableEntry(
-        cantConnectToServerAlert,
+        ),
+        
+        ErrorsTableEntry( cantConnectToServerAlert,
         _T("Server unavailable"),
         _T("Can't connect to the server.")
-    ),
-    
-    ErrorsTableEntry(
-        articleNotFoundAlert,
+        ),
+        
+        ErrorsTableEntry( articleNotFoundAlert,
         _T("Article not found"),
         _T("Encyclopedia article for '^1' was not found.")
-    ),
-
-    ErrorsTableEntry(
-        articleTooLongAlert,
+        ),
+        
+        ErrorsTableEntry( articleTooLongAlert,
         _T("Article too long"),
         _T("Article is too long for iPedia to process.")
-    ),
-
-    ErrorsTableEntry(
-        notEnoughMemoryAlert,
+        ),
+        
+        ErrorsTableEntry( notEnoughMemoryAlert,
         _T("Error"),
         _T("Not enough memory to complete current operation.")
-    ),
-
-    ErrorsTableEntry(
-        serverFailureAlert,
-        _T("Server Error"),
+        ),
+        
+        ErrorsTableEntry( serverFailureAlert,
+        _T("Server error"),
         _T("Unable to complete request due to server error.")
-    ),
-
-    ErrorsTableEntry(
-        invalidAuthorizationAlert,
+        ),
+        
+        ErrorsTableEntry( invalidAuthorizationAlert,
         _T("Invalid Authorization"),
-        _T("Unable to complete request due to invalid authorization data. Please check if you entered serial number correctly.")
-    ),
-
-    ErrorsTableEntry(
-        trialExpiredAlert,
+        _T("Unable to complete request due to invalid authorization data. Please check if you entered serial number correctly (using menu 'Register').")
+        ),
+        
+        ErrorsTableEntry( alertRegistrationFailed,
+        _T("Wrong registration code"),
+        _T("Incorrect registration code. Contact support@arslexis.com in case of problems.")
+        ),
+        
+        ErrorsTableEntry( alertRegistrationOk,
+        _T("Registration successful"),
+        _T("Thank you for registering iPedia.")
+        ),
+        
+        ErrorsTableEntry( trialExpiredAlert,
         _T("Expired"),
         _T("Your unregistered trial version expired. Please register to remove daily requests limit.")
-    ),
-
-    ErrorsTableEntry(
-        unsupportedDeviceAlert,
-        _T("Unsupported Device"),
-        _T("Your hardware configuration is unsupported.")
-    ),
-
-    ErrorsTableEntry(
-        malformedRequestAlert,
-        _T("Malformed Request"),
-        _T("Server rejected your query.")
-    ),
-
-    ErrorsTableEntry(
-        noWebBrowserAlert,
+        ),
+        
+        ErrorsTableEntry( unsupportedDeviceAlert,
+        _T("Unsupported device"),
+        _T("Your hardware configuration is unsupported. Please contact support@arslexis.com if the problem persists.")
+        ),
+        
+        ErrorsTableEntry( malformedRequestAlert,
+        _T("Malformed request"),
+        _T("Server rejected your query. Please contact support@arslexis.com if the problem persists.")
+        ),
+        
+        ErrorsTableEntry( invalidRequestAlert,
+        _T("Invalid request"),
+        _T("Client sent invalid request. Please contact support@arslexis.com if the problem persists.")
+        ),
+        
+        ErrorsTableEntry( noWebBrowserAlert,
         _T("No web browser"),
         _T("Web browser is not installed on this device.")
-    ),
-
-    ErrorsTableEntry(
-        malformedResponseAlert,
-        _T("Malformed Response"),
-        _T("Server returned malformed response.")
-    ),
-
-    ErrorsTableEntry(
-        connectionTimedOutAlert,
-        _T("Timed Out"),
+        ),
+        
+        ErrorsTableEntry( malformedResponseAlert,
+        _T("Malformed response"),
+        _T("Server returned malformed response. Please contact support@arslexis.com if the problem persists.")
+        ),
+        
+        ErrorsTableEntry( connectionTimedOutAlert,
+        _T("Connection timed out"),
         _T("Connection timed out.")
-    ),
-
-    ErrorsTableEntry(
-        connectionErrorAlert,
+        ),
+        
+        ErrorsTableEntry( connectionErrorAlert,
         _T("Error"),
         _T("Connection terminated.")
-    ),
-
-    ErrorsTableEntry(
-        connectionServerNotRunning,
+        ),
+        
+        ErrorsTableEntry( connectionServerNotRunning,
         _T("Error"),
-        _T("The iPedia server is not available. Please contact support@arslexis.com.")
-    )
+        _T("The iPedia server is not available. Please contact support@arslexis.com if the problem persists.")
+        )
 };
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
-void setMenu(HWND hwnd);
+
+bool initConnection();
 
 WNDPROC oldEditWndProc;
 
@@ -142,6 +146,8 @@ iPediaApplication iPediaApplication::instance_;
 Definition *definition_ = new Definition();
 RenderingProgressReporter* rep; 
 RenderingPreferences* prefs= new RenderingPreferences();
+
+bool isAboutVisible = false;
 
 static bool g_forceLayoutRecalculation=false;
 bool rec=false;
@@ -184,6 +190,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         case WM_CREATE:
         {
+            if (!initConnection())
+            {
+#ifdef DEBUG
+                ArsLexis::String errorMsg = TEXT("Can't establish connection to ");
+                errorMsg += iPediaApplication::instance().server();
+#else
+                ArsLexis::String errorMsg = TEXT("Can't establish connection.");
+#endif
+                MessageBox(
+                    hwnd,
+                    errorMsg.c_str(),
+                    TEXT("Error"),
+                    MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND
+                    );
+            }
             // create the menu bar
             SHMENUBARINFO mbi;
             ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
@@ -230,6 +251,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             lookupManager->setProgressReporter(new SmartPhoneProgressReported());
             rep = new RenderingProgressReporter(hwnd);
             definition_->setRenderingProgressReporter(rep);
+
             setMenu(hwnd);
             SetFocus(hwndEdit);
             break;
@@ -256,6 +278,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     SendMessage(hwnd,WM_CLOSE,0,0);
                     break;
                 }
+                case IDM_MENU_HOME:
+                    // Try to open hyperlink
+                    GotoURL(_T("http://arslexis.com/pda/sm.html"));
+                    break;
+                case IDM_MENU_UPDATES:
+                    GotoURL(_T("http://arslexis.com/updates/sm-ipedia-1-0.html"));
+                    break;
+                case IDM_MENU_ABOUT:
+                    isAboutVisible = true;
+                    setMenu(hwnd);
+                    InvalidateRect(hwnd,NULL,TRUE);
+                    break;
                 case IDM_EXT_SEARCH:
                 case ID_SEARCH:
                 {
@@ -315,6 +349,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 case IDM_MENU_PREV:
                 case IDM_MENU_NEXT:
                 {
+                    if (isAboutVisible) 
+                    {
+                        isAboutVisible = false;
+                        if(!definition_->empty())
+                        {
+                            SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)lookupManager->lastInputTerm().c_str());
+                            int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
+                            SendMessage(hwndEdit, EM_SETSEL, 0,len);
+                        }
+                        InvalidateRect(hwnd, NULL, false);
+                        break;
+                    }
                     if (lookupManager && !lookupManager->lookupInProgress())
                         lookupManager->moveHistory(!(wp-IDM_MENU_NEXT));
                     break;
@@ -361,8 +407,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             switch(HIWORD(lp))
             {
                 case VK_TBACK:
+                    #ifndef PPC
                     if ( 0 != (MOD_KEYUP & LOWORD(lp)))
                         SHSendBackToFocusWindow( msg, wp, lp );
+                    #endif
                     break;
                 case VK_TDOWN:
                     if(definition_)
@@ -430,6 +478,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
                         SendMessage(hwndEdit, EM_SETSEL, 0,len);
                     }
+                    isAboutVisible=false;
                     InvalidateRect(hwndMain, NULL, TRUE);
                     break;
                 }
@@ -449,7 +498,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     {
                         assert(newRegCode_.length()<=prefs.regCodeLength);
                         prefs.regCode=newRegCode_;
-                        //app.savePreferences();
+                        app.savePreferences();
                     }   
                     MessageBox(hwnd, 
                         _T("Thank you for registering iPedia."), 
@@ -472,8 +521,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     {
                         // this is "Ok" button. Clear-out registration code (since it was invalid)
                         prefs.regCode = _T("");
-                        //app.savePreferences();
-                        //closePopup();
+                        app.savePreferences();
                         newRegCode_ = _T("");
                     }
                     else
@@ -495,41 +543,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
             }   
             
-            if(app.preferences().articleCount!=-1)
-            {
-                articleCountText.erase();
-                databaseDateText.erase();
-                dateText.erase();
-                int articleCount = app.preferences().articleCount;
-                String &dbTime = app.preferences().databaseTime;
-                char_t buffer[32];
-                int len = ArsLexis::formatNumber(articleCount, buffer, sizeof(buffer));
-                assert(len != -1 );
-                articleCountText.append(buffer, len);
-                articleCountText.append(_T(" articles"));
-                databaseDateText.append(_T("database updated on "));
-                dateText.append(dbTime, 0, 4);
-                dateText.append(1, _T('-'));
-                dateText.append(dbTime, 4, 2);
-                dateText.append(1, _T('-'));
-                dateText.append(dbTime, 6, 2);
-                /*
-                articleCountText.assign(_T("Number of articles: "));
-                char_t buffer[16];
-                int len= tprintf(buffer, _T("%ld"), app.preferences().articleCount);
-                articleCountText.append(buffer, len);*/
-            }
-
+            setupAboutWindow();
             lookupManager->handleLookupFinishedInForm(data);
             setMenu(hwnd);
-
             InvalidateRect(hwnd,NULL,TRUE);
         }
         break;
         case WM_CLOSE:
+            if(hConnection)
+                ConnMgrReleaseConnection(hConnection,1);
+            
             DestroyWindow(hwnd);
-        break;
-
+            break;
+            
         case WM_DESTROY:
             PostQuitMessage(0);
         break;
@@ -678,7 +704,7 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
 
     if(!onlyProgress)
     {
-        if (definition_->empty())
+        if (definition_->empty()||isAboutVisible)
         {
             LOGFONT logfnt;
             HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
@@ -762,6 +788,14 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
                 definition_->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
             if(g_forceLayoutRecalculation) 
                 setScrollBar(definition_);
+/*            if(g_forceLayoutRecalculation)
+            {
+                MSG msg;
+                while(PeekMessage(&msg, hwndMain,0 ,0, PM_REMOVE)
+                    &&(msg.message!=WM_PAINT))
+                    ;
+            }
+            */
             g_forceLayoutRecalculation=false;
         }
     }
@@ -987,7 +1021,8 @@ void setMenu(HWND hwnd)
         EnableMenuItem(hMenu, IDM_MENU_NEXT, 
             lookupManager->hasNextHistoryTerm()?MF_ENABLED:MF_GRAYED);
         EnableMenuItem(hMenu, IDM_MENU_PREV, 
-            lookupManager->hasPreviousHistoryTerm()?MF_ENABLED:MF_GRAYED);
+            lookupManager->hasPreviousHistoryTerm()||
+            (isAboutVisible&&!definition_->empty())?MF_ENABLED:MF_GRAYED);
         EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_GRAYED);
         Definition::ElementPosition_t pos;
         for(pos=definition_->firstElementPosition();
@@ -1007,4 +1042,67 @@ void setMenu(HWND hwnd)
         }
     }
 }
+
+bool initConnection()
+{
+    DWORD dwStatus  = 0;
+    DWORD dwTimeout = 5000;     // connection timeout: 5 seconds
+
+    CONNMGR_CONNECTIONINFO ccInfo;
+    
+    memset(&ccInfo, 0, sizeof(CONNMGR_CONNECTIONINFO));
+    ccInfo.cbSize = sizeof(CONNMGR_CONNECTIONINFO);
+    ccInfo.dwParams = CONNMGR_PARAM_GUIDDESTNET;
+    ccInfo.dwFlags = CONNMGR_FLAG_PROXY_HTTP;
+    ccInfo.dwPriority = CONNMGR_PRIORITY_USERINTERACTIVE;
+    ccInfo.guidDestNet = IID_DestNetInternet;
+    
+    HRESULT res = ConnMgrEstablishConnectionSync(&ccInfo, &hConnection, dwTimeout, &dwStatus);
+    
+    if (FAILED(res))
+        return false;
+    return true;
+}
+
+void setupAboutWindow()
+{
+    iPediaApplication &app=iPediaApplication::instance();
+    if(app.preferences().articleCount!=-1)
+    {
+        articleCountText.erase();
+        databaseDateText.erase();
+        dateText.erase();
+        int articleCount = app.preferences().articleCount;
+        String &dbTime = app.preferences().databaseTime;
+        char_t buffer[32];
+        int len = ArsLexis::formatNumber(articleCount, buffer, sizeof(buffer));
+        assert(len != -1 );
+        articleCountText.append(buffer, len);
+        articleCountText.append(_T(" articles"));
+        databaseDateText.append(_T("database updated on "));
+        dateText.append(dbTime, 0, 4);
+        dateText.append(1, _T('-'));
+        dateText.append(dbTime, 4, 2);
+        dateText.append(1, _T('-'));
+        dateText.append(dbTime, 6, 2);
+    }
+}
+
+BOOL GotoURL(LPCTSTR lpszUrl)
+{
+    // Try to open hyperlink
+
+    SHELLEXECUTEINFO sei;
+
+    memset(&sei, 0, sizeof(SHELLEXECUTEINFO));
+
+    sei.cbSize = sizeof(SHELLEXECUTEINFO);
+    sei.fMask = SEE_MASK_FLAG_NO_UI;
+    sei.lpVerb = _T("open");
+    sei.lpFile = lpszUrl;
+    sei.nShow = SW_SHOWMAXIMIZED;
+
+    return ShellExecuteEx(&sei);
+}
+
 // end sm_ipedia.cpp

@@ -5,8 +5,7 @@
 #include <BaseTypes.hpp>
 #include <Utility.hpp>
 #include <map>
-
-//#include <PalmOS.h>
+#include <list>
 
 namespace ArsLexis 
 {
@@ -24,7 +23,7 @@ namespace ArsLexis
 #define psErrDatabaseCorrupted  psErrorClass+5
     
     enum PrefItemType {
-        pitBool = 1,
+            pitBool = 1,
             pitInt,
             pitLong,
             pitUInt16,
@@ -50,6 +49,13 @@ namespace ArsLexis
     {
     private:
         std::map< int, PrefItem> items_;
+        std::list<char_t*> strPointers_;
+        status_t ErrGetPrefItemWithId(int uniqueId, PrefItem *prefItem);
+        HANDLE _fHandle;
+        const char_t * _dbName;
+        ulong_t _dbCreator;
+        ulong_t _dbType;
+        status_t ErrLoadPreferences();
     public:
         PrefsStoreReader(const char_t *dbName, ulong_t dbCreator, ulong_t dbType);
         status_t ErrGetBool(int uniqueId, bool *value);
@@ -68,6 +74,11 @@ namespace ArsLexis
     private:
         std::map< int, PrefItem> items_;
         status_t ErrSetItem(PrefItem *item);
+        const char_t * _dbName;
+        ulong_t _dbCreator;
+        ulong_t _dbType;
+        int _itemsCount;
+        HANDLE _fHandle;
     public:
         PrefsStoreWriter(const char_t *dbName, ulong_t dbCreator, ulong_t dbType);
         status_t ErrSetBool(int uniqueId, bool value);

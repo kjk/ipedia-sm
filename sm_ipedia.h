@@ -21,6 +21,10 @@ extern ArsLexis::String recentWord;
 extern ArsLexis::String searchWord;
 extern Definition *definition_;
 
+BOOL GotoURL(LPCTSTR lpszUrl);
+void setupAboutWindow();
+void setMenu(HWND hwnd);
+
 class RenderingProgressReporter: public Definition::RenderingProgressReporter
 {
     HWND hwndMain_;

@@ -54,7 +54,7 @@ void RenderingPreferences::calculateIndentation()
 
 status_t RenderingPreferences::serializeOut(ArsLexis::PrefsStoreWriter& writer, int uniqueId) const
 {
-    status_t error;
+    /*status_t error;
     if (errNone!=(error=writer.ErrSetUInt32(uniqueId++, backgroundColor_)))
         goto OnError;
     if (errNone!=(error=writer.ErrSetUInt16(uniqueId++, bulletIndentation_)))
@@ -74,12 +74,13 @@ status_t RenderingPreferences::serializeOut(ArsLexis::PrefsStoreWriter& writer, 
     }
 OnError:
     assert(errNone==error);
-    return error;    
+    return error;    */
+    return errNone;
 }
 
 status_t RenderingPreferences::serializeIn(ArsLexis::PrefsStoreReader& reader, int uniqueId)
 {
-    status_t                  error;
+/*    status_t                  error;
     RenderingPreferences tmp;
     ushort_t               val;
 
@@ -104,7 +105,8 @@ status_t RenderingPreferences::serializeIn(ArsLexis::PrefsStoreReader& reader, i
     }
     (*this)=tmp;
 OnError:
-    return error;    
+    return error;    */
+    return errNone;
 }
 
 status_t RenderingPreferences::StyleFormatting::serializeOut(ArsLexis::PrefsStoreWriter& writer, int uniqueId) const
