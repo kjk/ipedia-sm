@@ -1,21 +1,21 @@
 /*
-Copyright (C) Krzysztof Kowalczyk
-Owner: Krzysztof Kowalczyk (krzysztofk@pobox.com)
+  Copyright (C) Krzysztof Kowalczyk
+  Owner: Krzysztof Kowalczyk (krzysztofk@pobox.com)
 */
 
-
-#include "PrefsStore.hpp"
+#include <windows.h>
+#include <aygshell.h>
+#include <shellapi.h>
+#ifdef WIN32_PLATFORM_WFSP
+#include <tpcshell.h>
+#include <winuserm.h>
+#include <sms.h>
+#endif
 
 #include <Debug.hpp>
 #include <iPediaApplication.hpp>
-#include <aygshell.h>
-#ifndef WIN32_PLATFORM_PSPC
-#include <tpcshell.h>
-#include <winuserm.h>
-#endif
-#include <shellapi.h>
-#include <winbase.h>
-#include <sms.h>
+
+#include "PrefsStore.hpp"
 
 #define Assert assert
 
