@@ -1,135 +1,168 @@
-#include "LastResults.h"
-#include "sm_ipedia.h"
+#include <windows.h>
 #include <iPediaApplication.hpp>
 #include <LookupManager.hpp>
-#include <list>
-#include <windows.h>
+#include "LastResults.h"
+#include "sm_ipedia.h"
 
 using namespace ArsLexis;
 
 static WNDPROC oldResultsListWndProc = NULL;
 static WNDPROC oldResultsEditWndProc = NULL;
 static HWND    g_hLastResultsDlg  = NULL;
-static bool    g_fRefine = true;
 
-std::list<char_t*> g_listPositions;
-ArsLexis::String   g_listPositionsString;
+static StrList_t g_strList;
 
-const int hotKeyCode=0x32;
+#define HOT_KEY_ACTION 0x32
+#define HOT_KEY_UP     0x33
+
+// switching menus using SHCreateMenuBar() doesn't seem to correctly
+// change the IDs that are sent by menu presses so we can't tell
+// from messages if ID_REFINE or ID_SELECT really means those were pressed.
+// So we have to track which menu is active and make a decision based on that
+static bool g_fRefineMenu;
+
+static bool SetRefineMenu(HWND hDlg)
+{
+    SHMENUBARINFO shmbi = {0};
+    shmbi.cbSize     = sizeof(shmbi);
+    shmbi.hwndParent = hDlg;
+    shmbi.nToolBarId = IDR_LAST_RESULTS_REFINE_MENUBAR;
+    shmbi.hInstRes   = GetModuleHandle(NULL);
+
+    if (!SHCreateMenuBar(&shmbi))
+        return false;
+
+    (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
+        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
+        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
+
+    g_fRefineMenu = true;
+    return true;
+}
+
+static bool SetSearchMenu(HWND hDlg)
+{
+    SHMENUBARINFO shmbi = {0};
+    shmbi.cbSize = sizeof(shmbi);
+    shmbi.hwndParent = hDlg;
+    shmbi.nToolBarId = IDR_LAST_RESULTS_SEARCH_MENUBAR ;
+    shmbi.hInstRes   = GetModuleHandle(NULL);
+
+    if (!SHCreateMenuBar(&shmbi))
+        return FALSE;
+
+    if (!SHCreateMenuBar(&shmbi))
+        return false;
+
+    (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
+        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
+        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
+
+    g_fRefineMenu = false;
+    return true;
+}
 
 LRESULT CALLBACK ResultsEditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    switch(msg)
-    {
-        case WM_SETFOCUS:
-        {               
-                SHMENUBARINFO shmbi;
-                ZeroMemory(&shmbi, sizeof(shmbi));
-                shmbi.cbSize = sizeof(shmbi);
-                shmbi.hwndParent = g_hLastResultsDlg;
-                shmbi.nToolBarId = IDR_LAST_RESULTS_REFINE_MENUBAR;
-                shmbi.hInstRes = iPediaApplication::instance().getApplicationHandle();
-                
-                if (!SHCreateMenuBar(&shmbi))
-                    return FALSE;
-                
-                (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
-                    MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
-                    SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-                g_fRefine = true;
-                break;
-        }
+    if (WM_SETFOCUS==msg)
+    {               
+        if (!SetRefineMenu(g_hLastResultsDlg))
+            return FALSE;
+        // return TRUE;
     }
+
     return CallWindowProc(oldResultsEditWndProc, hwnd, msg, wp, lp);
 }
 
 LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    switch(msg)
+    int currSelection;
+
+    if (WM_SETFOCUS==msg)
     {
-        //What the hell is constatnt - any idea VK_F24 ??
-        case WM_SETFOCUS:
-        {               
-            SHMENUBARINFO shmbi;
-            ZeroMemory(&shmbi, sizeof(shmbi));
-            shmbi.cbSize = sizeof(shmbi);
-            shmbi.hwndParent = g_hLastResultsDlg;
-            shmbi.nToolBarId = IDR_LAST_RESULTS_SEARCH_MENUBAR ;
-            shmbi.hInstRes = iPediaApplication::instance().getApplicationHandle();
-            
-            if (!SHCreateMenuBar(&shmbi))
-                return FALSE;
-            
-            (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
-                MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
-                SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-            g_fRefine = false;
-            break;
-        }
-        
-        case 0x87: 
+        if (!SetSearchMenu(g_hLastResultsDlg))
+            return FALSE;
+        SendMessage (hwnd, LB_SETCURSEL, 0, 0);
+        return TRUE;
+    }
+
+    //What the hell is constatnt - any idea VK_F24 ??
+    if (0x87==msg)
+    {
+        switch (wp)
         {
-            switch (wp)
-            {
-                case hotKeyCode:
-                    SendMessage(g_hLastResultsDlg, WM_COMMAND, ID_REFINE, 0);
-                    break;
-                case hotKeyCode+1:
-                    int pos = SendMessage (hwnd, LB_GETCURSEL, 0, 0);
-                    if (0==pos)
-                    {
-                        HWND ctrl=GetDlgItem(g_hLastResultsDlg, IDC_REFINE_EDIT);
-                        SetFocus(ctrl);
-
-                        /*SHMENUBARINFO shmbi;
-                        ZeroMemory(&shmbi, sizeof(shmbi));
-                        shmbi.cbSize = sizeof(shmbi);
-                        shmbi.hwndParent = g_hLastResultsDlg;
-                        shmbi.nToolBarId = IDR_LAST_RESULTS_REFINE_MENUBAR;
-                        shmbi.hInstRes = g_hInst;
-        
-                        if (!SHCreateMenuBar(&shmbi))
-                            return FALSE;
-    
-                        (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
-                            MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
-                            SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-                        g_fRefine = true;*/
-                    }
-                    else
-                        SendMessage (hwnd, LB_SETCURSEL, pos-1, 0);
-
-                    UpdateWindow(hwnd);
-                    break;
-            }
+            case HOT_KEY_ACTION:
+                currSelection = SendMessage (hwnd, LB_GETCURSEL, 0, 0);
+                SendMessage(g_hLastResultsDlg, WM_COMMAND, ID_REFINE, 0);
+                break;
+            case HOT_KEY_UP:
+                currSelection = SendMessage (hwnd, LB_GETCURSEL, 0, 0);
+                if (0==currSelection)
+                {
+                    HWND ctrl=GetDlgItem(g_hLastResultsDlg, IDC_REFINE_EDIT);                    
+                    SetFocus(ctrl);
+                    SendMessage (hwnd, LB_SETCURSEL, -1, 0);
+                }
+                else
+                {
+                    SendMessage (hwnd, LB_SETCURSEL, currSelection-1, 0);
+                }
         }
     }
     return CallWindowProc(oldResultsListWndProc, hwnd, msg, wp, lp);
 }
 
+static void OnSize(HWND hDlg, WPARAM wp, LPARAM lp)
+{
+    int width = LOWORD(lp);
+    int height = HIWORD(lp);
+    HWND ctrlRefineEdit = GetDlgItem(hDlg, IDC_REFINE_EDIT);
+    HWND ctrlResultsList = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
+    int fntHeight = GetSystemMetrics(SM_CYCAPTION);
+    MoveWindow(ctrlRefineEdit, 2, 1, width-4, fntHeight, TRUE);
+    MoveWindow(ctrlResultsList,0, fntHeight + 2, width, height - fntHeight, TRUE);
+}
+
+static void DoRefine(HWND hDlg)
+{
+    HWND hwndEdit = GetDlgItem(hDlg, IDC_REFINE_EDIT);
+    String txt;
+    GetEditWinText(hwndEdit, txt);
+    if (txt.empty())
+        return;
+
+    g_recentWord += _T(" ");
+    g_recentWord += txt;
+    g_searchWord.assign(g_recentWord);
+    EndDialog(hDlg, LR_DO_REFINE);
+}
+    
+static void DoSelect(HWND hDlg)
+{
+    HWND ctrl = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
+    bool fSelected = FGetListSelectedItemText(ctrl, g_searchWord);
+    if (fSelected)
+        EndDialog(hDlg, LR_DO_LOOKUP_IF_DIFFERENT);
+}
+
+static void DoSelectOrRefine(HWND hDlg)
+{
+    if (g_fRefineMenu)
+        DoRefine(hDlg);
+    else
+        DoSelect(hDlg);
+}
+
 BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
-    switch(msg)
+    switch (msg)
     {
         case WM_INITDIALOG:
-            if (FInitLastResults(hDlg))
-                return TRUE;
-            else
-                return FALSE;
-            assert(0);
-            break;
+            return FInitLastResults(hDlg) ? TRUE : FALSE;
 
         case WM_SIZE:
-        {
-            int width = LOWORD(lp);
-            int height = HIWORD(lp);
-            HWND ctrlRefineEdit = GetDlgItem(hDlg, IDC_REFINE_EDIT);
-            HWND ctrlResultsList = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
-            int fntHeight = GetSystemMetrics(SM_CYCAPTION);
-            MoveWindow(ctrlRefineEdit, 2, 1, width-4, fntHeight, TRUE);
-            MoveWindow(ctrlResultsList,0, fntHeight + 2, width, height - fntHeight, TRUE);
+            OnSize(hDlg,wp,lp);
             break;
-        }
 
         case WM_COMMAND:
         {
@@ -139,48 +172,20 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                     EndDialog(hDlg, LR_CANCEL_PRESSED);
                     break;
 
-                case ID_REFINE:
+                case ID_REFINE:  // no break is intentional
                 case ID_SELECT:
-                {
-                    if (!g_fRefine)
+                    DoSelectOrRefine(hDlg);
+                    break;
+
+                case IDC_LAST_RESULTS_LIST:
+                    int code = HIWORD(lp);
+                    if (LBN_DBLCLK==code)
                     {
-                        HWND ctrl = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
-                        int idx = SendMessage(ctrl, LB_GETCURSEL, 0, 0);
-                        int len = SendMessage(ctrl, LB_GETTEXTLEN, idx, 0);
-                        TCHAR *buf = new TCHAR[len+1];
-                        SendMessage(ctrl, LB_GETTEXT, idx, (LPARAM) buf);
-                        g_searchWord.assign(buf);
-                        delete buf;
-                        EndDialog(hDlg, LR_DO_LOOKUP_IF_DIFFERENT);
-                        break;
+                        DoSelect(hDlg);
                     }
-                    else                
-                    {
-                        HWND ctrl = GetDlgItem(hDlg, IDC_REFINE_EDIT);
-                        int len = SendMessage(ctrl, EM_LINELENGTH, 0,0);
-                        if (len>0)
-                        {
-                            TCHAR *buf=new TCHAR[len+1];
-                            len = SendMessage(ctrl, WM_GETTEXT, len+1, (LPARAM)buf);
-                            SendMessage(ctrl, EM_SETSEL, 0,len);
-                            g_recentWord += _T(" ");
-                            g_recentWord += buf;
-                            g_searchWord.assign(g_recentWord);
-                            delete buf;
-                            EndDialog(hDlg, LR_DO_SEARCH);
-                            break;
-                        }
-                    }
-                }
+                    break;
             }
         }
-        HWND ctrlList = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
-        int senderID = LOWORD(wp);
-        int code = HIWORD(wp);
-        HWND senderHWND = (HWND)lp;
-        if((IDC_LAST_RESULTS_LIST == senderID) && (senderHWND == ctrlList))
-            if (LBN_DBLCLK == code)
-                SendMessage(g_hLastResultsDlg , WM_COMMAND, ID_SELECT, 0); 
     }
     return FALSE;
 }
@@ -188,53 +193,38 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 bool FInitLastResults(HWND hDlg)
 {
     // Specify that the dialog box should stretch full screen
-    SHINITDLGINFO shidi;
-    ZeroMemory(&shidi, sizeof(shidi));
+    SHINITDLGINFO shidi = {0};
     shidi.dwMask  = SHIDIM_FLAGS;
     shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;
     shidi.hDlg    = hDlg;
-
-    // Set up the menu bar
-    SHMENUBARINFO shmbi;
-    ZeroMemory(&shmbi, sizeof(shmbi));
-    shmbi.cbSize     = sizeof(shmbi);
-    shmbi.hwndParent = hDlg;
-    shmbi.nToolBarId = IDR_LAST_RESULTS_REFINE_MENUBAR;
-    shmbi.hInstRes   = iPediaApplication::instance().getApplicationHandle();
 
     // If we could not initialize the dialog box, return an error
     if (!SHInitDialog(&shidi))
         return false;
 
-    if (!SHCreateMenuBar(&shmbi))
+    if (!SetRefineMenu(hDlg))
         return false;
 
-    (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
-        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
-        SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-
     g_hLastResultsDlg = hDlg;
-    g_fRefine = true;
 
-    HWND ctrl=GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
-    oldResultsListWndProc = (WNDPROC)SetWindowLong(ctrl, GWL_WNDPROC, (LONG)ResultsListWndProc);
-    RegisterHotKey( ctrl, hotKeyCode,   0, VK_TACTION);
-    RegisterHotKey( ctrl, hotKeyCode+1, 0, VK_TUP);
+    HWND ctrlList = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
+    oldResultsListWndProc = (WNDPROC)SetWindowLong(ctrlList, GWL_WNDPROC, (LONG)ResultsListWndProc);
+    RegisterHotKey(ctrlList, HOT_KEY_ACTION, 0, VK_TACTION);
+    RegisterHotKey(ctrlList, HOT_KEY_UP,     0, VK_TUP);
 
-    HWND EditCrl=GetDlgItem(hDlg, IDC_REFINE_EDIT);
+    HWND EditCrl = GetDlgItem(hDlg, IDC_REFINE_EDIT);
     oldResultsEditWndProc = (WNDPROC)SetWindowLong(EditCrl, GWL_WNDPROC, (LONG)ResultsEditWndProc);
 
-    g_listPositions.clear();
-    
-    iPediaApplication& app=iPediaApplication::instance();
+    iPediaApplication& app = GetApp();
     LookupManager* lookupManager=app.getLookupManager();
+    
+    ArsLexis::String   listPositionsString;
     if (lookupManager)
     {
-        g_listPositionsString=lookupManager->lastSearchResults();
-        g_listPositions.clear();
-        String::iterator end(g_listPositionsString.end());
-        String::iterator lastStart=g_listPositionsString.begin();
-        for (String::iterator it=g_listPositionsString.begin(); it!=end; ++it)
+        listPositionsString=lookupManager->lastSearchResults();
+        String::iterator end(listPositionsString.end());
+        String::iterator lastStart=listPositionsString.begin();
+        for (String::iterator it=listPositionsString.begin(); it!=end; ++it)
         {
             if ('\n'==*it)
             {
@@ -242,14 +232,39 @@ bool FInitLastResults(HWND hDlg)
                 lastStart = it;
                 ++lastStart;
                 *it = chrNull;
-                g_listPositions.push_back(start);
-                SendMessage(ctrl, LB_ADDSTRING, 0, (LPARAM)start);
+                SendMessage(ctrlList, LB_ADDSTRING, 0, (LPARAM)start);
             }
         }
-        //if (!lookupManager->lastSearchExpression().empty())
-        //    setTitle(lookupManager->lastSearchExpression());
     }
-    SendMessage (ctrl, LB_SETCURSEL, 0, 0);
-    UpdateWindow(ctrl);
+    SendMessage (ctrlList, LB_SETCURSEL, -1, 0);
+    UpdateWindow(ctrlList);
     return true;
 }
+
+enum RefineDlgResult {
+    REFINE_DLG_REFINE,
+    REFINE_DLG_SEARCH,
+    REFINE_DLG_CANCEL
+};
+
+RefineDlgResult DoRefineDlg(HWND hwnd, StrList_t strList, String& strOut)
+{
+    g_strList = strList;
+
+    int res = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc);
+
+    if (LR_DO_LOOKUP_IF_DIFFERENT==res)
+    {
+        // TODO: put string
+        return REFINE_DLG_SEARCH;
+    }
+
+    if (LR_DO_REFINE==res)
+    {
+        // TODO: put string
+        return REFINE_DLG_REFINE;
+    }
+
+    return REFINE_DLG_CANCEL;
+}
+

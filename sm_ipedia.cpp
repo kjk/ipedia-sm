@@ -761,7 +761,7 @@ static void DoLastResults(HWND hwnd)
         lookupManager->lookupIfDifferent(g_searchWord);
         SetUIState(false);
         InvalidateRect(hwnd,NULL,FALSE);
-    } else if (LR_DO_SEARCH==res)
+    } else if (LR_DO_REFINE==res)
     {
         lookupManager->lookupIfDifferent(g_searchWord);
         SetUIState(false);
