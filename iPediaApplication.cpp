@@ -23,8 +23,8 @@ using namespace ArsLexis;
 
 #define serverIpediaArslexis _T("ipedia.arslexis.com:9000")
 
-//#define serverToUse serverIpediaArslexis
-#define serverToUse serverKjkLaptop3
+#define serverToUse serverIpediaArslexis
+//#define serverToUse serverKjkLaptop3
 
 const ErrorInfo ErrorsTable[] =
 {

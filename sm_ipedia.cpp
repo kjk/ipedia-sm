@@ -606,13 +606,13 @@ static void MoveHistoryForwardOrBack(bool forward)
     }
 
     LookupManager* lookupManager=app.getLookupManager(true);
-    if (!app.fLookupInProgress())
-    {
-        if (!fInitConnection())
-            return;
-        lookupManager->moveHistory(forward);
-        SetUIState(false);
-    }
+    if (app.fLookupInProgress())
+        return;
+
+    if (!fInitConnection())
+        return;
+    lookupManager->moveHistory(forward);
+    SetUIState(false);
 }
 
 void MoveHistoryForward()
@@ -630,34 +630,35 @@ static void SimpleOrExtendedSearch(HWND hwnd, String& term, bool simple)
     if (term.empty())
         return;
 
-    if (!fInitConnection())
+    iPediaApplication& app = GetApp();
+    if (app.fLookupInProgress())
         return;
 
-    iPediaApplication& app = GetApp();
     LookupManager* lookupManager = app.getLookupManager(true);
     if (NULL==lookupManager)
         return;
 
-    if (app.fLookupInProgress())
+    if (simple && !lookupManager->lastSearchTermDifferent(term))
+    {
+        if (displayMode()!=showArticle)
+        {
+            SetDisplayMode(showArticle);
+            SetScrollBar(g_definition);
+            SetUIState(true);
+            InvalidateRect(hwnd,NULL,FALSE);                            
+        }
+        return;
+    }
+
+    if (!fInitConnection())
         return;
 
     if (simple)
     {
-        if (lookupManager->lookupIfDifferent(term))
-        {
-            SetUIState(false);
-            InvalidateRect(hwnd,NULL,FALSE);
-        }
-        else
-        {
-            if (displayMode()!=showArticle)
-            {
-                SetDisplayMode(showArticle);
-                SetScrollBar(g_definition);
-                SetUIState(true);
-                InvalidateRect(hwnd,NULL,FALSE);                            
-            }
-        }
+        bool fDifferent = lookupManager->lookupIfDifferent(term);
+        assert(fDifferent); // we checked for that above so it must be true
+        SetUIState(false);
+        InvalidateRect(hwnd,NULL,FALSE);
     }
     else
     {
@@ -756,10 +757,10 @@ static void OnReverseLinks(HWND hwnd)
 
 static void DoRandom()
 {
-    if (!fInitConnection())
-        return;
     iPediaApplication& app=GetApp();
     if (app.fLookupInProgress())
+        return;
+    if (!fInitConnection())
         return;
     LookupManager* lookupManager=app.getLookupManager(true);
     lookupManager->lookupRandomTerm();
@@ -783,11 +784,11 @@ static void DoRegister(HWND hwnd, const String& oldRegCode)
 
     assert(!g_newRegCode.empty());
 
-    if (!fInitConnection())
-        return;
-
     iPediaApplication& app = GetApp();
     if (app.fLookupInProgress())
+        return;
+
+    if (!fInitConnection())
         return;
 
     g_newRegCode = newRegCode;

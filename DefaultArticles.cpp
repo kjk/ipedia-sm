@@ -92,7 +92,7 @@ void prepareAbout(Definition *def)
 
     elems.push_back(new LineBreakElement(1,3*divider*divider));
 
-    const char_t* version=_T("Ver ") appVersion
+    const char_t* version=_T("Ver 1.01")
 #ifdef DEBUG
         _T(" (debug)")
 #endif
