@@ -36,39 +36,41 @@ BOOL CALLBACK RegistrationDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
     return FALSE;
 }
 
-BOOL InitRegistrationDlg(HWND hDlg)
+bool InitRegistrationDlg(HWND hDlg)
 {
     SHINITDLGINFO shidi;
     ZeroMemory(&shidi, sizeof(shidi));
-    shidi.dwMask = SHIDIM_FLAGS;
-    shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;
-    shidi.hDlg = hDlg;
+    shidi.dwMask   = SHIDIM_FLAGS;
+    shidi.dwFlags  = SHIDIF_SIZEDLGFULLSCREEN;
+    shidi.hDlg     = hDlg;
 
     // Set up the menu bar
     SHMENUBARINFO shmbi;
     ZeroMemory(&shmbi, sizeof(shmbi));
-    shmbi.cbSize = sizeof(shmbi);
-    shmbi.hwndParent = hDlg;
-    shmbi.nToolBarId = IDR_REGISTER_MENUBAR;
-    shmbi.hInstRes = g_hInst;
+    shmbi.cbSize      = sizeof(shmbi);
+    shmbi.hwndParent  = hDlg;
+    shmbi.nToolBarId  = IDR_REGISTER_MENUBAR;
+    shmbi.hInstRes    = g_hInst;
 
     if (!SHInitDialog(&shidi))
-        return FALSE;
+        return false;
     
     if (!SHCreateMenuBar(&shmbi))
-        return FALSE;
+        return false;
 
     (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
         MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
         SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
 
-    iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
     HWND hwndEdit = GetDlgItem(hDlg,IDC_EDIT_REGCODE);
-    SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)newRegCode_.c_str());
     SendMessage(hwndEdit, EM_SETINPUTMODE, 0, EIM_NUMBERS);
+
+    iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
+    SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)newRegCode_.c_str());
     //if(!prefs.regCode.empty())
         //SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)prefs.regCode.c_str());
     //else
-    SetFocus(GetDlgItem(hDlg,IDC_EDIT_REGCODE));
-    return TRUE;
+    SetFocus(hwndEdit);
+
+    return true;
 }

@@ -321,8 +321,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         stressModeCnt=100;
                         SendMessage(hwnd, WM_COMMAND, IDM_MENU_RANDOM, 0);
                     break;
+
                     case IDM_ENABLE_UI:
-                    {
                         setUI(true);
                         if(stressModeCnt>0)
                         {
@@ -330,24 +330,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                             SendMessage(hwnd, WM_COMMAND, IDM_MENU_RANDOM, 0);
                         }
                         break;
-                    }
+
                     case IDOK:
-                    {
                         SendMessage(hwnd,WM_CLOSE,0,0);
                         break;
-                    }
+
                     case IDM_MENU_HOME:
                         // Try to open hyperlink
                         GotoURL(_T("http://arslexis.com/pda/sm.html"));
                         break;
+
                     case IDM_MENU_UPDATES:
                         GotoURL(_T("http://arslexis.com/updates/sm-ipedia-1-0.html"));
                         break;
+
                     case IDM_MENU_ABOUT:
                         isAboutVisible = true;
                         setMenu(hwnd);
                         InvalidateRect(hwnd,NULL,TRUE);
                         break;
+
                     case IDM_EXT_SEARCH:
                     case ID_SEARCH:
                     {
@@ -822,7 +824,7 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
             
             SelectObject(hdc, fnt2);
             tmpRect.top += 18;
-            String regstr;
+
             if(app.preferences().regCode.empty())
                 DrawText(hdc, _T("Unregistred"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
             else
@@ -1148,19 +1150,16 @@ void setupAboutWindow()
     }
 }
 
-BOOL GotoURL(LPCTSTR lpszUrl)
+// Try to launch IE with a given url
+bool GotoURL(LPCTSTR lpszUrl)
 {
-    // Try to open hyperlink
-
     SHELLEXECUTEINFO sei;
-
     memset(&sei, 0, sizeof(SHELLEXECUTEINFO));
-
-    sei.cbSize = sizeof(SHELLEXECUTEINFO);
-    sei.fMask = SEE_MASK_FLAG_NO_UI;
-    sei.lpVerb = _T("open");
-    sei.lpFile = lpszUrl;
-    sei.nShow = SW_SHOWMAXIMIZED;
+    sei.cbSize  = sizeof(SHELLEXECUTEINFO);
+    sei.fMask   = SEE_MASK_FLAG_NO_UI;
+    sei.lpVerb  = _T("open");
+    sei.lpFile  = lpszUrl;
+    sei.nShow   = SW_SHOWMAXIMIZED;
 
     return ShellExecuteEx(&sei);
 }
