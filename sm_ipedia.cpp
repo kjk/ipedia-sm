@@ -858,11 +858,19 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         
         case IDM_MENU_HOME:
+#ifdef WIN32_PLATFORM_PSPC
+            GotoURL(_T("http://arslexis.com/pda/ppc.html"));
+#else
             GotoURL(_T("http://arslexis.com/pda/sm.html"));
+#endif
             break;
         
         case IDM_MENU_UPDATES:
+#ifdef WIN32_PLATFORM_PSPC
+            GotoURL(_T("http://arslexis.com/updates/ppc-ipedia-1-0.html"));
+#else
             GotoURL(_T("http://arslexis.com/updates/sm-ipedia-1-0.html"));
+#endif
             break;
         
         case IDM_MENU_ABOUT:
