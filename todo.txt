@@ -1,4 +1,3 @@
-## 18. figure out the "Data call. invalid skin" problem.
 ## 9. sm, in "Extended search result", don't select any string in a list if we're 
 in the text field.
 ## 13. in PPC, when SIP state is changed in enter reg code dialog and we get back
@@ -24,6 +23,9 @@ in the text field.
 
 
         *  DONE   *
+
+## 18. figure out the "Data call. invalid skin" problem. (2004-08-18 - using
+HWND_BROADCAST in SendEvent() was the problem).
 
 ## 19. parser hangs on "neal ford" both ppc and sm, palm works just fine 
 (2004-08-17)

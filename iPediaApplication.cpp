@@ -8,6 +8,8 @@
 #include <ipedia.h>
 #include <sm_ipedia.h>
 
+HWND g_hwndForEvents = NULL;
+
 using namespace ArsLexis;
 
 const char_t iPediaApplication::szAppName[] = _T("iPedia");
@@ -170,6 +172,8 @@ DWORD iPediaApplication::runEventLoop()
     setMenu(hwndMain_);
     InvalidateRect(hwndMain_,NULL,FALSE);
 
+    g_hwndForEvents = hwndMain_;
+
     MSG msg;
     while (true)
     {
@@ -190,15 +194,14 @@ DWORD iPediaApplication::runEventLoop()
         {
             if (lookupManager_ && 
                 (LookupManager::lookupStartedEvent<=msg.message)
-                && (LookupManager::lookupFinishedEvent>=msg.message)&&
-                this->hwndMain_==msg.hwnd)
+                && (LookupManager::lookupFinishedEvent>=msg.message) &&
+                g_hwndForEvents==msg.hwnd)
             {
                 EventType event;
                 event.eType = msg.message;
                 LookupFinishedEventData data;
                 ArsLexis::EventData i;
                 i.wParam=msg.wParam; i.lParam=msg.lParam;
-                //memcpy(&data, &i, sizeof(data));
                 memcpy(event.data, &i,sizeof(data));
                 lookupManager_->handleLookupEvent(event);
             }
