@@ -3,7 +3,7 @@
 #include "sm_ipedia.h"
 #include <iPediaApplication.hpp>
 
-ArsLexis::String newRegCode_;
+ArsLexis::String g_newRegCode;
 
 BOOL CALLBACK RegistrationDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -37,7 +37,7 @@ BOOL CALLBACK RegistrationDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                     TCHAR *text=new TCHAR[len+1];
                     len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)text);
                     iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
-                    newRegCode_.assign(text);
+                    g_newRegCode.assign(text);
                     delete text;
                     EndDialog(hDlg, 1);                    
                     break;
@@ -78,7 +78,7 @@ bool InitRegistrationDlg(HWND hDlg)
     SendMessage(hwndEdit, EM_SETINPUTMODE, 0, EIM_NUMBERS);
 
     iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
-    SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)newRegCode_.c_str());
+    SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)g_newRegCode.c_str());
     //if(!prefs.regCode.empty())
         //SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)prefs.regCode.c_str());
     //else

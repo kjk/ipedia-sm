@@ -200,7 +200,8 @@ void DrawProgressRect(HDC hdc, const ArsLexis::Rectangle& bounds);
 void handleExtendSelection(HWND hwnd, int x, int y, bool finish);
 void DrawAboutInfo(HDC hdc, RECT rect);
 void repaintDefiniton(HWND hwnd, int scrollDelta = 0);
-void handleMoveHistory(bool forward);
+void moveHistoryForward();
+void moveHistoryBack();
 void setScrollBar(Definition* definition);
 void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar);
 void SimpleOrExtendedSearch(HWND hwnd, bool simple);
@@ -617,12 +618,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     setUI(true);
                     g_fRegistration = false;
                     iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
-                    assert(!newRegCode_.empty());
+                    assert(!g_newRegCode.empty());
                     // TODO: assert that it consists of numbers only
-                    if (newRegCode_!=prefs.regCode)
+                    if (g_newRegCode!=prefs.regCode)
                     {
-                        assert(newRegCode_.length()<=prefs.regCodeLength);
-                        prefs.regCode=newRegCode_;
+                        assert(g_newRegCode.length()<=prefs.regCodeLength);
+                        prefs.regCode=g_newRegCode;
                         app.savePreferences();
                     }   
                     MessageBox(hwnd, 
@@ -645,7 +646,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         // this is "Ok" button. Clear-out registration code (since it was invalid)
                         prefs.regCode = _T("");
                         app.savePreferences();
-                        newRegCode_ = _T("");
+                        g_newRegCode = _T("");
                     }
                     else
                     {
@@ -655,13 +656,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                             LookupManager* lookupManager=app.getLookupManager(true);
                             if (lookupManager && !lookupManager->lookupInProgress())
                             {
-                                lookupManager->verifyRegistrationCode(newRegCode_);
+                                lookupManager->verifyRegistrationCode(g_newRegCode);
                                 setUI(false);
                                 g_fRegistration = true;
                             }
                         }
                         else
-                            newRegCode_ = _T("");
+                            g_newRegCode = _T("");
                         break;
                     }
                 }
@@ -690,155 +691,160 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return lResult;
 }
 
-LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+static void DoRegister()
 {
-    LRESULT lResult = TRUE;
-    
+    CopyToClipboard();
+    if (!fInitConnection())
+        return;
+
     iPediaApplication& app=iPediaApplication::instance();
     LookupManager* lookupManager=app.getLookupManager(true);
-    if (lookupManager && !lookupManager->lookupInProgress())
+
+    g_newRegCode = app.preferences().regCode;
+    if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), g_hwndMain,RegistrationDlgProc))
     {
-        switch (wp)
-        {   
-            case IDM_MENU_CLIPBOARD:
-                CopyToClipboard();
-                break;
-
-            case IDM_MENU_STRESS_MODE:
-                g_stressModeCnt = 100;
-                SendMessage(hwnd, WM_COMMAND, IDM_MENU_RANDOM, 0);
-                break;
-                
-            case IDM_ENABLE_UI:
-                setUI(true);
-                if (g_stressModeCnt>0)
-                {
-                    g_stressModeCnt--;
-                    SendMessage(hwnd, WM_COMMAND, IDM_MENU_RANDOM, 0);
-                }
-                break;
-            
-            case IDOK:
-                SendMessage(hwnd,WM_CLOSE,0,0);
-                break;
-            
-            case IDM_MENU_HOME:
-                // Try to open hyperlink
-                GotoURL(_T("http://arslexis.com/pda/sm.html"));
-                break;
-            
-            case IDM_MENU_UPDATES:
-                GotoURL(_T("http://arslexis.com/updates/sm-ipedia-1-0.html"));
-                break;
-            
-            case IDM_MENU_ABOUT:
-                g_isAboutVisible = true;
-                setMenu(hwnd);
-                setScrollBar(g_definition);
-                InvalidateRect(hwnd,NULL,TRUE);
-                break;
-
-            case IDM_EXT_SEARCH:
-                SimpleOrExtendedSearch(hwnd, false);
-                break;
-                
-            case ID_SEARCH_BTN:
-            case ID_SEARCH_BTN2:
-            case ID_SEARCH:
-            // intentional fall-through
-                SimpleOrExtendedSearch(hwnd, true);
-                break;
-
-            case IDM_MENU_HYPERS:
-            {
-                if (!fInitConnection())
-                    break;
-                if (!g_definition->empty())
-                {
-                    if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_HYPERLINKS), hwnd,HyperlinksDlgProc))
-                    {
-                        if (lookupManager && !lookupManager->lookupInProgress())
-                        {
-                            lookupManager->lookupTerm(searchWord);                            
-                            setUI(false);
-                            InvalidateRect(hwnd,NULL,TRUE);
-                        }
-                    }
-                }
-                break;
-            }
-            case IDM_MENU_RANDOM:
-            {
-                if (!fInitConnection())
-                    break;
-                if (lookupManager && !lookupManager->lookupInProgress())
-                {
-                    setUI(false);
-                    lookupManager->lookupRandomTerm();
-                }
-                break;
-            }
-            case IDM_MENU_REGISTER:
-            {
-                CopyToClipboard();
-                if (!fInitConnection())
-                    break;
-                newRegCode_ = app.preferences().regCode;
-                if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), hwnd,RegistrationDlgProc))
-                {
-                    if (lookupManager && !lookupManager->lookupInProgress())
-                    {
-                        lookupManager->verifyRegistrationCode(newRegCode_);
-                        setUI(false);
-                        g_fRegistration = true;
-                    }
-                }
-                else
-                    newRegCode_ = _T("");
-                break;
-            }
-            case ID_PREV_BTN:
-            case ID_NEXT_BTN:
-            {
-                handleMoveHistory(wp == ID_NEXT_BTN);
-                break;
-            }
-            case IDM_MENU_PREV:
-            case IDM_MENU_NEXT:
-            {
-                handleMoveHistory(wp == IDM_MENU_NEXT);
-                break;
-            }
-            case IDM_MENU_RESULTS:
-            {
-                int res=DialogBox(g_hInst, MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc);
-                if (res)
-                {
-                    iPediaApplication& app=iPediaApplication::instance();
-                    LookupManager* lookupManager=app.getLookupManager(true);
-                    if (lookupManager && !lookupManager->lookupInProgress())
-                    {
-                        if (res==1)
-                            lookupManager->lookupIfDifferent(searchWord);
-                        else
-                            lookupManager->search(searchWord);
-                        setUI(false);
-                    }
-                    InvalidateRect(hwnd,NULL,TRUE);
-                }
-                break;
-            }
-            default:
-                lResult  = DefWindowProc(hwnd, msg, wp, lp);
-        };
+        if (lookupManager && !lookupManager->lookupInProgress())
+        {
+            lookupManager->verifyRegistrationCode(g_newRegCode);
+            setUI(false);
+            g_fRegistration = true;
+        }
     }
+    else
+        g_newRegCode = _T("");
+}
+
+LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+{    
+    iPediaApplication& app=iPediaApplication::instance();
+    LookupManager* lookupManager=app.getLookupManager(true);
+
+    if ( (NULL==lookupManager) || lookupManager->lookupInProgress())
+        return TRUE;
+
+    LRESULT lResult = TRUE;
+
+
+    switch (wp)
+    {   
+        case IDM_MENU_CLIPBOARD:
+            CopyToClipboard();
+            break;
+
+        case IDM_MENU_STRESS_MODE:
+            g_stressModeCnt = 100;
+            SendMessage(hwnd, WM_COMMAND, IDM_MENU_RANDOM, 0);
+            break;
+            
+        case IDM_ENABLE_UI:
+            setUI(true);
+            if (g_stressModeCnt>0)
+            {
+                g_stressModeCnt--;
+                SendMessage(hwnd, WM_COMMAND, IDM_MENU_RANDOM, 0);
+            }
+            break;
+        
+        case IDOK:
+            SendMessage(hwnd,WM_CLOSE,0,0);
+            break;
+        
+        case IDM_MENU_HOME:
+            // Try to open hyperlink
+            GotoURL(_T("http://arslexis.com/pda/sm.html"));
+            break;
+        
+        case IDM_MENU_UPDATES:
+            GotoURL(_T("http://arslexis.com/updates/sm-ipedia-1-0.html"));
+            break;
+        
+        case IDM_MENU_ABOUT:
+            g_isAboutVisible = true;
+            setMenu(hwnd);
+            setScrollBar(g_definition);
+            InvalidateRect(hwnd,NULL,TRUE);
+            break;
+
+        case IDM_EXT_SEARCH:
+            SimpleOrExtendedSearch(hwnd, false);
+            break;
+            
+        case ID_SEARCH_BTN:
+            // intentional fall-through
+        case ID_SEARCH_BTN2:
+            // intentional fall-through
+        case ID_SEARCH:
+            SimpleOrExtendedSearch(hwnd, true);
+            break;
+
+        case IDM_MENU_HYPERS:
+        {
+            if (!fInitConnection())
+                break;
+            if (!g_definition->empty())
+            {
+                if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_HYPERLINKS), hwnd,HyperlinksDlgProc))
+                {
+                    if (lookupManager && !lookupManager->lookupInProgress())
+                    {
+                        lookupManager->lookupTerm(searchWord);                            
+                        setUI(false);
+                        InvalidateRect(hwnd,NULL,TRUE);
+                    }
+                }
+            }
+            break;
+        }
+        case IDM_MENU_RANDOM:
+        {
+            if (!fInitConnection())
+                break;
+            if (lookupManager && !lookupManager->lookupInProgress())
+            {
+                setUI(false);
+                lookupManager->lookupRandomTerm();
+            }
+            break;
+        }
+        case IDM_MENU_REGISTER:
+            DoRegister();
+            break;
+
+        case IDM_MENU_PREV:
+            // intentionally fall through
+        case ID_PREV_BTN:
+            moveHistoryBack();
+            break;
+
+        case IDM_MENU_NEXT:
+            // intentionally fall through
+        case ID_NEXT_BTN:
+            moveHistoryForward();
+            break;
+
+        case IDM_MENU_RESULTS:
+        {
+            int res = DialogBox(g_hInst, MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc);
+            if (res)
+            {
+                if (1==res)
+                    lookupManager->lookupIfDifferent(searchWord);
+                else
+                    lookupManager->search(searchWord);
+                setUI(false);
+            }
+            InvalidateRect(hwnd,NULL,TRUE);
+            break;
+        }
+        default:
+            lResult  = DefWindowProc(hwnd, msg, wp, lp);
+    };
+
     return lResult;
 }
-        
 
-BOOL InitInstance (HINSTANCE hInstance, int CmdShow )
+bool InitInstance (HINSTANCE hInstance, int CmdShow )
 {
-
     g_hInst = hInstance;
     g_hwndMain = CreateWindow(szAppName,
             szTitle,
@@ -850,11 +856,11 @@ BOOL InitInstance (HINSTANCE hInstance, int CmdShow )
             NULL, NULL, hInstance, NULL );
 
     if ( !g_hwndMain )
-        return FALSE;
+        return false;
 
     ShowWindow(g_hwndMain, CmdShow );
     UpdateWindow(g_hwndMain);
-    return TRUE;
+    return true;
 }
 
 BOOL InitApplication ( HINSTANCE hInstance )
@@ -1448,7 +1454,7 @@ void CopyToClipboard()
     CloseClipboard();
 }
 
-void handleMoveHistory(bool forward)
+static void handleMoveHistory(bool forward)
 {
     iPediaApplication& app=iPediaApplication::instance();
     LookupManager* lookupManager=app.getLookupManager(true);
@@ -1472,6 +1478,16 @@ void handleMoveHistory(bool forward)
         lookupManager->moveHistory(forward);
         setUI(false);
     }
+}
+
+void moveHistoryForward()
+{
+    handleMoveHistory(true);
+}
+
+void moveHistoryBack()
+{
+    handleMoveHistory(false);
 }
 
 void SimpleOrExtendedSearch(HWND hwnd, bool simple)

@@ -8,11 +8,11 @@
 using namespace ArsLexis;
 
 static WNDPROC oldResultsListWndProc = NULL;
-static HWND    hLastResultsDlg  = NULL;
-static bool    fRefine = true;
+static HWND    g_hLastResultsDlg  = NULL;
+static bool    g_fRefine = true;
 
-std::list<char_t*> listPositions_;
-ArsLexis::String listPositionsString_;
+std::list<char_t*> g_listPositions;
+ArsLexis::String   g_listPositionsString;
 
 const int hotKeyCode=0x32;
 
@@ -26,7 +26,7 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 SHMENUBARINFO shmbi;
                 ZeroMemory(&shmbi, sizeof(shmbi));
                 shmbi.cbSize = sizeof(shmbi);
-                shmbi.hwndParent = hLastResultsDlg;
+                shmbi.hwndParent = g_hLastResultsDlg;
                 shmbi.nToolBarId = IDR_LAST_RESULTS_SEARCH_MENUBAR;
                 shmbi.hInstRes = g_hInst;
                 
@@ -36,7 +36,7 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
                     MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
                     SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-                fRefine = false;
+                g_fRefine = false;
                 break;
         }
         
@@ -45,19 +45,19 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             switch (wp)
             {
                 case hotKeyCode:
-                    SendMessage(hLastResultsDlg, WM_COMMAND, ID_REFINE, 0);
+                    SendMessage(g_hLastResultsDlg, WM_COMMAND, ID_REFINE, 0);
                     break;
                 case hotKeyCode+1:
                     int pos = SendMessage (hwnd, LB_GETCURSEL, 0, 0);
                     if (0==pos)
                     {
-                        HWND ctrl=GetDlgItem(hLastResultsDlg, IDC_REFINE_EDIT);
+                        HWND ctrl=GetDlgItem(g_hLastResultsDlg, IDC_REFINE_EDIT);
                         SetFocus(ctrl);
 
                         SHMENUBARINFO shmbi;
                         ZeroMemory(&shmbi, sizeof(shmbi));
                         shmbi.cbSize = sizeof(shmbi);
-                        shmbi.hwndParent = hLastResultsDlg;
+                        shmbi.hwndParent = g_hLastResultsDlg;
                         shmbi.nToolBarId = IDR_LAST_RESULTS_REFINE_MENUBAR;
                         shmbi.hInstRes = g_hInst;
         
@@ -67,7 +67,7 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         (void)SendMessage(shmbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK, 
                             MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
                             SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
-                        fRefine = true;
+                        g_fRefine = true;
                     }
                     else
                         SendMessage (hwnd, LB_SETCURSEL, pos-1, 0);
@@ -114,7 +114,7 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
                 case ID_REFINE:
                 {
-                    if (!fRefine)
+                    if (!g_fRefine)
                     {
                         HWND ctrl = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
                         int idx = SendMessage(ctrl, LB_GETCURSEL, 0, 0);
@@ -178,25 +178,25 @@ bool FInitLastResults(HWND hDlg)
         MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
         SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
 
-    hLastResultsDlg = hDlg;
-    fRefine = true;
+    g_hLastResultsDlg = hDlg;
+    g_fRefine = true;
 
     HWND ctrl=GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
     oldResultsListWndProc=(WNDPROC)SetWindowLong(ctrl, GWL_WNDPROC, (LONG)ResultsListWndProc);
-    RegisterHotKey( ctrl, hotKeyCode, 0, VK_TACTION);
-    RegisterHotKey( ctrl, hotKeyCode +1, 0 , VK_TUP);
+    RegisterHotKey( ctrl, hotKeyCode,   0, VK_TACTION);
+    RegisterHotKey( ctrl, hotKeyCode+1, 0, VK_TUP);
         
-    listPositions_.clear();
+    g_listPositions.clear();
     
     iPediaApplication& app=iPediaApplication::instance();
     LookupManager* lookupManager=app.getLookupManager();
     if (lookupManager)
     {
-        listPositionsString_=lookupManager->lastSearchResults();
-        listPositions_.clear();
-        String::iterator end(listPositionsString_.end());
-        String::iterator lastStart=listPositionsString_.begin();
-        for (String::iterator it=listPositionsString_.begin(); it!=end; ++it)
+        g_listPositionsString=lookupManager->lastSearchResults();
+        g_listPositions.clear();
+        String::iterator end(g_listPositionsString.end());
+        String::iterator lastStart=g_listPositionsString.begin();
+        for (String::iterator it=g_listPositionsString.begin(); it!=end; ++it)
         {
             if ('\n'==*it)
             {
@@ -204,7 +204,7 @@ bool FInitLastResults(HWND hDlg)
                 lastStart = it;
                 ++lastStart;
                 *it = chrNull;
-                listPositions_.push_back(start);
+                g_listPositions.push_back(start);
                 SendMessage(ctrl, LB_ADDSTRING, 0, (LPARAM)start);
             }
         }
