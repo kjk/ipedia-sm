@@ -12,11 +12,6 @@ text box. Probably a refresh/invalidate would help.
 
 ## 4. Ctrl-Q to quit on PPC
 
-## 5. double-click selects an item from list (both dialogs with lists)
-
-## 6. down key in ExtSearchResultsDlg moves from edit box to list (like in 
-smartphone)
-
     * POSSIBLY AFTER V1 *
 ## 1. ability to change font size (like in iNoah/sm)
 ## 2. home screen plugin (e.g. display recent article)
@@ -99,3 +94,11 @@ different screen orientation correctly. Need to figure what the parameter is.
 http://www.devx.com/wireless/Article/21590
 
 (2004-09-20)
+
+## double-click selects an item from list (both dialogs with lists)
+(2004-09-21)
+
+## down key in ExtSearchResultsDlg moves from edit box to list (like in 
+smartphone)
+(2004-09-21)
+

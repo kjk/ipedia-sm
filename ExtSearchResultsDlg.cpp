@@ -15,6 +15,7 @@ static WNDPROC oldResultsEditWndProc = NULL;
 // TODO: should be able to eliminate g_hDlg. Just need to know the API
 // for finding parent dialog based on hwnd of a control
 static HWND    g_hDlg  = NULL;
+static HWND    g_hListWnd = NULL;
 
 static CharPtrList_t*  g_strList=NULL;
 static String          g_editBoxTxt;
@@ -56,7 +57,7 @@ static bool SetSearchMenu(HWND hDlg)
     shmbi.hInstRes   = GetModuleHandle(NULL);
 
     if (!SHCreateMenuBar(&shmbi))
-        return FALSE;
+        return false;
 
     if (!SHCreateMenuBar(&shmbi))
         return false;
@@ -75,7 +76,15 @@ LRESULT CALLBACK ResultsEditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         if (!SetRefineMenu(g_hDlg))
             return FALSE;
     }
-
+    else if (WM_KEYUP==msg)
+    {
+        int key = wp;
+        if (VK_DOWN==key)
+        {
+            SendMessage(g_hListWnd, LB_SETCURSEL, 0, 0);
+            SetFocus(g_hListWnd);
+        }
+    }
     return CallWindowProc(oldResultsEditWndProc, hwnd, msg, wp, lp);
 }
 
@@ -87,12 +96,10 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         if (!SetSearchMenu(g_hDlg))
             return FALSE;
-        SendMessage (hwnd, LB_SETCURSEL, 0, 0);
-        return TRUE;
+        SendMessage(hwnd, LB_SETCURSEL, 0, 0);
     }
-
     // What the hell is constant - any idea VK_F24 ??
-    if (0x87==msg)
+    else if (0x87==msg)
     {
         switch (wp)
         {
@@ -175,13 +182,13 @@ static bool FInitDlg(HWND hDlg)
     HWND EditCrl = GetDlgItem(hDlg, IDC_REFINE_EDIT);
     oldResultsEditWndProc = (WNDPROC)SetWindowLong(EditCrl, GWL_WNDPROC, (LONG)ResultsEditWndProc);
 
-    HWND ctrlList = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
-    oldResultsListWndProc = (WNDPROC)SetWindowLong(ctrlList, GWL_WNDPROC, (LONG)ResultsListWndProc);
-    RegisterHotKey(ctrlList, HOT_KEY_ACTION, 0, VK_TACTION);
-    RegisterHotKey(ctrlList, HOT_KEY_UP,     0, VK_TUP);
-    ListCtrlFillFromList(ctrlList, *g_strList, false);
-    SendMessage (ctrlList, LB_SETCURSEL, -1, 0);
-    UpdateWindow(ctrlList);
+    g_hListWnd = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
+    oldResultsListWndProc = (WNDPROC)SetWindowLong(g_hListWnd, GWL_WNDPROC, (LONG)ResultsListWndProc);
+    RegisterHotKey(g_hListWnd, HOT_KEY_ACTION, 0, VK_TACTION);
+    RegisterHotKey(g_hListWnd, HOT_KEY_UP,     0, VK_TUP);
+    ListCtrlFillFromList(g_hListWnd, *g_strList, false);
+    SendMessage (g_hListWnd, LB_SETCURSEL, -1, 0);
+    UpdateWindow(g_hListWnd);
 
     return true;
 }
@@ -202,9 +209,12 @@ static BOOL CALLBACK ExtSearchResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPA
             SHSendBackToFocusWindow(msg, wp, lp);
             return TRUE;
 #endif
-         case WM_COMMAND:
+        case WM_COMMAND:
         {
-            switch (wp)
+            uint_t control = LOWORD(wp);
+            uint_t code = HIWORD(wp);
+
+            switch (control)
             {
                 case ID_CANCEL:
                     EndDialog(hDlg, EXT_RESULTS_CANCEL);
@@ -216,11 +226,8 @@ static BOOL CALLBACK ExtSearchResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPA
                     break;
 
                 case IDC_LAST_RESULTS_LIST:
-                    int code = HIWORD(lp);
                     if (LBN_DBLCLK==code)
-                    {
                         DoSelect(hDlg);
-                    }
                     break;
             }
         }
