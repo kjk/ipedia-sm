@@ -29,6 +29,7 @@
 #include <fonteffects.hpp>
 #include <sms.h>
 #include <uniqueid.h>
+#include <Text.hpp>
 
 const int ErrorsTableEntries = 16;
 bool registration = false;
@@ -152,6 +153,8 @@ using ArsLexis::char_t;
 
 
 String articleCountText;
+String databaseDateText;
+String dateText;
 String recentWord;
 String searchWord;
 
@@ -171,16 +174,6 @@ TCHAR szTitle[]   = TEXT("iPedia");
 HWND hwndEdit;
 HWND hwndScroll;
 
-//
-//  FUNCTION: WndProc(HWND, unsigned, WORD, LONG)
-//
-//  PURPOSE:  Processes messages for the main window.
-//
-//  WM_COMMAND	- process the application menu
-//  WM_PAINT	- Paint the main window
-//  WM_DESTROY	- post a quit message and return
-//
-//
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT		lResult = TRUE;
@@ -238,6 +231,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             rep = new RenderingProgressReporter(hwnd);
             definition_->setRenderingProgressReporter(rep);
             setMenu(hwnd);
+            SetFocus(hwndEdit);
             break;
         
         }
@@ -262,17 +256,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     SendMessage(hwnd,WM_CLOSE,0,0);
                     break;
                 }
-                
+                case IDM_EXT_SEARCH:
                 case ID_SEARCH:
                 {
+
                     int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
                     TCHAR *buf=new TCHAR[len+1];
                     len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
                     SendMessage(hwndEdit, EM_SETSEL, 0,len);
-                    String word(buf); 
-                    if (lookupManager && !lookupManager->lookupInProgress())
-                        lookupManager->lookupTerm(word);
+                    String term(buf); 
                     delete buf;
+                    if (term.empty()) break;
+                    if (lookupManager && !lookupManager->lookupInProgress())
+                    {
+                        if(wp==IDM_EXT_SEARCH)
+                            lookupManager->search(term);
+                        else
+                            lookupManager->lookupIfDifferent(term);
+                    }
                     InvalidateRect(hwnd,NULL,TRUE);
                     break;            
                 }
@@ -283,11 +284,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_HYPERLINKS), hwnd,HyperlinksDlgProc))
                         {
                             if (lookupManager && !lookupManager->lookupInProgress())
-                                lookupManager->lookupTerm(searchWord);
-                            SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)recentWord.c_str());
-                            int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
-                            SendMessage(hwndEdit, EM_SETSEL, 0,len);
-                            
+                                lookupManager->lookupTerm(searchWord);                            
                             InvalidateRect(hwnd,NULL,TRUE);
                         }
                     }
@@ -326,17 +323,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 {
                     iPediaApplication& app=iPediaApplication::instance();
                     LookupManager* lookupManager=app.getLookupManager();    
-
-                    if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc))
+                    int res;
+                    if(res=DialogBox(g_hInst, MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc))
                     {
                         iPediaApplication& app=iPediaApplication::instance();
                         LookupManager* lookupManager=app.getLookupManager(true);
                         if (lookupManager && !lookupManager->lookupInProgress())
-                            lookupManager->lookupTerm(searchWord);
-                        SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)recentWord.c_str());
-                        int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
-                        SendMessage(hwndEdit, EM_SETSEL, 0,len);
-
+                            if(res==1)
+                                lookupManager->lookupIfDifferent(searchWord);
+                            else
+                                lookupManager->search(searchWord);
                         InvalidateRect(hwnd,NULL,TRUE);
                     }
                     break;
@@ -344,16 +340,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         		default:
 		        	lResult = DefWindowProc(hwnd, msg, wp, lp);
             };
+            //SetFocus(hwndEdit);
             break;
         }
         case WM_PAINT:
         {
             PAINTSTRUCT	ps;
             hdc = BeginPaint (hwnd, &ps);
-            /*GetClientRect (hwnd, &rect);
-            DrawText (hdc, TEXT("Enter article name "),-1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
-            rect.top+=38;
-            DrawText (hdc, TEXT("and press \"Search\" button."),-1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);*/
             paint(hwnd, hdc, ps.rcPaint);
             EndPaint (hwnd, &ps);
             break;
@@ -433,6 +426,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         definition_->replaceElements(lookupManager->lastDefinitionElements());
                         g_forceLayoutRecalculation=true;
                         //const LookupHistory& history=app.history();
+                        SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)lookupManager->lastInputTerm().c_str());
+                        int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
+                        SendMessage(hwndEdit, EM_SETSEL, 0,len);
                     }
                     InvalidateRect(hwndMain, NULL, TRUE);
                     break;
@@ -499,14 +495,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
             }   
             
-            assert(0!=app.preferences().articleCount);
             if(app.preferences().articleCount!=-1)
             {
+                articleCountText.erase();
+                databaseDateText.erase();
+                dateText.erase();
+                int articleCount = app.preferences().articleCount;
+                String &dbTime = app.preferences().databaseTime;
+                char_t buffer[32];
+                int len = ArsLexis::formatNumber(articleCount, buffer, sizeof(buffer));
+                assert(len != -1 );
+                articleCountText.append(buffer, len);
+                articleCountText.append(_T(" articles"));
+                databaseDateText.append(_T("database updated on "));
+                dateText.append(dbTime, 0, 4);
+                dateText.append(1, _T('-'));
+                dateText.append(dbTime, 4, 2);
+                dateText.append(1, _T('-'));
+                dateText.append(dbTime, 6, 2);
+                /*
                 articleCountText.assign(_T("Number of articles: "));
                 char_t buffer[16];
                 int len= tprintf(buffer, _T("%ld"), app.preferences().articleCount);
-                articleCountText.append(buffer, len);
+                articleCountText.append(buffer, len);*/
             }
+
             lookupManager->handleLookupFinishedInForm(data);
             setMenu(hwnd);
 
@@ -530,16 +543,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 }
 
 
-//
-//  FUNCTION: InitInstance(HANDLE, int)
-//
-//  PURPOSE: Saves instance handle and creates main window
-//
-//  COMMENTS:
-//
-//    In this function, we save the instance handle in a global variable and
-//    create and display the main program window.
-//
 BOOL InitInstance (HINSTANCE hInstance, int CmdShow )
 {
 
@@ -562,11 +565,6 @@ BOOL InitInstance (HINSTANCE hInstance, int CmdShow )
 	return TRUE;
 }
 
-//
-//  FUNCTION: InitApplication(HANDLE)
-//
-//  PURPOSE: Sets the properties for our window.
-//
 BOOL InitApplication ( HINSTANCE hInstance )
 {
 	WNDCLASS wc;
@@ -589,11 +587,6 @@ BOOL InitApplication ( HINSTANCE hInstance )
 }
 
 
-//
-//  FUNCTION: WinMain(HANDLE, HANDLE, LPWSTR, int)
-//
-//  PURPOSE: Entry point for the application
-//
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPWSTR     lpCmdLine,
@@ -690,27 +683,54 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
             LOGFONT logfnt;
             HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
             GetObject(fnt, sizeof(logfnt), &logfnt);
-            logfnt.lfHeight+=1;
+            logfnt.lfHeight-=1;
+            logfnt.lfWeight=FW_BOLD;
+            HFONT fnt3=(HFONT)CreateFontIndirect(&logfnt);
+            logfnt.lfHeight+=2;
+            logfnt.lfWeight=FW_NORMAL;
             int fontDy = logfnt.lfHeight;
             HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
+            
+            logfnt.lfHeight-=1;
+            HFONT fnt4=(HFONT)CreateFontIndirect(&logfnt);
+
             SelectObject(hdc, fnt2);
             
             RECT tmpRect=rect;
-            DrawText(hdc, TEXT("(enter article name and press"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+            DrawText(hdc, TEXT("(enter article title and press"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
             tmpRect.top += 16;
             
-            DrawText(hdc, TEXT("\"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+            DrawText(hdc, TEXT("\"Search\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
             
+            
+            SelectObject(hdc, fnt3);
             //tmpRect.top += (fontDy*3);
-            tmpRect.top += 40;
+            tmpRect.top += 32;
             DrawText(hdc, TEXT("ArsLexis iPedia 1.0"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
             // tmpRect.top += fontDy+6;
-            tmpRect.top += 18;
+
+            SelectObject(hdc, fnt4);
+
+            tmpRect.top += 22;
             DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+            
+            SelectObject(hdc, fnt2);
             tmpRect.top += 18;
+            String regstr;
+            if(app.preferences().regCode.empty())
+                DrawText(hdc, _T("Unregistred"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+            else
+                DrawText(hdc, _T("Registred"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+            tmpRect.top += 16;
             DrawText(hdc, articleCountText.c_str(), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+            tmpRect.top += 16;
+            DrawText(hdc, databaseDateText.c_str(), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+            tmpRect.top += 16;
+            DrawText(hdc, dateText.c_str(), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+
             SelectObject(hdc,fnt);
             DeleteObject(fnt2);
+            DeleteObject(fnt3);
         }
         else
         {
@@ -778,6 +798,12 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         case WM_KEYDOWN:
         {
+            if (VK_TACTION==wp) 
+            { 
+                SendMessage(hwndMain,WM_COMMAND, ID_SEARCH, 0);
+                return 0; 
+            } 
+
             if(definition_)
             {
                 int page=0;

@@ -50,6 +50,11 @@
 #define IDD_HYPERLINKS                  134
 #define IDC_LIST_HYPERLINKS             135
 #define IDR_HYPERLINKS_MENUBAR          136
+
+#define IDM_MENU_HOME                   137
+#define IDM_MENU_UPDATES                138
+#define IDM_MENU_ABOUT                  139
+#define IDM_EXT_SEARCH                  140
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

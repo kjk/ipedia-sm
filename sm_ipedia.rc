@@ -25,11 +25,20 @@ BEGIN
     POPUP "&Dummy"
     BEGIN
         MENUITEM "Hyperlinks",              IDM_MENU_HYPERS
-        MENUITEM "Last results",            IDM_MENU_RESULTS
+        MENUITEM "Extended search",         IDM_EXT_SEARCH          
+        MENUITEM "Ext. search results",     IDM_MENU_RESULTS
+        
         MENUITEM "Previous",                IDM_MENU_PREV
         MENUITEM "Next",                    IDM_MENU_NEXT
         MENUITEM "Random article",          IDM_MENU_RANDOM
         MENUITEM "Register",                IDM_MENU_REGISTER
+        POPUP "About"
+	    BEGIN
+    		MENUITEM "ArsLexis home",       IDM_MENU_HOME
+		    MENUITEM "Check updates",       IDM_MENU_UPDATES
+		    MENUITEM "About",            	IDM_MENU_ABOUT
+	    END
+
         MENUITEM "Quit",                    IDOK
     END
 END
@@ -116,8 +125,7 @@ IDD_REGISTER DIALOG DISCARDABLE  4, 4, 80, 70
 STYLE WS_POPUP | WS_VISIBLE
 FONT 8, "System"
 BEGIN
-    CTEXT "Enter received registration",IDC_STATIC, 0, 25, 100, 10
-    CTEXT "code below:",IDC_STATIC, 0, 37, 100, 10
+    CTEXT "Enter received registration",IDC_STATIC, 0, 37, 100, 10
     EDITTEXT IDC_EDIT_REGCODE, 2, 47, 96, 10,
         ES_LEFT | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL
 END

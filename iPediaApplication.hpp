@@ -14,7 +14,7 @@ class LookupManager;
 class LookupHistory;
 struct LookupFinishedEventData;
 
-#define serverLocalhost        _T("arslex.no-ip.info:9000")
+#define serverLocalhost        _T("192.168.0.1:9000")
 //#define serverLocalhost    _T("arslex.no-ip.info:9000")
 #define serverIpediaArslexis   _T("ipedia.arslexis.com:9000")
 
@@ -46,8 +46,6 @@ protected:
     //ArsLexis::status_t handleSystemNotify(SysNotifyParamType& notify);
     
     ArsLexis::status_t normalLaunch();
-
-    
     
     //ArsLexis::Form* createForm(ushort_t formId);
 
