@@ -9,6 +9,7 @@ Repro:
 Observed: nothing happens, menus are disabled - we can scroll and enter a word
 but not launch query
 
+Probable cause: not handling "error" response from the server.
 
         *  DONE   *
 5. common enter reg code dialog with iNoah (2004-08-12)

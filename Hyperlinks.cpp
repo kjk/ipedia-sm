@@ -37,7 +37,7 @@ static void OnSelect(HWND hDlg)
     int  idx = SendMessage(ctrl, LB_GETCURSEL, 0, 0);
 
     GenericTextElement *txtEl=(GenericTextElement*)SendMessage(ctrl, LB_GETITEMDATA, idx, 0);
-    if((txtEl->hyperlinkProperties()->type==hyperlinkTerm)||
+    if ((txtEl->hyperlinkProperties()->type==hyperlinkTerm)||
        (txtEl->hyperlinkProperties()->type==hyperlinkBookmark))
     {
         int len = SendMessage(ctrl, LB_GETTEXTLEN, idx, 0);
@@ -123,26 +123,28 @@ BOOL InitHyperlinks(HWND hDlg)
     g_oldHyperlinksListWndProc = (WNDPROC)SetWindowLong(ctrl, GWL_WNDPROC, (LONG)HyperlinksListWndProc);
     RegisterHotKey(ctrl, hotKeyCode, 0, VK_TACTION);
 
-    
     Definition::ElementPosition_t pos;
     Definition &def = currentDefinition();
-    for(pos=def.firstElementPosition();
-        pos!=def.lastElementPosition();
-        pos++)
+    DefinitionElement *currEl;
+    const char_t *linkTxt;
+    const char_t *articleTitle;
+    for (pos=def.firstElementPosition(); pos!=def.lastElementPosition(); pos++)
     {
-        DefinitionElement *curr=*pos;
-        if(curr->isTextElement())
+        currEl = *pos;
+        if (currEl->isTextElement())
         {
-            GenericTextElement *txtEl=(GenericTextElement*)curr;
-            if((txtEl->isHyperlink())&&
-                ((txtEl->hyperlinkProperties()->type==hyperlinkTerm)||
+            GenericTextElement *txtEl=(GenericTextElement*)currEl;
+            if ((txtEl->isHyperlink()) &&
+                ((txtEl->hyperlinkProperties()->type==hyperlinkTerm) ||
                  (txtEl->hyperlinkProperties()->type==hyperlinkExternal)))
             {
-                int idx = SendMessage(ctrl,LB_FINDSTRING,0,(LPARAM)txtEl->text().c_str());
+                linkTxt = txtEl->text().c_str();
+                articleTitle = txtEl->hyperlinkProperties()->resource.c_str();
+                int idx = SendMessage(ctrl,LB_FINDSTRINGEXACT,0,(LPARAM)articleTitle);
                 if (LB_ERR == idx)
                 {
-                    idx = SendMessage(ctrl,LB_ADDSTRING,0,(LPARAM)txtEl->text().c_str());
-                    SendMessage(ctrl, LB_SETITEMDATA, idx, (LPARAM) txtEl);
+                    idx = SendMessage(ctrl,LB_ADDSTRING,0,(LPARAM)articleTitle);
+                    SendMessage(ctrl, LB_SETITEMDATA, idx, (LPARAM)txtEl);
                 }
             }
         }

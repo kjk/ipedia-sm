@@ -78,6 +78,9 @@ void prepareAbout()
     FontEffects fxBold;
     fxBold.setWeight(FontEffects::weightBold);
 
+    FontEffects fxSmall;
+    fxSmall.setSmall(true);
+
     elems.push_back(new LineBreakElement(1,10));
 
     elems.push_back(text=new FormattedTextElement(_T("ArsLexis iPedia")));
@@ -103,6 +106,7 @@ void prepareAbout()
     iPediaApplication& app=iPediaApplication::instance();
     if (app.preferences().regCode.empty())
     {
+#ifdef WIN32_PLATFORM_PSPC
         elems.push_back(text=new FormattedTextElement(_T("Unregistered (")));
         text->setJustification(DefinitionElement::justifyCenter);
         elems.push_back(text=new FormattedTextElement(_T("how to register")));
@@ -113,6 +117,11 @@ void prepareAbout()
         elems.push_back(text=new FormattedTextElement(_T(")")));
         text->setJustification(DefinitionElement::justifyCenter);
         elems.push_back(new LineBreakElement(1,4*divider));
+#else
+        elems.push_back(text=new FormattedTextElement(_T("Unregistered")));
+        text->setJustification(DefinitionElement::justifyCenter);
+        elems.push_back(new LineBreakElement(1,4*divider));
+#endif
     }
     else
     {
@@ -147,6 +156,7 @@ void prepareAbout()
     }
     g_articleCountElement->setJustification(DefinitionElement::justifyCenter);
 
+#ifdef WIN32_PLATFORM_PSPC
     elems.push_back(new LineBreakElement(3,divider));
     elems.push_back(text=new FormattedTextElement(_T("Using iPedia: ")));
     text->setJustification(DefinitionElement::justifyLeft);
@@ -156,6 +166,12 @@ void prepareAbout()
     // url doesn_T('t really matter, it')s only to establish a hotspot
     text->setHyperlink(_T(""), hyperlinkTerm);
     text->setActionCallback( tutorialActionCallback, NULL);
+#else
+    elems.push_back(new LineBreakElement(1,2));
+    elems.push_back(text=new FormattedTextElement(_T("Downloading uses data connection")));
+    text->setJustification(DefinitionElement::justifyCenter);
+    text->setEffects(fxSmall);
+#endif
 
     (*g_about).replaceElements(elems);    
 }

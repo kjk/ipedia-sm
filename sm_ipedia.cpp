@@ -472,7 +472,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case iPediaApplication::appForceUpgrade:
         {           
             int res = MessageBox(hwnd, 
-                _T("You need to upgrade iPedia to a newer version. You can do it right now or later using 'Options/Check for updates'. Would you like to do it now ?"),
+                _T("You need to upgrade iPedia to a newer version. Upgrade now?"),
                 _T("Upgrade required"),
                 MB_YESNO | MB_APPLMODAL | MB_SETFOREGROUND );
             if (IDYES == res)
@@ -658,7 +658,6 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         
         case IDM_MENU_HOME:
-            // Try to open hyperlink
             GotoURL(_T("http://arslexis.com/pda/sm.html"));
             break;
         
