@@ -27,18 +27,26 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 WNDPROC oldEditWndProc;
 
 Definition *definition_ = new Definition();
+RenderingProgressReporter* rep; 
 RenderingPreferences* prefs= new RenderingPreferences();
 static bool g_forceLayoutRecalculation=false;
 bool rec=false;
 void setScrollBar(Definition* definition_);
-ArsLexis::String articleCountText;
+
+using ArsLexis::String;
+using ArsLexis::Graphics;
+using ArsLexis::char_t;
+
+
+String articleCountText;
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
 HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
 
 
-void paint(HWND hwnd, HDC hdc);
-
+void paint(HWND hwnd, HDC hdc, RECT rcpaint);
+void DrawProgressBar(Graphics& gr, uint_t percent, const ArsLexis::Rectangle& bounds);
+RECT progressRect = { 7, 80, 162, 125 };
 
 TCHAR szAppName[] = TEXT("iPedia");
 TCHAR szTitle[]   = TEXT("iPedia");
@@ -60,7 +68,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT		lResult = TRUE;
 	HDC			hdc;
-	PAINTSTRUCT	ps;
+	
 
 	switch(msg)
 	{
@@ -109,7 +117,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             LookupManager* lookupManager=app.getLookupManager(true);
             if (lookupManager && !lookupManager->lookupInProgress())
                 lookupManager->checkArticleCount();
-            
+            lookupManager->setProgressReporter(new SmartPhoneProgressReported());
+            rep = new RenderingProgressReporter(hwnd);
+            definition_->setRenderingProgressReporter(rep);
 			break;
         
         }
@@ -137,7 +147,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     TCHAR *buf=new TCHAR[len+1];
                     len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
                     SendMessage(hwndEdit, EM_SETSEL, 0,len);
-                    ArsLexis::String word(buf); 
+                    String word(buf); 
                     iPediaApplication& app=iPediaApplication::instance();
                     LookupManager* lookupManager=app.getLookupManager(true);
                     if (lookupManager && !lookupManager->lookupInProgress())
@@ -161,19 +171,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 		case WM_PAINT:
 		{
+            PAINTSTRUCT	ps;
 			hdc = BeginPaint (hwnd, &ps);
 			/*GetClientRect (hwnd, &rect);
             DrawText (hdc, TEXT("Enter article name "),-1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
             rect.top+=38;
             DrawText (hdc, TEXT("and press \"Search\" button."),-1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);*/
-            paint(hwnd, hdc);
+            paint(hwnd, hdc, ps.rcPaint);
 			EndPaint (hwnd, &ps);
     		break;
 		}		
         
         case WM_HOTKEY:
         {
-            ArsLexis::Graphics gr(GetDC(hwndMain), hwndMain);
+            Graphics gr(GetDC(hwndMain), hwndMain);
             int page=0;
             if (definition_)
                 page=definition_->shownLinesCount();
@@ -191,11 +202,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             }
             break;
         }    
-        
+        case LookupManager::lookupStartedEvent:
         case LookupManager::lookupProgressEvent:
         {
-            //Still progress displaying doesn't work
-            //InvalidateRect(hwnd,NULL,TRUE);
+            InvalidateRect(hwndMain, &progressRect, FALSE);
             break;
         }
 
@@ -223,7 +233,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             }            
             assert(0!=articleCountElement_);
             articleCountText.assign(_T("Number of articles: "));
-            ArsLexis::char_t buffer[16];
+            char_t buffer[16];
             int len= tprintf(buffer, _T("%ld"), app.preferences().articleCount);
             articleCountText.append(buffer, len);
             InvalidateRect(hwnd,NULL,TRUE);
@@ -338,7 +348,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		return (FALSE);
 	}
     
-    iPediaApplication::instance().waitForEvent();
+    return iPediaApplication::instance().waitForEvent();
 }
 
 void setScrollBar(Definition* definition_)
@@ -372,93 +382,105 @@ void ArsLexis::handleBadAlloc()
     RaiseException(1,0,0,NULL);    
 }
 
-void paint(HWND hwnd, HDC hdc)
+void paint(HWND hwnd, HDC hdc, RECT rcpaint)
 {
     RECT rect;
     GetClientRect (hwnd, &rect);
-    FillRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+    ArsLexis::Rectangle rin(rcpaint);
+    ArsLexis::Rectangle rout(progressRect);
+    
+    iPediaApplication& app=iPediaApplication::instance();
+    LookupManager* lookupManager=app.getLookupManager(true);
+    //Definition::Elements_t defels_=lookupManager->lastDefinitionElements();
+
+    bool onlyProgress=false;
+    //FillRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+    if (lookupManager && lookupManager->lookupInProgress() &&
+        (rout&&rin.topLeft) && (rout.extent.x>=rin.extent.x)
+        && (rout.extent.y>=rin.extent.y))
+            onlyProgress = true;
+
     rect.top    +=22;
     rect.left   +=2;
     rect.right  -=7;
     rect.bottom -=2;
-    ArsLexis::Graphics gr(hdc, hwnd);
-    //iPediaApplication& app=iPediaApplication::instance();
-    //LookupManager* lookupManager=app.getLookupManager(true);
-    //Definition::Elements_t defels_=lookupManager->lastDefinitionElements();
-    if (definition_->empty())
-    {
-        LOGFONT logfnt;
-        HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
-        GetObject(fnt, sizeof(logfnt), &logfnt);
-        logfnt.lfHeight+=1;
-        int fontDy = logfnt.lfHeight;
-        HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
-        SelectObject(hdc, fnt2);
+    Graphics gr(hdc, hwnd);
+    
 
-        RECT tmpRect=rect;
-        DrawText(hdc, TEXT("(enter article name and press"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
-        tmpRect.top += 16;
-        
-        DrawText(hdc, TEXT("\"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
 
-        //tmpRect.top += (fontDy*3);
-        tmpRect.top += 40;
-        DrawText(hdc, TEXT("ArsLexis iPedia 1.0"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
-        // tmpRect.top += fontDy+6;
-        tmpRect.top += 18;
-        DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
-        tmpRect.top += 18;
-        DrawText(hdc, articleCountText.c_str(), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
-        SelectObject(hdc,fnt);
-        DeleteObject(fnt2);
-    }
-    else
+    if(!onlyProgress)
     {
-        RECT b;
-        GetClientRect(hwnd, &b);
-        ArsLexis::Rectangle bounds=b;
-        ArsLexis::Rectangle defRect=rect;
-        bool doubleBuffer=true;
-        HDC offscreenDc=::CreateCompatibleDC(hdc);
-        if (offscreenDc) {
-            HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
-            if (bitmap) {
-                HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-                {
-                    ArsLexis::Graphics offscreen(offscreenDc, NULL);
-                    definition_->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
-                    offscreen.copyArea(defRect, gr, defRect.topLeft);
+        if (definition_->empty())
+        {
+            LOGFONT logfnt;
+            HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
+            GetObject(fnt, sizeof(logfnt), &logfnt);
+            logfnt.lfHeight+=1;
+            int fontDy = logfnt.lfHeight;
+            HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
+            SelectObject(hdc, fnt2);
+            
+            RECT tmpRect=rect;
+            DrawText(hdc, TEXT("(enter article name and press"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+            tmpRect.top += 16;
+            
+            DrawText(hdc, TEXT("\"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+            
+            //tmpRect.top += (fontDy*3);
+            tmpRect.top += 40;
+            DrawText(hdc, TEXT("ArsLexis iPedia 1.0"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+            // tmpRect.top += fontDy+6;
+            tmpRect.top += 18;
+            DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+            tmpRect.top += 18;
+            DrawText(hdc, articleCountText.c_str(), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+            SelectObject(hdc,fnt);
+            DeleteObject(fnt2);
+        }
+        else
+        {
+            RECT b;
+            GetClientRect(hwnd, &b);
+            ArsLexis::Rectangle bounds=b;
+            ArsLexis::Rectangle defRect=rect;
+            bool doubleBuffer=true;
+            HDC offscreenDc=::CreateCompatibleDC(hdc);
+            if (offscreenDc) {
+                HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
+                if (bitmap) {
+                    HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+                    {
+                        Graphics offscreen(offscreenDc, NULL);
+                        definition_->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
+                        offscreen.copyArea(defRect, gr, defRect.topLeft);
+                    }
+                    ::SelectObject(offscreenDc, oldBitmap);
+                    ::DeleteObject(bitmap);
                 }
-                ::SelectObject(offscreenDc, oldBitmap);
-                ::DeleteObject(bitmap);
+                else
+                    doubleBuffer=false;
+                ::DeleteDC(offscreenDc);
             }
             else
                 doubleBuffer=false;
-            ::DeleteDC(offscreenDc);
+            if (!doubleBuffer)
+                definition_->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
+            if(g_forceLayoutRecalculation) 
+                setScrollBar(definition_);
+            g_forceLayoutRecalculation=false;
         }
-        else
-            doubleBuffer=false;
-        if (!doubleBuffer)
-            definition_->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
-        if(g_forceLayoutRecalculation) 
-            setScrollBar(definition_);
-        g_forceLayoutRecalculation=false;
-    }
-    RECT a;
-    GetClientRect(hwnd, &a);
-
-    ArsLexis::Rectangle progressArea(a);
-    const iPediaApplication& app=iPediaApplication::instance();
-    const LookupManager* lookupManager=app.getLookupManager();
-    if (lookupManager && lookupManager->lookupInProgress())
-    {
-        gr.setColor(ArsLexis::Graphics::ColorChoice::colorText,RGB(0,0,0));
-        lookupManager->showProgress(gr, progressArea);
     }
     if(rec)
     {
         setScrollBar(definition_);
         rec=false;
+    }
+
+    if (lookupManager && lookupManager->lookupInProgress())
+    {
+        Graphics gr(GetDC(hwndMain), hwndMain);    
+        ArsLexis::Rectangle progressArea(progressRect);
+        lookupManager->showProgress(gr, progressArea);
     }
 }
 
@@ -487,7 +509,7 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     ArsLexis::Rectangle bounds=b;
                     ArsLexis::Rectangle defRect=bounds;
                     defRect.explode(2, 22, -9, -24);
-                    ArsLexis::Graphics gr(GetDC(hwndMain), hwndMain);
+                    Graphics gr(GetDC(hwndMain), hwndMain);
                     bool doubleBuffer=true;
                     
                     HDC offscreenDc=::CreateCompatibleDC(gr.handle());
@@ -496,7 +518,7 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         if (bitmap) {
                             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
                             {
-                                ArsLexis::Graphics offscreen(offscreenDc, NULL);
+                                Graphics offscreen(offscreenDc, NULL);
                                 definition_->scroll(offscreen,*prefs, page);
                                 offscreen.copyArea(defRect, gr, defRect.topLeft);
                             }
@@ -522,5 +544,118 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return CallWindowProc(oldEditWndProc, hwnd, msg, wp, lp);
 }
 
+void DrawProgressRect(HDC hdc, const ArsLexis::Rectangle& bounds)
+{
 
+    HBRUSH hbr = CreateSolidBrush(RGB(255,255,255));
+    SelectObject(hdc, hbr);
+    Rectangle(hdc, 
+        bounds.x(), 
+        bounds.y(), 
+        bounds.x()+bounds.width(), 
+        bounds.y()+bounds.height() 
+        );
+    
+    POINT points[4];
+    points[0].x = points[3].x = bounds.x() +2;
+    points[0].y = points[1].y = bounds.y() +2;
+    points[2].y = points[3].y = bounds.y() + bounds.height() - 3;
+    points[1].x = points[2].x = bounds.x() + bounds.width() - 3;
+    
+    Polygon(hdc, points,4);
+    /*points[0].x = points[3].x = bounds.x - 2;
+    points[0].y = points[1].y = bounds.y -2;
+    points[2].y = points[3].y = bounds.y - 2 + bounds.height() - 4;
+    points[1].x = points[2].x = bounds.x -2 + bounds.width() - 4;
+    Polygon(hdc, points,4);*/
+
+}
+
+RenderingProgressReporter::RenderingProgressReporter(HWND hwnd):
+    hwndMain_(hwnd),
+    ticksAtStart_(0),
+    lastPercent_(-1),
+    showProgress_(true),
+    afterTrigger_(false)
+{
+    waitText_.assign(_T("Wait... %d%%"));
+    waitText_.c_str(); // We don't want reallocation to occur while rendering...
+}
+
+void RenderingProgressReporter::reportProgress(uint_t percent) 
+{      
+    if (percent==lastPercent_)
+        return;
+    lastPercent_=percent;
+
+    Graphics gr(GetDC(hwndMain), hwndMain_);
+    
+    ArsLexis::Rectangle bounds(progressRect);
+    DrawProgressRect(gr.handle(),bounds);
+
+    DrawProgressBar(gr, percent, bounds);
+
+    ArsLexis::Rectangle progressArea(bounds);    
+    int h = progressArea.height();
+    progressArea.explode(6, h - 20, -12, -h + 15);
+
+    gr.setFont(WinFont());
+    String str(_T("Formatting article..."));
+    uint_t length=str.length();
+    uint_t width=bounds.width();
+    gr.charsInWidth(str.c_str(), length, width);
+    uint_t height=gr.fontHeight();
+    ArsLexis::Point p(progressArea.topLeft);
+    gr.drawText(str.c_str(), length, p);
+    //gr.drawText(str.c_str(), length,progressArea.topLeft);
+
+    char_t buffer[16];
+    //assert(support.percentProgress()<=100);
+    length=tprintf(buffer, _T(" %hu%%"), percent);
+
+    
+    p.x+=width+2;
+    width=bounds.width()-width;
+    gr.charsInWidth(buffer, length, width);
+    gr.drawText(buffer, length, p);
+}
+
+void DrawProgressBar(Graphics& gr, uint_t percent, const ArsLexis::Rectangle& bounds)
+{
+    RECT nativeRec;
+    bounds.toNative(nativeRec);
+    nativeRec.top +=6;
+    nativeRec.bottom = nativeRec.top + 17;
+    nativeRec.left+=6;
+    nativeRec.right-=6;
+
+    HBRUSH hbr=CreateSolidBrush(RGB(180,180,180));
+    FillRect(gr.handle(), &nativeRec, hbr);
+    DeleteObject(hbr);
+
+    nativeRec.right=nativeRec.left + ((nativeRec.right-nativeRec.left)*percent)/100;
+    
+    hbr=CreateSolidBrush(RGB(0,0,255));
+    FillRect(gr.handle(), &nativeRec, hbr);
+    DeleteObject(hbr);
+}
+
+void SmartPhoneProgressReported::showProgress(const ArsLexis::LookupProgressReportingSupport& support, Graphics& gr, const ArsLexis::Rectangle& bounds, bool clearBkg)
+{
+    
+    DrawProgressRect(gr.handle(),bounds);
+
+    if(support.percentProgress()!=support.percentProgressDisabled)
+        DrawProgressBar(gr, support.percentProgress(), bounds);
+    else
+        DrawProgressBar(gr, 0, bounds);
+    gr.setTextColor(RGB(0,0,0));
+    gr.setBackgroundColor(RGB(255,255,255));
+    
+    ArsLexis::Rectangle progressArea(bounds);    
+    int h = progressArea.height();
+    progressArea.explode(6, h - 20, -12, -h + 15);
+
+    DefaultLookupProgressReporter::showProgress(support, gr, progressArea, false);
+}
 // end sm_ipedia.cpp
