@@ -12,16 +12,20 @@ RenderingPreferences::RenderingPreferences():
     bulletIndentation_(2),
     backgroundColor_(RGB(255,255,255))
 {
+    FontEffects fx;
     LOGFONT logfnt;
     HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
     GetObject(fnt, sizeof(logfnt), &logfnt);
     logfnt.lfHeight+=1;
     logfnt.lfCharSet = EASTEUROPE_CHARSET;
     WinFont wfnt = WinFont(CreateFontIndirect(&logfnt));
-    styles_[0].font = wfnt;
-
+    
+    fx.setUnderline(FontEffects::underlineNone);
+    wfnt.setEffects(fx);   
+    styles_[styleDefault].font = wfnt;
+ 
     logfnt.lfUnderline = TRUE;
-    FontEffects fx;
+    
     fx.setUnderline(FontEffects::underlineDotted);
     for (uint_t i=0; i<hyperlinkTypesCount_; ++i) 
     {
@@ -33,7 +37,8 @@ RenderingPreferences::RenderingPreferences():
     logfnt.lfWeight=800;
     logfnt.lfHeight-=2;
     styles_[styleHeader].font=WinFont(CreateFontIndirect(&logfnt));
-    
+    fx.setUnderline(FontEffects::underlineNone);
+    styles_[styleHeader].font.setEffects(fx);   
 
     calculateIndentation();
 }
