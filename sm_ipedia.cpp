@@ -485,6 +485,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         msg.c_str(),
                         ErrorsTable[j].title.c_str(),
                         MB_OK|MB_ICONEXCLAMATION);
+                    setUI(true);
                     break;
                 }
             }
@@ -881,7 +882,7 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 return 0; 
             } 
 
-            if(definition_)
+            if(definition_&&!isAboutVisible)
             {
                 int page=0;
                 switch (wp) 

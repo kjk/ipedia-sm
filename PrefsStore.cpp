@@ -406,7 +406,7 @@ to ignore the case when a preference item is missing.
                 WriteFile(_fHandle, &prefItem.value, size,&written, NULL);
             else
                 WriteFile(_fHandle, prefItem.value.strVal, size,&written, NULL);
-        }   
+        }
         return errNone;
     }
 } // namespace ArsLexis
