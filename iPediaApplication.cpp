@@ -191,10 +191,10 @@ DWORD iPediaApplication::runEventLoop()
             {
                 EventType event;
                 event.eType = msg.message;
-                LookupFinishedEventData data = ExtractLookupFinishedEventData(msg.wParam, msg.lParam);
+                LookupFinishedEventData data;
                 EventData i;
                 i.wParam=msg.wParam; i.lParam=msg.lParam;
-                memcpy(event.data, &data, sizeof(data));
+                memcpy(event.data, &i,sizeof(data));
                 lookupManager_->handleLookupEvent(event);
             }
     
@@ -392,7 +392,7 @@ bool iPediaApplication::initApplication(HINSTANCE hInstance, HINSTANCE hPrevInst
         if (!InitApplication(hInstance))
             return false;
     }
-
+    
     if (!InitInstance(hInstance, cmdShow))
         return false;
     //Initialization of appilcation successful
