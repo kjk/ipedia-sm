@@ -2,6 +2,9 @@
 #include "BaseTypes.hpp"
 #include "sm_ipedia.h"
 #include <iPediaApplication.hpp>
+
+ArsLexis::String newRegCode_;
+
 BOOL CALLBACK RegistrationDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch(msg)
@@ -23,14 +26,14 @@ BOOL CALLBACK RegistrationDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                     len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)text);
                     iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
                     ArsLexis::String newSn(text);
-                    if (newSn!=prefs.serialNumber)
+                    if (newSn!=prefs.regCode)
                     {
                         assert(newSn.length()<=prefs.serialNumberLength);
-                        prefs.serialNumber=newSn;
-                        prefs.serialNumberRegistered=false;
+                        newRegCode_=newSn;
+                        //prefs.regCode=false;
                     }
                     delete text;
-                    EndDialog(hDlg, 0);                    
+                    EndDialog(hDlg, 1);                    
                     break;
                 }
             }
@@ -67,7 +70,7 @@ BOOL InitRegistrationDlg(HWND hDlg)
 
     iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
     HWND hwndEdit = GetDlgItem(hDlg,IDC_EDIT_REGCODE);
-    SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)prefs.serialNumber.c_str());
+    SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)prefs.regCode.c_str());
 
     SetFocus(GetDlgItem(hDlg,IDC_EDIT_REGCODE));
     return TRUE;

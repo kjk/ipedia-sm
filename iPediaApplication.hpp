@@ -83,21 +83,18 @@ public:
         
         enum {cookieLength=32};
         ArsLexis::String cookie;
-        
-        enum {serialNumberLength=32};
-        ArsLexis::String serialNumber;
-        
-        bool serialNumberRegistered;
-        bool checkArticleCountAtStartup;
-        
-        enum {articleCountNotChecked=-1L};
+                        
+        enum {regCodeLength=32};
+        ArsLexis::String regCode;
+
+        //enum {articleCountNotChecked=-1L};
         
         long articleCount;
         
         Preferences():
-            serialNumberRegistered(false),
-            checkArticleCountAtStartup(true),
-            articleCount(articleCountNotChecked)            
+            //serialNumberRegistered(false),
+            //checkArticleCountAtStartup(true),
+            articleCount(-1)
         {}
             ArsLexis::String databaseTime;
     };
