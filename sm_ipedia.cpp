@@ -41,7 +41,6 @@ String g_newRegCode;
 
 bool g_fRegistration = false;
 
-int  g_menuDy = 0;
 bool g_lbuttondown = false;
 
 enum ScrollUnit
@@ -65,6 +64,8 @@ Definition *g_register = new Definition();
 Definition *g_tutorial = new Definition();
 Definition *g_wikipedia = new Definition();
 DisplayMode g_displayMode = showAbout;
+
+SHACTIVATEINFO g_sai;
 
 long g_articleCountSet = -1;
 
@@ -132,14 +133,20 @@ Definition& currentDefinition()
 // Can be called multiple times - will do nothing if connection is already established.
 static bool fInitConnection()
 {
-    if (InitDataConnection)
+    if (InitDataConnection())
         return true;
 
+#ifdef WIN32_PLATFORM_PSPC
+    // just ignore on Pocket PC. I don't know how to make it work 
+    // reliably across both Pocket PC and Pocket PC Phone Edition
+    return true;
+#else
     String errorMsg = _T("Unable to connect");
     errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
     iPediaApplication& app = GetApp();
     MessageBox(app.getMainWindow(), errorMsg.c_str(), _T("Error"), MB_OK | MB_ICONERROR | MB_APPLMODAL | MB_SETFOREGROUND );
     return false;
+#endif
 }
 
 void OnLinkedArticles(HWND hwnd)
@@ -386,11 +393,11 @@ static void RepaintDefiniton(int scrollDelta)
     defRectTmp.top    += 24;
     defRectTmp.left   += 2;
     defRectTmp.right  -= 2 + GetScrollBarDx();
-    defRectTmp.bottom -= 2 + g_menuDy;
+    defRectTmp.bottom -= 2;
 
     ArsLexis::Rectangle defRect = defRectTmp;
 
-		Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
+    Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
     if ( (true == g_forceAboutRecalculation) && (displayMode() == showAbout) )
     {
         g_forceLayoutRecalculation = true;
@@ -783,15 +790,27 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return lResult;
 }
 
+static void OnSettingChange(HWND hwnd, WPARAM wp, LPARAM lp)
+{
+    SHHandleWMSettingChange(hwnd, wp, lp, &g_sai);
+}
+
+static void OnActivateMain(HWND hwnd, WPARAM wp, LPARAM lp)
+{
+    SHHandleWMActivate(hwnd, wp, lp, &g_sai, 0);
+}
+
+static void OnHibernate(HWND hwnd, WPARAM wp, LPARAM lp)
+{
+    // do nothing
+}
+
 static void OnCreate(HWND hwnd)
 {
     iPediaApplication &app = GetApp();
     app.loadPreferences();
 
-    g_menuDy = 0;
-#ifdef WIN32_PLATFORM_PSPC
-    g_menuDy = GetSystemMetrics(SM_CYMENU) + 3;
-#endif
+    app.setMainWindow(hwnd);
 
     // create the menu bar
     SHMENUBARINFO mbi = {0};
@@ -810,6 +829,30 @@ static void OnCreate(HWND hwnd)
     }
     g_hWndMenuBar = mbi.hwndMB;
 
+    OverrideBackButton(mbi.hwndMB);
+
+#ifdef WIN32_PLATFORM_PSPC
+        ZeroMemory(&g_sai, sizeof(g_sai));
+        g_sai.cbSize = sizeof(g_sai);
+    
+        // size the main window taking into account SIP state and menu bar size
+        SIPINFO si = {0};
+        si.cbSize = sizeof(si);
+        SHSipInfo(SPI_GETSIPINFO, 0, (PVOID)&si, FALSE);
+    
+        int visibleDx = RectDx(&si.rcVisibleDesktop);
+        int visibleDy = RectDy(&si.rcVisibleDesktop);
+    
+        if ( FDesktopIncludesMenuBar(&si) )
+        {
+            RECT rectMenuBar;
+            GetWindowRect(mbi.hwndMB, &rectMenuBar);
+            int menuBarDy = RectDy(&rectMenuBar);
+            visibleDy -= menuBarDy;
+        }
+        SetWindowPos(hwnd, NULL, 0, 0, visibleDx, visibleDy, SWP_NOMOVE | SWP_NOZORDER);
+#endif
+
     g_hwndEdit = CreateWindow(
         TEXT("edit"),
         NULL,
@@ -819,6 +862,7 @@ static void OnCreate(HWND hwnd)
         (HMENU) ID_EDIT,
         app.getApplicationHandle(),
         NULL);
+
 #ifdef WIN32_PLATFORM_PSPC
     g_hwndSearchButton = CreateWindow(
         _T("button"),  
@@ -843,13 +887,6 @@ static void OnCreate(HWND hwnd)
         NULL);
 
     SetScrollBar(g_about);
-    (void)SendMessage(
-        mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK,
-        MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
-        SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
-        );
-
-    app.setMainWindow(hwnd);
 
     LookupManager* lookupManager=app.getLookupManager(true);
     lookupManager->setProgressReporter(new DownloadingProgressReporter());
@@ -1025,8 +1062,13 @@ static void DoDisplayAlert(HWND hwnd, WPARAM wp, LPARAM lp, bool fCustom)
     SetUIState(true);
 }
 
-static void OnPaint(HWND hwnd, HDC hdc, RECT rcpaint)
+static void OnPaint(HWND hwnd)
 {
+    PAINTSTRUCT ps;
+    HDC hdc = BeginPaint (hwnd, &ps);
+
+    RECT rcpaint = ps.rcPaint;
+
     RECT rect;
     GetClientRect (hwnd, &rect);
     ArsLexis::Rectangle rin(rcpaint);
@@ -1047,7 +1089,7 @@ static void OnPaint(HWND hwnd, HDC hdc, RECT rcpaint)
     rect.top    += 22;
     rect.left   += 2;
     rect.right  -= (2+GetScrollBarDx());
-    rect.bottom -= (2+g_menuDy);
+    rect.bottom -= 2;
 
     if ( !onlyProgress && !g_recalculationInProgress)
     {
@@ -1087,20 +1129,12 @@ static void OnPaint(HWND hwnd, HDC hdc, RECT rcpaint)
             app.getLookupManager()->showProgress(gr, progressArea);
         }
     }
+
+    EndPaint (hwnd, &ps);
 }
 
-bool g_fNotFirstOnSize = false;
 static void OnSize(HWND hwnd, LPARAM lp)
 {
-    if (g_fNotFirstOnSize)
-    {
-        g_menuDy = 0;
-    }
-    else
-    {
-        g_fNotFirstOnSize = true;
-    }
-
     int dx = LOWORD(lp);
     int dy = HIWORD(lp);
 
@@ -1115,14 +1149,8 @@ static void OnSize(HWND hwnd, LPARAM lp)
 #endif
 
     int scrollStartY = 24;
-    int scrollDy = dy - g_menuDy - scrollStartY - 2;
-
-#ifdef WIN32_PLATFORM_PSPC
-    // TODO: on first sizing, scrollDy is incorrect (3px too long)
+    int scrollDy = dy - scrollStartY - 2;
     MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
-#else
-    MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
-#endif
 
     g_progressRect.left = (dx - GetScrollBarDx() - 155)/2;
     g_progressRect.top  = (dy-45)/2;
@@ -1199,7 +1227,6 @@ static void OnScroll(WPARAM wp)
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     LRESULT     lResult = TRUE;
-    HDC         hdc;
     iPediaApplication& app = GetApp();
 
     // I don't know why on PPC in first WM_SIZE mesaage hieght of menu
@@ -1211,26 +1238,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             OnCreate(hwnd);
             break;
 
-#ifdef WIN32_PLATFORM_PSPC
         case WM_SETTINGCHANGE:
-        {
-            SHACTIVATEINFO sai = {0};
-            if (SPI_SETSIPINFO == wp)
-            {
-                SHHandleWMSettingChange(hwnd, -1 , 0, &sai);
-            }
+            OnSettingChange(hwnd, wp, lp);
             break;
-        }
+
         case WM_ACTIVATE:
-        {
-            SHACTIVATEINFO sai = {0};
-            if (SPI_SETSIPINFO == wp)
-            {
-                SHHandleWMActivate(hwnd, wp, lp, &sai, 0);
-            }
+            OnActivateMain(hwnd, wp, lp);
             break;
-        }
-#endif
+
         case WM_SIZE:
             OnSize(hwnd, lp);
             break;
@@ -1244,13 +1259,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            hdc = BeginPaint (hwnd, &ps);
-            OnPaint(hwnd, hdc, ps.rcPaint);
-            EndPaint (hwnd, &ps);
+            OnPaint(hwnd);
             break;
-        }
         
         case WM_HOTKEY:
         {
