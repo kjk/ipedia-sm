@@ -36,6 +36,16 @@
 #define IDR_LAST_RESULTS_REFINE_MENUBAR 123
 #define IDR_LAST_RESULTS_SEARCH_MENUBAR 124
 
+#define IDD_REGISTER                    125
+#define IDC_EDIT_REGCODE                126
+#define IDM_REGISTER                    127
+#define IDR_REGISTER_MENUBAR            128
+#define IDS_REGISTER                    129
+
+#define IDM_MENU_HYPERS                 130
+#define IDM_MENU_PREV                   131
+#define IDM_MENU_NEXT                   132
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

@@ -14,10 +14,11 @@ RenderingPreferences::RenderingPreferences():
 {
     FontEffects fx;
     LOGFONT logfnt;
+    
     HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
     GetObject(fnt, sizeof(logfnt), &logfnt);
     logfnt.lfHeight+=1;
-    logfnt.lfCharSet = EASTEUROPE_CHARSET;
+    logfnt.lfCharSet = SHIFTJIS_CHARSET;//logfnt.lfCharSet = EASTEUROPE_CHARSET;
     WinFont wfnt = WinFont(CreateFontIndirect(&logfnt));
     
     fx.setUnderline(FontEffects::underlineNone);

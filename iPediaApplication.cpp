@@ -14,7 +14,7 @@ using namespace ArsLexis;
 
 iPediaApplication::iPediaApplication():
     log_( _T("root") ),
-    history_(0),
+    history_(new LookupHistory()),
     diaNotifyRegistered_(false),
     //ticksPerSecond_(SysTicksPerSecond()),
     ticksPerSecond_(1000),
@@ -101,7 +101,7 @@ LookupManager* iPediaApplication::getLookupManager(bool create)
 {
     if (!lookupManager_ && create)
     {
-        //assert(0!=history_);
+        assert(0!=history_);
         lookupManager_=new LookupManager(*history_);
     }
     return lookupManager_;
@@ -148,6 +148,11 @@ DWORD iPediaApplication::waitForEvent()
             {
                 EventType event;
                 event.eType = msg.message;
+                LookupFinishedEventData data;
+                ArsLexis::EventData i;
+                i.wParam=msg.wParam; i.lParam=msg.lParam;
+                memcpy(&data, &i, sizeof(data));
+                memcpy(event.data, &data,sizeof(data));
                 lookupManager_->handleLookupEvent(event);
             }
     
