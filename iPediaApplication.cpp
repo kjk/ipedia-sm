@@ -10,6 +10,114 @@
 
 using namespace ArsLexis;
 
+const char_t iPediaApplication::szAppName[] = _T("iPedia");
+const char_t iPediaApplication::szTitle[]   = _T("iPedia");
+
+const iPediaApplication::ErrorInfo iPediaApplication::ErrorsTable[] =
+{
+    ErrorInfo(romIncompatibleAlert,
+    _T("System incompatible"),
+    _T("System Version 4.0 or greater is required to run iPedia.")),
+
+    ErrorInfo(networkUnavailableAlert,
+    _T("Network unavailable"),
+    _T("Unable to initialize network subsystem.")),
+
+    ErrorInfo(cantConnectToServerAlert,
+    _T("Server unavailable"),
+    _T("Can't connect to the server.")),
+
+    ErrorInfo(articleNotFoundAlert,
+    _T("Article not found"),
+    _T("Encyclopedia article for '^1' was not found.")),
+
+    ErrorInfo(articleTooLongAlert,
+    _T("Article too long"),
+    _T("Article is too long for iPedia to process.")),
+
+    ErrorInfo(notEnoughMemoryAlert,
+    _T("Error"),
+    _T("Not enough memory to complete current operation.")),
+
+    ErrorInfo(serverFailureAlert,
+    _T("Server error"),
+    _T("Unable to complete request due to server error.")),
+
+    ErrorInfo(invalidRegCodeAlert,
+    _T("Invalid registration code"),
+    _T("Invalid registration code sent. Please check registration code (using menu 'Options/Register'). Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorInfo(invalidCookieAlert,
+    _T("Invalid cookie"),
+    _T("Invalid cookie sent. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorInfo(alertRegistrationFailed,
+    _T("Wrong registration code"),
+    _T("Incorrect registration code. Contact support@arslexis.com in case of problems.")),
+
+    ErrorInfo(alertRegistrationOk,
+    _T("Registration successful"),
+    _T("Thank you for registering iPedia.")),
+
+    ErrorInfo(lookupLimitReachedAlert,
+    _T("Trial expired"),
+    _T("Your unregistered version expired. Please register by purchasing registration code and entering it using menu 'Options/Register'. Do you want to enter it now ?")),
+
+    ErrorInfo(forceUpgradeAlert,
+    _T("Upgrade required"),
+    _T("You need to upgrade iPedia to a newer version. Use menu 'Options/Check for updates' or press Update button to download newer version.")),
+
+    ErrorInfo(unsupportedDeviceAlert,
+    _T("Unsupported device"),
+    _T("Your hardware configuration is unsupported. Please contact support@arslexis.com if the problem persists.")),
+
+    // this shouldn't really happen, means bug on the client
+    ErrorInfo(unexpectedRequestArgumentAlert,
+    _T("Unexpected request argument"),
+    _T("Unexpected request argument. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorInfo(requestArgumentMissingAlert,
+    _T("Request argument missing"),
+    _T("Request argument missing. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorInfo(invalidProtocolVersionAlert,
+    _T("Invalid protocol version"),
+    _T("Invalid protocol version. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorInfo(userDisabledAlert,
+    _T("User disabled"),
+    _T("This user has been disabled. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorInfo(malformedRequestAlert,
+    _T("Malformed request"),
+    _T("Server rejected your query. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorInfo(invalidRequestAlert,
+    _T("Invalid request"),
+    _T("Client sent invalid request. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorInfo(noWebBrowserAlert,
+    _T("No web browser"),
+    _T("Web browser is not installed on this device.")),
+
+    ErrorInfo(malformedResponseAlert,
+    _T("Malformed response"),
+    _T("Server returned malformed response. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorInfo(connectionTimedOutAlert,
+    _T("Connection timed out"),
+    _T("Connection timed out.")),
+
+    ErrorInfo(connectionErrorAlert,
+    _T("Error"),
+    _T("Connection terminated.")),
+
+    ErrorInfo(connectionServerNotRunning,
+    _T("Error"),
+    _T("The iPedia server is not available. Please contact support@arslexis.com if the problem persists."))
+};
+
+
 iPediaApplication::iPediaApplication():
     log_( _T("root") ),
     history_(new LookupHistory()),
@@ -17,7 +125,6 @@ iPediaApplication::iPediaApplication():
     ticksPerSecond_(1000),
     lookupManager_(0),
     server_(serverToUse),
-    stressMode_(false),
     hasHighDensityFeatures_(false),
     fArticleCountChecked(false)
 {
@@ -51,7 +158,7 @@ LookupManager* iPediaApplication::getLookupManager(bool create)
     return lookupManager_;
 }
 
-DWORD iPediaApplication::waitForEvent()
+DWORD iPediaApplication::runEventLoop()
 {
     loadPreferences();
     setupAboutWindow();
@@ -210,4 +317,96 @@ void* ArsLexis::allocate(size_t size)
     if (!ptr)
         handleBadAlloc();
     return ptr;
+}
+
+const iPediaApplication::ErrorInfo& iPediaApplication::getErrorInfo(int alertId)
+{
+    for(int j=0; j<sizeof(ErrorsTable)/sizeof(ErrorsTable[0]); j++)
+    {
+        if (ErrorsTable[j].errorCode == alertId)
+            return ErrorsTable[j];
+    }
+    assert(0);
+    return ErrorsTable[0];
+}
+
+void iPediaApplication::getErrorMessage(int alertId, bool customAlert, String &out)
+{
+    out.assign(getErrorInfo(alertId).message);
+    if (customAlert)
+    {
+        int pos = out.find(_T("^1"));
+        out.replace(pos,2,popCustomAlert().c_str());
+    }
+}
+
+void iPediaApplication::getErrorTitle(int alertId, String &out)
+{
+    out.assign(getErrorInfo(alertId).title);
+}
+
+bool iPediaApplication::InitInstance(HINSTANCE hInstance, int CmdShow )
+{
+    
+    hInst_ = hInstance;
+    hwndMain_ = CreateWindow(szAppName,
+        szTitle,
+        WS_VISIBLE,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        NULL, NULL, hInstance, NULL );
+    
+    if ( !hwndMain_ )
+        return false;
+    
+    ShowWindow(hwndMain_, CmdShow );
+    UpdateWindow(hwndMain_);
+    return true;
+}
+
+BOOL iPediaApplication::InitApplication ( HINSTANCE hInstance )
+{
+    WNDCLASS wc;
+    BOOL f;
+    
+    wc.style = CS_HREDRAW | CS_VREDRAW ;
+    wc.lpfnWndProc = (WNDPROC)WndProc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hIcon = NULL;
+    wc.hInstance = hInstance;
+    wc.hCursor = NULL;
+    wc.hbrBackground = (HBRUSH) GetStockObject( WHITE_BRUSH );
+    wc.lpszMenuName = NULL;
+    wc.lpszClassName = szAppName;
+    
+    f = RegisterClass(&wc);
+    
+    return f;
+}
+
+bool iPediaApplication::initApplication(HINSTANCE hInstance,
+                     HINSTANCE hPrevInstance,
+                     ArsLexis::String cmdLine,
+                     int cmdShow)
+{
+    HWND hwndPrev = FindWindow(szAppName, szTitle);
+    if (hwndPrev) 
+    {
+        SetForegroundWindow(hwndPrev);    
+        return false;
+    }
+    
+    if (!hPrevInstance)
+    {
+        if (!InitApplication(hInstance))
+            return false;
+    }
+    
+    if (!InitInstance(hInstance, cmdShow))
+        return false;
+    //Initialization of appilcation successful
+    return true;
 }

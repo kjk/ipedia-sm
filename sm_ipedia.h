@@ -15,8 +15,8 @@
 #include <LookupManagerBase.hpp>
 #include <Definition.hpp>
 
-extern HWND             g_hwndMain;
-extern HINSTANCE        g_hInst;
+//extern HWND             g_hwndMain;
+//extern HINSTANCE        g_hInst;
 extern Definition *     g_definition;
 extern ArsLexis::String g_recentWord;
 extern ArsLexis::String g_searchWord;
@@ -46,19 +46,6 @@ enum DisplayMode
 void setDisplayMode(DisplayMode mode);
 DisplayMode displayMode();
 Definition& currentDefinition();
-
-struct ErrorsTableEntry
-{
-    int errorCode;
-    ArsLexis::String title;
-    ArsLexis::String message;
-
-    ErrorsTableEntry(int eCode, ArsLexis::String tit, ArsLexis::String msg):
-        errorCode(eCode),
-        title(tit),
-        message(msg)
-    {}
-
-};
+LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
 #endif // !defined(AFX_SM_IPEDIA_H__6B0A6D56_EEA8_48CF_B48B_C0C09E513635__INCLUDED_)

@@ -1,4 +1,5 @@
 #include "Hyperlinks.h"
+#include "iPediaApplication.hpp"
 #include "sm_ipedia.h"
 #include <Definition.hpp>
 #include <DefinitionElement.hpp>
@@ -44,6 +45,7 @@ static void OnSelect(HWND hDlg)
         SendMessage(ctrl, LB_GETTEXT, idx, (LPARAM) buf);
         g_searchWord.assign(buf);
         g_recentWord.assign(buf);
+        delete [] buf;
     }
     txtEl->performAction(currentDefinition());
     EndDialog(hDlg, 1);
@@ -102,7 +104,7 @@ BOOL InitHyperlinks(HWND hDlg)
     shmbi.cbSize = sizeof(shmbi);
     shmbi.hwndParent = hDlg;
     shmbi.nToolBarId = IDR_HYPERLINKS_MENUBAR ;
-    shmbi.hInstRes = g_hInst;
+    shmbi.hInstRes = iPediaApplication::instance().getApplicationHandle();
     
     // If we could not initialize the dialog box, return an error
     if (!SHInitDialog(&shidi))
@@ -136,8 +138,12 @@ BOOL InitHyperlinks(HWND hDlg)
                 ((txtEl->hyperlinkProperties()->type==hyperlinkTerm)||
                  (txtEl->hyperlinkProperties()->type==hyperlinkExternal)))
             {
-                int idx = SendMessage(ctrl,LB_ADDSTRING,0,(LPARAM)txtEl->text().c_str());
-                SendMessage(ctrl, LB_SETITEMDATA, idx, (LPARAM) txtEl);
+                int idx = SendMessage(ctrl,LB_FINDSTRING,0,(LPARAM)txtEl->text().c_str());
+                if (LB_ERR == idx)
+                {
+                    idx = SendMessage(ctrl,LB_ADDSTRING,0,(LPARAM)txtEl->text().c_str());
+                    SendMessage(ctrl, LB_SETITEMDATA, idx, (LPARAM) txtEl);
+                }
             }
         }
     }

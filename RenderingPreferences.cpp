@@ -1,5 +1,6 @@
 #include "RenderingPreferences.hpp"
 #include "sm_ipedia.h"
+#include "iPediaApplication.hpp"
 #include <PrefsStore.hpp>
 #include <BaseTypes.hpp>
 
@@ -54,7 +55,8 @@ RenderingPreferences::RenderingPreferences():
 void RenderingPreferences::calculateIndentation()
 {
     const ArsLexis::char_t* bullet=_T("\x95");
-    Graphics graphics(GetDC(g_hwndMain), g_hwndMain);
+    iPediaApplication &app = iPediaApplication::instance();
+    Graphics graphics(GetDC(app.getMainWindow()), app.getMainWindow());
     standardIndentation_=graphics.textWidth(bullet, 1)+bulletIndentation_;
 }
 

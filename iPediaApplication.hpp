@@ -18,7 +18,7 @@ struct LookupFinishedEventData;
 #define serverLocalhost2     _T("127.0.0.1:9000")
 #define serverIpediaArslexis _T("ipedia.arslexis.com:9000")
 
-#define serverToUse serverIpediaArslexis
+#define serverToUse serverLocalhost
 
 class iPediaApplication
 {
@@ -28,13 +28,14 @@ class iPediaApplication
     LookupHistory*          history_;
     LookupManager*          lookupManager_;
     ArsLexis::String        server_;
+    HINSTANCE               hInst_;
     
     typedef std::list<ArsLexis::String> CustomAlerts_t;
     CustomAlerts_t customAlerts_;
     void loadPreferences();
 
     HWND hwndMain_;    
-    
+
 protected:
 
     bool handleApplicationEvent(ArsLexis::EventType& event);
@@ -46,7 +47,7 @@ public:
 
     iPediaApplication();
 
-    DWORD waitForEvent();
+    DWORD runEventLoop();
     
     HWND getMainWindow()
     {return hwndMain_ ;}
@@ -134,13 +135,7 @@ public:
     
     static iPediaApplication& instance()
     {return instance_;}
-    
-    bool inStressMode() const
-    {return stressMode_;}
-    
-    void toggleStressMode(bool enable)
-    {stressMode_=enable;}
-    
+            
     const LookupHistory& history() const
     {
         assert(0!=history_);
@@ -153,14 +148,41 @@ public:
     iPediaHyperlinkHandler& hyperlinkHandler()
     {return hyperlinkHandler_;}
 
+
+    struct ErrorInfo
+    {
+        int errorCode;
+        ArsLexis::String title;
+        ArsLexis::String message;
+    
+        ErrorInfo(int eCode, ArsLexis::String tit, ArsLexis::String msg):
+            errorCode(eCode),
+            title(tit),
+            message(msg)
+        {}
+
+    };
+    void getErrorMessage(int alertId, bool customAlert, ArsLexis::String &out);
+    void iPediaApplication::getErrorTitle(int alertId, ArsLexis::String &out);
+
+    bool InitInstance (HINSTANCE hInstance, int CmdShow );
+    BOOL InitApplication ( HINSTANCE hInstance );    
+    bool initApplication(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+                         ArsLexis::String cmdLine, int cmdShow);
+    HINSTANCE getApplicationHandle()
+    {return hInst_;}
 private:
     
     Preferences preferences_;
     static iPediaApplication instance_;
     bool diaNotifyRegistered_:1;
-    bool stressMode_:1;
     bool hasHighDensityFeatures_:1;
     bool logAllocation_;  
+    static const ErrorInfo ErrorsTable[];
+    const ErrorInfo& getErrorInfo(int alertID);
+    static const ArsLexis::char_t szAppName[];
+    static const ArsLexis::char_t szTitle[];
+
 };
 
 #endif

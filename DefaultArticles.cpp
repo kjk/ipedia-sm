@@ -34,7 +34,7 @@ static void wikipediaActionCallback(void *data)
     assert(showWikipedia!=displayMode());
     setDisplayMode(showWikipedia);
     g_forceLayoutRecalculation = true;
-    InvalidateRect(g_hwndMain, NULL, false);
+    InvalidateRect(iPediaApplication::instance().getMainWindow(), NULL, false);
 }
 
 static void tutorialActionCallback(void *data)
@@ -42,7 +42,7 @@ static void tutorialActionCallback(void *data)
     assert(showTutorial!=displayMode());
     setDisplayMode(showTutorial);
     g_forceLayoutRecalculation = true;
-    InvalidateRect(g_hwndMain, NULL, false);
+    InvalidateRect(iPediaApplication::instance().getMainWindow(), NULL, false);
 }
 
 static void unregisteredActionCallback(void *data)
@@ -50,7 +50,7 @@ static void unregisteredActionCallback(void *data)
     assert(showRegister!=displayMode());
     setDisplayMode(showRegister);
     g_forceLayoutRecalculation = true;
-    InvalidateRect(g_hwndMain, NULL, false);
+    InvalidateRect(iPediaApplication::instance().getMainWindow(), NULL, false);
 }
 
 static void aboutActionCallback(void *data)
@@ -58,13 +58,13 @@ static void aboutActionCallback(void *data)
     assert(showAbout!=displayMode());
     setDisplayMode(showAbout);
     g_forceLayoutRecalculation = true;
-    InvalidateRect(g_hwndMain, NULL, false);
+    InvalidateRect(iPediaApplication::instance().getMainWindow(), NULL, false);
 }
 
 static void randomArticleActionCallback(void *data)
 {
     assert(showTutorial==displayMode());
-    SendMessage(g_hwndMain, WM_COMMAND, IDM_MENU_RANDOM, 0);
+    SendMessage(iPediaApplication::instance().getMainWindow(), WM_COMMAND, IDM_MENU_RANDOM, 0);
 }
 
 void prepareAbout()
@@ -298,7 +298,7 @@ void prepareTutorial()
 static void registerActionCallback(void *data)
 {
     assert(NULL!=data);
-    SendMessage(g_hwndMain, WM_COMMAND, IDM_MENU_REGISTER, 0);
+    SendMessage(iPediaApplication::instance().getMainWindow(), WM_COMMAND, IDM_MENU_REGISTER, 0);
 }
 
 // TODO: make those on-demand only to save memory

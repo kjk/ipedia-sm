@@ -28,7 +28,7 @@ LRESULT CALLBACK ResultsEditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 shmbi.cbSize = sizeof(shmbi);
                 shmbi.hwndParent = g_hLastResultsDlg;
                 shmbi.nToolBarId = IDR_LAST_RESULTS_REFINE_MENUBAR;
-                shmbi.hInstRes = g_hInst;
+                shmbi.hInstRes = iPediaApplication::instance().getApplicationHandle();
                 
                 if (!SHCreateMenuBar(&shmbi))
                     return FALSE;
@@ -55,7 +55,7 @@ LRESULT CALLBACK ResultsListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             shmbi.cbSize = sizeof(shmbi);
             shmbi.hwndParent = g_hLastResultsDlg;
             shmbi.nToolBarId = IDR_LAST_RESULTS_SEARCH_MENUBAR ;
-            shmbi.hInstRes = g_hInst;
+            shmbi.hInstRes = iPediaApplication::instance().getApplicationHandle();
             
             if (!SHCreateMenuBar(&shmbi))
                 return FALSE;
@@ -200,7 +200,7 @@ bool FInitLastResults(HWND hDlg)
     shmbi.cbSize     = sizeof(shmbi);
     shmbi.hwndParent = hDlg;
     shmbi.nToolBarId = IDR_LAST_RESULTS_REFINE_MENUBAR;
-    shmbi.hInstRes   = g_hInst;
+    shmbi.hInstRes   = iPediaApplication::instance().getApplicationHandle();
 
     // If we could not initialize the dialog box, return an error
     if (!SHInitDialog(&shidi))
