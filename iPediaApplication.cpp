@@ -46,7 +46,8 @@ inline void iPediaApplication::detectViewer()
 
 status_t iPediaApplication::initialize()
 {
-    status_t error = initialize();
+    status_t error = errNone;
+    //err = initialize();
     if (!error)
     {
         /*if (diaSupport_ && notifyManagerPresent()) 
