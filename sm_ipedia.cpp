@@ -207,7 +207,7 @@ static bool fInitConnection()
 #endif
 }
 
-void OnLinkedArticles(HWND hwnd)
+static void OnLinkedArticles(HWND hwnd)
 {
      if (currentDefinition().empty())
        return;
@@ -234,6 +234,9 @@ void OnLinkedArticles(HWND hwnd)
             }
         }
     }
+
+    if (strList.empty())
+        return;
 
     String selectedString;
     bool fSelected = FGetStringFromListRemoveDups(hwnd, strList, selectedString);
@@ -329,34 +332,39 @@ static void SetMenu(HWND hwnd)
     hMenu = (HMENU)SendMessage(hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
     iPediaApplication& app=iPediaApplication::instance();
     LookupManager* lookupManager=app.getLookupManager(true);
-    
-    unsigned int lastSearchResultEnabled = MF_GRAYED;
-    if (!lookupManager->lastExtendedSearchResults().empty())
-        lastSearchResultEnabled = MF_ENABLED;
-    EnableMenuItem(hMenu, IDM_MENU_RESULTS, lastSearchResultEnabled);
-    
-    unsigned int nextHistoryTermEnabled = MF_GRAYED;
-    if (lookupManager->hasNextHistoryTerm())
-        nextHistoryTermEnabled = MF_ENABLED;
-    EnableMenuItem(hMenu, IDM_MENU_NEXT, nextHistoryTermEnabled);
 
-    unsigned int previousHistoryTermEnabled = MF_GRAYED;
+    unsigned int menuState = MF_ENABLED;
+    if (lookupManager->lastExtendedSearchResults().empty())
+        menuState = MF_GRAYED;
+    EnableMenuItem(hMenu, IDM_MENU_RESULTS, menuState);
+
+    menuState = MF_ENABLED;
+    if (lookupManager->lastReverseLinks().empty())
+        menuState = MF_GRAYED;
+    EnableMenuItem(hMenu, IDM_MENU_REVERSE_LINKS, menuState);
+
+    menuState = MF_GRAYED;
+    if (lookupManager->hasNextHistoryTerm())
+        menuState = MF_ENABLED;
+    EnableMenuItem(hMenu, IDM_MENU_NEXT, menuState);
+
+    menuState = MF_GRAYED;
     if (lookupManager->hasPreviousHistoryTerm() ||
         ( (displayMode()!=showArticle) && (!g_definition->empty()) )
        )
     {
-        previousHistoryTermEnabled = MF_ENABLED;
+        menuState = MF_ENABLED;
     }
 
-    EnableMenuItem(hMenu, IDM_MENU_PREV, previousHistoryTermEnabled);
+    EnableMenuItem(hMenu, IDM_MENU_PREV, menuState);
     
-    unsigned int clipboardEnabled = MF_GRAYED;
+    menuState = MF_GRAYED;
     Definition &def = currentDefinition();
     if (!def.empty())
     {
-        clipboardEnabled = MF_ENABLED;
+        menuState = MF_ENABLED;
     }
-    EnableMenuItem(hMenu, IDM_MENU_CLIPBOARD, clipboardEnabled);
+    EnableMenuItem(hMenu, IDM_MENU_CLIPBOARD, menuState);
 
 #ifdef WIN32_PLATFORM_PSPC
     if (g_uiEnabled)
@@ -680,8 +688,13 @@ static void DoExtSearchResults(HWND hwnd)
 
     CharPtrList_t strList;
     AddLinesToList(lastSearchResults, strList);
+    if (strList.empty())
+        return;
+
     String strResult;
     int res = ExtSearchResultsDlg(hwnd, strList, strResult);
+
+    FreeStringsFromCharPtrList(strList);
 
     if (EXT_RESULTS_REFINE==res)
     {
@@ -696,6 +709,50 @@ static void DoExtSearchResults(HWND hwnd)
         DoSimpleSearch(hwnd, strResult);
     }
 }    
+
+void replaceCharInString(char_t *str, char_t orig, char_t replacement)
+{
+    while (_T('\0')!=*str)
+    {
+        if (*str==orig)
+            *str = replacement;
+        ++str;
+    }
+}
+
+static void OnReverseLinks(HWND hwnd)
+{
+    if (currentDefinition().empty())
+      return;
+
+    iPediaApplication& app=GetApp();
+    LookupManager *lookupManager = app.getLookupManager();
+    if (NULL==lookupManager)
+        return;
+    String& reverseLinks = lookupManager->lastReverseLinks();
+
+    char_t *str = (char_t*)reverseLinks.c_str();
+    replaceCharInString(str, _T('_'), _T(' '));
+
+    CharPtrList_t strList;
+
+    AddLinesToList(reverseLinks, strList);
+
+    if (strList.empty())
+        return;
+
+    String selectedString;
+    bool fSelected = FGetStringFromListRemoveDups(hwnd, strList, selectedString);
+
+    FreeStringsFromCharPtrList(strList);
+
+    if (!fSelected)
+        return;
+
+    assert (!selectedString.empty());
+
+    DoSimpleSearch(hwnd, selectedString);
+}
 
 static void DoRandom()
 {
@@ -901,6 +958,10 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         
         case IDM_MENU_HYPERS:
             OnLinkedArticles(hwnd);
+            break;
+
+        case IDM_MENU_REVERSE_LINKS:
+            OnReverseLinks(hwnd);
             break;
 
         case IDM_MENU_RANDOM:
@@ -1186,22 +1247,24 @@ static void DoDisplayAlert(HWND hwnd, WPARAM wp, LPARAM lp, bool fCustom)
 
     String msg;
     app.getErrorMessage(data.alertId, fCustom, msg);
-    String title;
-    app.getErrorTitle(data.alertId, title);
+
+    const char_t *title = getErrorTitle(data.alertId);
 
     if (lookupLimitReachedAlert == data.alertId)
     {
-        int res = MessageBox(app.getMainWindow(), msg.c_str(), title.c_str(),
+        int res = MessageBox(app.getMainWindow(), msg.c_str(), title,
                   MB_YESNO | MB_ICONEXCLAMATION | MB_APPLMODAL | MB_SETFOREGROUND );
         if (IDYES == res)
+        {
             SendMessage(hwnd, WM_COMMAND, IDM_MENU_REGISTER, 0);
+        }
     }
     else
     {
         // we need to do make it MB_APPLMODAL - if we don't if we switch
         // to other app and return here, the dialog is gone but the app
         // is blocked
-        MessageBox(app.getMainWindow(), msg.c_str(), title.c_str(),
+        MessageBox(app.getMainWindow(), msg.c_str(), title,
                    MB_OK | MB_ICONEXCLAMATION | MB_APPLMODAL | MB_SETFOREGROUND );
     }
 

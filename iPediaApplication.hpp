@@ -7,18 +7,11 @@
 #include <SysUtils.hpp>
 #include <BaseTypes.hpp>
 
+using ArsLexis::char_t;
+
 class LookupManager;
 class LookupHistory;
 struct LookupFinishedEventData;
-
-#define serverMarek          _T("arslex.no-ip.info:9000")
-#define serverKjk            _T("dict-pc.arslexis.com:9000")
-#define serverKjkLaptop      _T("192.168.123.150:9000")
-#define serverLocalhost      _T("192.168.0.1:9000")
-#define serverLocalhost2     _T("127.0.0.1:9000")
-#define serverIpediaArslexis _T("ipedia.arslexis.com:9000")
-
-#define serverToUse serverIpediaArslexis
 
 struct DisplayAlertEventData
 {
@@ -30,6 +23,19 @@ struct DisplayAlertEventData
     DisplayAlertEventData():
         alertId(0) {}
 };
+
+struct ErrorInfo
+{
+    int       errorCode;
+    const char_t *  title;
+    const char_t *  message;
+
+    ErrorInfo(int code, const char_t *tit, const char_t *msg) : errorCode(code), title(tit), message(msg)
+    {}
+};
+
+const char_t *getErrorTitle(int alertId);
+const char_t *getErrorMessage(int alertId);
 
 class iPediaApplication
 {
@@ -145,22 +151,7 @@ public:
     iPediaHyperlinkHandler& hyperlinkHandler()
     {return hyperlinkHandler_;}
 
-
-    struct ErrorInfo
-    {
-        int errorCode;
-        ArsLexis::String title;
-        ArsLexis::String message;
-    
-        ErrorInfo(int eCode, ArsLexis::String tit, ArsLexis::String msg):
-            errorCode(eCode),
-            title(tit),
-            message(msg)
-        {}
-
-    };
     void getErrorMessage(int alertId, bool customAlert, ArsLexis::String &out);
-    void getErrorTitle(int alertId, ArsLexis::String &out);
 
     bool InitInstance (HINSTANCE hInstance, int CmdShow );
     BOOL InitApplication ( HINSTANCE hInstance );    
@@ -173,8 +164,6 @@ private:
     Preferences preferences_;
     static iPediaApplication instance_;
     bool logAllocation_;  
-    static const ErrorInfo ErrorsTable[];
-    const ErrorInfo& getErrorInfo(int alertID);
 
 };
 

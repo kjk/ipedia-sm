@@ -12,7 +12,21 @@ HWND g_hwndForEvents = NULL;
 
 using namespace ArsLexis;
 
-const iPediaApplication::ErrorInfo iPediaApplication::ErrorsTable[] =
+#define serverMarek          _T("arslex.no-ip.info:9000")
+#define serverKjk            _T("dict-pc.arslexis.com:9000")
+#define serverKjkLaptop      _T("192.168.123.150:9000")
+#define serverKjkLaptop2     _T("169.254.191.23:9000")
+#define serverLocalhost      _T("192.168.0.1:9000")
+#define serverLocalhost2     _T("127.0.0.1:9000")
+
+#define serverKjkLaptop3     _T("192.168.57.162:9000")
+
+#define serverIpediaArslexis _T("ipedia.arslexis.com:9000")
+
+//#define serverToUse serverIpediaArslexis
+#define serverToUse serverKjkLaptop3
+
+const ErrorInfo ErrorsTable[] =
 {
     ErrorInfo(romIncompatibleAlert,
     _T("System incompatible"),
@@ -116,6 +130,30 @@ const iPediaApplication::ErrorInfo iPediaApplication::ErrorsTable[] =
     _T("The iPedia server is not available. Please contact support@arslexis.com if the problem persists."))
 };
 
+#define ERROR_INFO_SIZE sizeof(ErrorsTable)/sizeof(ErrorsTable[0])
+
+static const ErrorInfo* getErrorInfo(int alertId)
+{
+    for (int j=0; j<ERROR_INFO_SIZE; j++)
+    {
+        if (ErrorsTable[j].errorCode == alertId)
+            return &(ErrorsTable[j]);
+    }
+    assert(0);
+    return &(ErrorsTable[0]);
+}
+
+const char_t *getErrorTitle(int alertId)
+{
+    const ErrorInfo *ei = getErrorInfo(alertId);
+    return ei->title;
+}
+
+const char_t *getErrorMessage(int alertId)
+{
+    const ErrorInfo *ei = getErrorInfo(alertId);
+    return ei->message;
+}
 
 iPediaApplication::iPediaApplication():
     log_( _T("root") ),
@@ -317,30 +355,14 @@ void* ArsLexis::allocate(size_t size)
     return ptr;
 }
 
-const iPediaApplication::ErrorInfo& iPediaApplication::getErrorInfo(int alertId)
-{
-    for (int j=0; j<sizeof(ErrorsTable)/sizeof(ErrorsTable[0]); j++)
-    {
-        if (ErrorsTable[j].errorCode == alertId)
-            return ErrorsTable[j];
-    }
-    assert(0);
-    return ErrorsTable[0];
-}
-
 void iPediaApplication::getErrorMessage(int alertId, bool customAlert, String &out)
 {
-    out.assign(getErrorInfo(alertId).message);
+    out.assign(::getErrorMessage(alertId));
     if (customAlert)
     {
         int pos = out.find(_T("^1"));
         out.replace(pos,2,popCustomAlert().c_str());
     }
-}
-
-void iPediaApplication::getErrorTitle(int alertId, String &out)
-{
-    out.assign(getErrorInfo(alertId).title);
 }
 
 bool iPediaApplication::InitInstance(HINSTANCE hInstance, int CmdShow )

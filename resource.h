@@ -81,6 +81,8 @@
 
 #define IDC_PURCHASE_REG_CODE           163
 
+#define IDM_MENU_REVERSE_LINKS          164
+
 #define IDC_STRING_LIST                 1000
 
 // Next default values for new objects
