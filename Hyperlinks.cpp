@@ -7,32 +7,51 @@
 
 using namespace ArsLexis;
 
-WNDPROC oldHyperlinksListWndProc;
-HWND hHyperlinksDlg=NULL;
+WNDPROC g_oldHyperlinksListWndProc = NULL;
+HWND    g_hHyperlinksDlg = NULL;
 
-const int hotKeyCode=0x32;
+const int hotKeyCode = 0x32;
 
 LRESULT CALLBACK HyperlinksListWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    switch(msg)
+    switch (msg)
     {
         //What the hell is constatnt - any idea VK_F24 ??
         case 0x87: 
         {
-            switch(wp)
+            switch (wp)
             {
                 case hotKeyCode:
-                    SendMessage(hHyperlinksDlg, WM_COMMAND, ID_SELECT, 0);
+                    SendMessage(g_hHyperlinksDlg, WM_COMMAND, ID_SELECT, 0);
                     break;
             }
         }
     }
-    return CallWindowProc(oldHyperlinksListWndProc, hwnd, msg, wp, lp);
+    return CallWindowProc(g_oldHyperlinksListWndProc, hwnd, msg, wp, lp);
+}
+
+static void OnSelect(HWND hDlg)
+{
+    HWND ctrl = GetDlgItem(hDlg, IDC_LIST_HYPERLINKS);
+    int  idx = SendMessage(ctrl, LB_GETCURSEL, 0, 0);
+
+    GenericTextElement *txtEl=(GenericTextElement*)SendMessage(ctrl, LB_GETITEMDATA, idx, 0);
+    if((txtEl->hyperlinkProperties()->type==hyperlinkTerm)||
+       (txtEl->hyperlinkProperties()->type==hyperlinkBookmark))
+    {
+        int len = SendMessage(ctrl, LB_GETTEXTLEN, idx, 0);
+        TCHAR *buf = new TCHAR[len+1];
+        SendMessage(ctrl, LB_GETTEXT, idx, (LPARAM) buf);
+        g_searchWord.assign(buf);
+        g_recentWord.assign(buf);
+    }
+    txtEl->performAction(currentDefinition());
+    EndDialog(hDlg, 1);
 }
 
 BOOL CALLBACK HyperlinksDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
-    switch(msg)
+    switch (msg)
     {
         case WM_INITDIALOG:
             return InitHyperlinks(hDlg);
@@ -50,37 +69,19 @@ BOOL CALLBACK HyperlinksDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                     EndDialog(hDlg, 0);
                     break;
                 case ID_SELECT:
-                {
-                    HWND ctrl = GetDlgItem(hDlg, IDC_LIST_HYPERLINKS);
-                    int idx = SendMessage(ctrl, LB_GETCURSEL, 0, 0);
-                    GenericTextElement *txtEl=(GenericTextElement*)SendMessage(ctrl, LB_GETITEMDATA, idx, 0);
-                    if((txtEl->hyperlinkProperties()->type==hyperlinkTerm)||
-                       (txtEl->hyperlinkProperties()->type==hyperlinkBookmark))
-                    {
-                        int len = SendMessage(ctrl, LB_GETTEXTLEN, idx, 0);
-                        TCHAR *buf = new TCHAR[len+1];
-                        SendMessage(ctrl, LB_GETTEXT, idx, (LPARAM) buf);
-                        searchWord.assign(buf);
-                        recentWord.assign(buf);
-                    }
-
-                    txtEl->performAction(currentDefinition());
-                    EndDialog(hDlg, 1);
+                    OnSelect(hDlg);
                     break;
-                    /*if(txtEl->hyperlinkProperties()->type==hyperlinkExternal)
-                    {
-                        GotoURL(txtEl->hyperlinkProperties()->resource.c_str());
-                        break;
-                    }*/
-                }
             }
+            // TODO: when is this code executed?
             HWND ctrlList = GetDlgItem(hDlg, IDC_LIST_HYPERLINKS);
-            int senderID = LOWORD(wp);
-            int code = HIWORD(wp);
+            int  senderID = LOWORD(wp);
+            int  code = HIWORD(wp);
             HWND senderHWND = (HWND)lp;
-            if((IDC_LIST_HYPERLINKS == senderID) && (senderHWND == ctrlList))
+            if ((IDC_LIST_HYPERLINKS == senderID) && (senderHWND == ctrlList))
+            {
                 if (LBN_DBLCLK == code)
-                    SendMessage(hHyperlinksDlg, WM_COMMAND, ID_SELECT, 0); 
+                    SendMessage(g_hHyperlinksDlg, WM_COMMAND, ID_SELECT, 0);
+            }
         }
     }
     return FALSE;
@@ -114,11 +115,11 @@ BOOL InitHyperlinks(HWND hDlg)
         MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY, 
         SHMBOF_NODEFAULT | SHMBOF_NOTIFY));
     
-    hHyperlinksDlg=hDlg;
+    g_hHyperlinksDlg = hDlg;
 
-    HWND ctrl=GetDlgItem(hDlg, IDC_LIST_HYPERLINKS);
-    oldHyperlinksListWndProc=(WNDPROC)SetWindowLong(ctrl, GWL_WNDPROC, (LONG)HyperlinksListWndProc);
-    RegisterHotKey( ctrl, hotKeyCode, 0, VK_TACTION);
+    HWND ctrl = GetDlgItem(hDlg, IDC_LIST_HYPERLINKS);
+    g_oldHyperlinksListWndProc = (WNDPROC)SetWindowLong(ctrl, GWL_WNDPROC, (LONG)HyperlinksListWndProc);
+    RegisterHotKey(ctrl, hotKeyCode, 0, VK_TACTION);
 
     
     Definition::ElementPosition_t pos;
@@ -138,9 +139,7 @@ BOOL InitHyperlinks(HWND hDlg)
                 int idx = SendMessage(ctrl,LB_ADDSTRING,0,(LPARAM)txtEl->text().c_str());
                 SendMessage(ctrl, LB_SETITEMDATA, idx, (LPARAM) txtEl);
             }
-
         }
-        
     }
     SendMessage (ctrl, LB_SETCURSEL, 0, 0);
     UpdateWindow(ctrl);

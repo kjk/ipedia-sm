@@ -96,13 +96,13 @@ IDR_MENU_MAIN MENU DISCARDABLE
 BEGIN
     POPUP "&Dummy"
     BEGIN
-        MENUITEM "Hyperlinks",              IDM_MENU_HYPERS
+        MENUITEM "Links",                   IDM_MENU_HYPERS
         MENUITEM "Extended search",         IDM_EXT_SEARCH          
         MENUITEM "Ext. search results",     IDM_MENU_RESULTS
         MENUITEM "Previous",                IDM_MENU_PREV
         MENUITEM "Next",                    IDM_MENU_NEXT
         MENUITEM "Random article",          IDM_MENU_RANDOM
-        MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
+        //MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
         MENUITEM "Register",                IDM_MENU_REGISTER
         POPUP "About"
 	    BEGIN
@@ -110,8 +110,10 @@ BEGIN
 		    MENUITEM "Check updates",       IDM_MENU_UPDATES
 		    MENUITEM "About",            	IDM_MENU_ABOUT
 	    END
+#ifdef DEBUG
         MENUITEM "Stress mode",             IDM_MENU_STRESS_MODE
         MENUITEM "Quit",                    IDOK
+#endif
     END
 END
 #endif
@@ -170,7 +172,7 @@ END
 
 STRINGTABLE DISCARDABLE
 BEGIN
-	IDS_SEARCH		    "Go"
+	IDS_SEARCH		    "Search"
     IDS_SELECT		    "Select"
     IDS_REGISTER        "Register"
     IDS_MENU_BTN        "Menu"

@@ -15,12 +15,11 @@
 #include <LookupManagerBase.hpp>
 #include <Definition.hpp>
 
-extern HWND g_hwndMain;
-extern HINSTANCE g_hInst;
-extern Definition *g_definition;
-extern ArsLexis::String recentWord;
-extern ArsLexis::String searchWord;
-
+extern HWND             g_hwndMain;
+extern HINSTANCE        g_hInst;
+extern Definition *     g_definition;
+extern ArsLexis::String g_recentWord;
+extern ArsLexis::String g_searchWord;
 
 bool GotoURL(LPCTSTR lpszUrl);
 void setupAboutWindow();

@@ -149,7 +149,7 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                         int len = SendMessage(ctrl, LB_GETTEXTLEN, idx, 0);
                         TCHAR *buf = new TCHAR[len+1];
                         SendMessage(ctrl, LB_GETTEXT, idx, (LPARAM) buf);
-                        searchWord.assign(buf);
+                        g_searchWord.assign(buf);
                         delete buf;
                         EndDialog(hDlg, 1);
                         break;
@@ -163,9 +163,9 @@ BOOL CALLBACK LastResultsDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                             TCHAR *buf=new TCHAR[len+1];
                             len = SendMessage(ctrl, WM_GETTEXT, len+1, (LPARAM)buf);
                             SendMessage(ctrl, EM_SETSEL, 0,len);
-                            recentWord+=_T(" ");
-                            recentWord+=buf;
-                            searchWord.assign(recentWord);
+                            g_recentWord += _T(" ");
+                            g_recentWord += buf;
+                            g_searchWord.assign(g_recentWord);
                             delete buf;
                             EndDialog(hDlg, 2);
                             break;

@@ -196,8 +196,8 @@ bool g_uiEnabled = true;
 String articleCountText;
 String databaseDateText;
 String dateText;
-String recentWord;
-String searchWord;
+String g_recentWord;
+String g_searchWord;
 
 HINSTANCE g_hInst            = NULL;
 HWND      g_hwndMain         = NULL;
@@ -642,7 +642,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
 
                 case LookupFinishedEventData::outcomeList:
-                    recentWord.assign(lookupManager->lastInputTerm());
+                    g_recentWord.assign(lookupManager->lastInputTerm());
                     SendMessage(hwnd, WM_COMMAND, IDM_MENU_RESULTS, 0);
                     setUIState(true);
                     break;
@@ -808,6 +808,7 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         
         case IDM_MENU_HYPERS:
         {
+            // TODO: do we need fInitConnection() here?
             if (!fInitConnection())
                 break;
             Definition &def = currentDefinition();
@@ -861,9 +862,9 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 if (lookupManager && !lookupManager->lookupInProgress())
                 {
                     if (1==res)
-                        lookupManager->lookupIfDifferent(searchWord);
+                        lookupManager->lookupIfDifferent(g_searchWord);
                     else
-                        lookupManager->search(searchWord);
+                        lookupManager->search(g_searchWord);
                     setUIState(false);
                 }
                 InvalidateRect(hwnd,NULL,FALSE);
