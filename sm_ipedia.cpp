@@ -5,6 +5,8 @@
 
 #include <iPediaApplication.hpp>
 #include <LookupManager.hpp>
+#include <LookupManagerBase.hpp>
+
 #include <Definition.hpp>
 #include <Debug.hpp>
 #include <windows.h>
@@ -20,6 +22,10 @@ bool rec=false;
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
 HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
+
+
+void paint(HWND hwnd, HDC hdc);
+
 
 TCHAR szAppName[] = TEXT("iPedia");
 TCHAR szTitle[]   = TEXT("iPedia");
@@ -110,14 +116,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     lookupManager->lookupRandomTerm();
                 break;
             }
-            case LookupManager::lookupFinishedEvent:
-            {
-                iPediaApplication& app=iPediaApplication::instance();
-                LookupManager* lookupManager=app.getLookupManager(true);
-                definition_->replaceElements(lookupManager->lastDefinitionElements());
-                
-                break;
-            }
             default:
 				return DefWindowProc(hwnd, msg, wp, lp);
 			}
@@ -125,14 +123,47 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		case WM_PAINT:
 		{
 			hdc = BeginPaint (hwnd, &ps);
-			GetClientRect (hwnd, &rect);
+			/*GetClientRect (hwnd, &rect);
             DrawText (hdc, TEXT("Enter article name "),-1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
             rect.top+=38;
-            DrawText (hdc, TEXT("and press \"Search\" button."),-1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);
+            DrawText (hdc, TEXT("and press \"Search\" button."),-1, &rect, DT_VCENTER|DT_SINGLELINE|DT_CENTER);*/
+            paint(hwnd, hdc);
 			EndPaint (hwnd, &ps);
+    		break;
 		}		
-		break;
-
+        
+        case LookupManager::lookupFinishedEvent:
+        {
+            iPediaApplication& app=iPediaApplication::instance();
+            LookupManager* lookupManager=app.getLookupManager(true);
+            //definition_->replaceElements(lookupManager->lastDefinitionElements());
+            //definition_->replaceElements();
+            const LookupFinishedEventData& data=*((LookupFinishedEventData*)wp);
+            switch (data.outcome)
+            {
+                case data.outcomeDefinition:
+                {    
+                    assert(lookupManager!=0);
+                    if (lookupManager)
+                    {
+                        definition_->replaceElements(lookupManager->lastDefinitionElements());
+                        /*setDisplayMode(showDefinition);
+                        const LookupHistory& history=getHistory();
+                        if (history.hasCurrentTerm())
+                            setTitle(history.currentTerm());
+                        
+                        update();
+                        
+                        Field field(*this, termInputField);        
+                        field.replace(lookupManager->lastInputTerm());
+                        field.select();                    */
+                    }
+                    InvalidateRect(hwndMain, NULL, TRUE);
+                    break;
+                }
+            }
+        }
+        break;
 		case WM_CLOSE:
 			DestroyWindow(hwnd);
 		break;
@@ -242,22 +273,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		return (FALSE);
 	}
     
-    /* hmm will be tough but let's try
-    ArsLexis::SocketConnectionManager* manager=0;
-    if (lookupManager_)
-        manager=&lookupManager_->connectionManager();
-    if (manager && manager->active())
-    {
-        setEventTimeout(0);
-        Application::waitForEvent(event);
-        if (nilEvent==event.eType)
-            manager->manageConnectionEvents(ticksPerSecond_/20);
-    }
-    else
-    {
-        setEventTimeout(evtWaitForever);
-        Application::waitForEvent(event);
-    } */
     iPediaApplication::instance().waitForEvent();
 }
 
@@ -281,10 +296,10 @@ void paint(HWND hwnd, HDC hdc)
     rect.right  -=7;
     rect.bottom -=2;
 
-    iPediaApplication& app=iPediaApplication::instance();
-    LookupManager* lookupManager=app.getLookupManager(true);
-    Definition::Elements_t defels_=lookupManager->lastDefinitionElements();
-    if (!defels_.size())
+    //iPediaApplication& app=iPediaApplication::instance();
+    //LookupManager* lookupManager=app.getLookupManager(true);
+    //Definition::Elements_t defels_=lookupManager->lastDefinitionElements();
+    if (definition_->totalLinesCount()==0)
     {
         LOGFONT logfnt;
         HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
@@ -295,7 +310,7 @@ void paint(HWND hwnd, HDC hdc)
         SelectObject(hdc, fnt2);
 
         RECT tmpRect=rect;
-        DrawText(hdc, TEXT("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+        DrawText(hdc, TEXT("(enter article name and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
         //tmpRect.top += (fontDy*3);
         tmpRect.top += 46;
         DrawText(hdc, TEXT("ArsLexis iPedia 1.0"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
