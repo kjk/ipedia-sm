@@ -158,7 +158,6 @@ static bool fInitConnection()
 #endif
     if (NULL!=g_hConnection)
         return true;
-    iPediaApplication &app = iPediaApplication::instance();
     CONNMGR_CONNECTIONINFO ccInfo;
     memset(&ccInfo, 0, sizeof(CONNMGR_CONNECTIONINFO));
     ccInfo.cbSize      = sizeof(CONNMGR_CONNECTIONINFO);
@@ -179,13 +178,9 @@ static bool fInitConnection()
 
     if (NULL==g_hConnection)
     {
-#ifdef DEBUG
-        ArsLexis::String errorMsg = _T("Unable to connect to ");
-        errorMsg += iPediaApplication::instance().server();
-#else
         ArsLexis::String errorMsg = _T("Unable to connect");
-#endif
         errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
+        iPediaApplication& app = GetApp();
         MessageBox(app.getMainWindow(), errorMsg.c_str(), _T("Error"), MB_OK | MB_ICONERROR | MB_APPLMODAL | MB_SETFOREGROUND );
         return false;
     }
@@ -295,14 +290,9 @@ void OnCreate(HWND hwnd)
     SetFocus(g_hwndEdit);
 }
 
-static void OnRegister(HWND hwnd)
+static void OnRegister(HWND hwnd, const String& oldRegCode)
 {
-    if (!fInitConnection())
-        return;
-
     String newRegCode;
-    iPediaApplication& app=GetApp();
-    String oldRegCode = app.preferences().regCode;
 
     bool fOk = FGetRegCodeFromUser(hwnd, oldRegCode, newRegCode);
     if (!fOk)
@@ -310,8 +300,12 @@ static void OnRegister(HWND hwnd)
 
     assert(!g_newRegCode.empty());
 
+    if (!fInitConnection())
+        return;
+
     g_newRegCode = newRegCode;
 
+    iPediaApplication& app = GetApp();
     LookupManager* lookupManager = app.getLookupManager(true);
     if (lookupManager && !lookupManager->lookupInProgress())
     {
@@ -486,7 +480,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         
         case iPediaApplication::appDisplayAlertEvent:
         {
-            iPediaApplication& app=iPediaApplication::instance();
+            iPediaApplication& app = GetApp();
             iPediaApplication::DisplayAlertEventData data;
             ArsLexis::EventData i;
             i.wParam=wp; i.lParam=lp;
@@ -598,7 +592,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     }
                     else
                     {
-                        OnRegister(hwnd);
+                        OnRegister(hwnd, g_newRegCode);
                         break;
                     }
                 }
@@ -716,6 +710,7 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     iPediaApplication& app=GetApp();
     LookupManager* lookupManager=app.getLookupManager(true);
+    iPediaApplication::Preferences& prefs = GetPrefs();
 
     if ( (NULL==lookupManager) || lookupManager->lookupInProgress())
         return TRUE;
@@ -791,7 +786,7 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             lookupManager->lookupRandomTerm();
             break;
         case IDM_MENU_REGISTER:
-            OnRegister(hwnd);
+            OnRegister(hwnd, prefs.regCode);
             break;
         case IDM_MENU_PREV:
             // intentionally fall through
@@ -822,7 +817,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
                    int        CmdShow)
 
 {
-    iPediaApplication& app = iPediaApplication::instance();
+    iPediaApplication& app = GetApp();
     // if we're already running, then just bring our window to front
     String cmdLine(lpCmdLine);
     if (app.initApplication(hInstance, hPrevInstance, cmdLine, CmdShow))
@@ -863,12 +858,12 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
     ArsLexis::Rectangle rin(rcpaint);
     ArsLexis::Rectangle rout(g_progressRect);
     
-    iPediaApplication& app=iPediaApplication::instance();
-    LookupManager* lookupManager=app.getLookupManager(true);
+    iPediaApplication& app=GetApp();
+    bool fLookupInProgress = app.fLookupInProgress();
 
     bool onlyProgress=false;
 
-    if (lookupManager && lookupManager->lookupInProgress() &&
+    if (fLookupInProgress &&
         (rout && rin.topLeft) && (rout.extent.x>=rin.extent.x)
         && (rout.extent.y>=rin.extent.y))
     {
@@ -891,12 +886,18 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
             CreateThread(NULL, 0, formattingThreadProc, &g_recalculationData, 0, &threadID);
         }
         else
-            repaintDefiniton();
+        {
+            // TODO: a bit of a hack - we shouldn't be getting repaint if we
+            // started the download
+            if (!fLookupInProgress)
+            {
+                repaintDefiniton();
+            }
+        }
     }
 
-    if (lookupManager && lookupManager->lookupInProgress())
+    if (fLookupInProgress)
     {
-
         if (g_fRegistration)
         {
             g_RegistrationProgressReporter->reportProgress(-1);
@@ -905,7 +906,7 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
         {
             Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());    
             ArsLexis::Rectangle progressArea(g_progressRect);
-            lookupManager->showProgress(gr, progressArea);
+            app.getLookupManager()->showProgress(gr, progressArea);
         }
     }
 }

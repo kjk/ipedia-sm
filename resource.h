@@ -79,6 +79,8 @@
 #define IDR_STRING_LIST_MENUBAR         161
 #define IDD_STRING_LIST                 162
 
+#define IDC_PURCHASE_REG_CODE           163
+
 #define IDC_STRING_LIST                 1000
 
 // Next default values for new objects

@@ -60,7 +60,8 @@ public:
     LookupManager* getLookupManager(bool create=false);
     const LookupManager* getLookupManager() const
     {return lookupManager_;}
-    
+    bool fLookupInProgress() const;
+
     ushort_t ticksPerSecond() const
     {return ticksPerSecond_;}
     

@@ -75,9 +75,11 @@ BEGIN
         MENUITEM "Random article",          IDM_MENU_RANDOM
         MENUITEM SEPARATOR 
         MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
+#ifdef DEBUG
         MENUITEM SEPARATOR
         MENUITEM "Quit",                    IDOK
         MENUITEM "Stress mode",             IDM_MENU_STRESS_MODE
+#endif
     END
     POPUP "&Dummy"
     BEGIN
@@ -216,11 +218,18 @@ END
 	STYLE WS_POPUP | WS_VISIBLE
 	FONT 8, "System"
 	BEGIN
-	    CTEXT "Enter registration code:",IDC_STATIC_REG_CODE, 0, 27, 100, 10
-	    EDITTEXT IDC_EDIT_REGCODE, 2, 37, 96, 10,
+	    CTEXT "Enter registration code:", IDC_STATIC_REG_CODE, 28, 27, 80, 12
+	    EDITTEXT IDC_EDIT_REGCODE, 2, 27+12, 134, 12,
 	        ES_LEFT | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL
-	    DEFPUSHBUTTON "Register",IDM_REGISTER, 10, 47, 30, 10
-	    DEFPUSHBUTTON "Later",ID_CANCEL, 45, 47, 30, 10
+	    DEFPUSHBUTTON "Register",IDM_REGISTER, 10, 27+12+18, 50, 12
+	    PUSHBUTTON    "Later",   IDM_LATER,    78, 27+12+18, 50, 12
+
+#ifdef HANDANGO
+		CTEXT "Purchase registration code at http://handango.com/products. Product ID: 34344", IDC_PURCHASE_REG_CODE, 0, 27+12+18+20, 120, 24
+#else
+		CTEXT "Purchase registration code at http:/www.arslexis.com", IDC_PURCHASE_REG_CODE, 10, 27+12+18+20, 120, 24
+#endif
+
 	END
 #else
 	IDR_REGISTER_MENUBAR RCDATA
