@@ -36,7 +36,7 @@ enum DisplayMode
     showWikipedia
 };
 
-void setDisplayMode(DisplayMode mode);
+void SetDisplayMode(DisplayMode mode);
 DisplayMode displayMode();
 Definition& currentDefinition();
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);

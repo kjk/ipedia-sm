@@ -33,7 +33,7 @@ void updateArticleCountEl(long articleCount, ArsLexis::String& dbTime)
 static void wikipediaActionCallback(void *data)
 {
     assert(showWikipedia!=displayMode());
-    setDisplayMode(showWikipedia);
+    SetDisplayMode(showWikipedia);
     g_forceLayoutRecalculation = true;
     InvalidateRect(iPediaApplication::instance().getMainWindow(), NULL, false);
 }
@@ -41,7 +41,7 @@ static void wikipediaActionCallback(void *data)
 static void tutorialActionCallback(void *data)
 {
     assert(showTutorial!=displayMode());
-    setDisplayMode(showTutorial);
+    SetDisplayMode(showTutorial);
     g_forceLayoutRecalculation = true;
     InvalidateRect(iPediaApplication::instance().getMainWindow(), NULL, false);
 }
@@ -49,7 +49,7 @@ static void tutorialActionCallback(void *data)
 static void unregisteredActionCallback(void *data)
 {
     assert(showRegister!=displayMode());
-    setDisplayMode(showRegister);
+    SetDisplayMode(showRegister);
     g_forceLayoutRecalculation = true;
     InvalidateRect(iPediaApplication::instance().getMainWindow(), NULL, false);
 }
@@ -57,7 +57,7 @@ static void unregisteredActionCallback(void *data)
 static void aboutActionCallback(void *data)
 {
     assert(showAbout!=displayMode());
-    setDisplayMode(showAbout);
+    SetDisplayMode(showAbout);
     g_forceLayoutRecalculation = true;
     InvalidateRect(iPediaApplication::instance().getMainWindow(), NULL, false);
 }

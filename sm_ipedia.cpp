@@ -99,8 +99,10 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 DisplayMode displayMode()
 {return g_displayMode;}
 
-void setDisplayMode(DisplayMode displayMode)
-{g_displayMode=displayMode;}
+void SetDisplayMode(DisplayMode displayMode)
+{
+    g_displayMode=displayMode;
+}
 
 Definition& currentDefinition()
 {
@@ -124,6 +126,57 @@ Definition& currentDefinition()
     return (*g_about);
 }
 
+static void DrawTextInRect(Graphics& gr, ArsLexis::Rectangle& rect, const char_t *text)
+{
+    HDC hdc = gr.handle();
+    HBRUSH hbr = CreateSolidBrush(RGB(255,255,255));
+    HBRUSH oldbr = (HBRUSH)SelectObject(hdc, hbr);
+    int x = rect.x();
+    int y = rect.y();
+    int width = rect.width();
+    int height = rect.height();
+    ::Rectangle(hdc, x, y, x + width, y+height);
+    
+    POINT points[4];
+    points[0].x = points[3].x = x +2;
+    points[0].y = points[1].y = y +2;
+    points[2].y = points[3].y = y + height - 3;
+    points[1].x = points[2].x = x + width - 3;   
+    Polygon(hdc, points,4);
+
+    SelectObject(hdc, oldbr);
+    DeleteObject(hbr);
+
+    uint_t rectDx = (uint_t)rect.dx();
+    uint_t txtDx = rectDx;
+    uint_t length = tstrlen(text);
+    gr.charsInWidth(text, length, txtDx);
+    uint_t txtXOffsetCentered = 0;
+    if (rectDx>txtDx)
+        txtXOffsetCentered = (rectDx-txtDx)/2;
+
+    uint_t dy = gr.fontHeight();
+    uint_t rectDy = (uint_t)rect.dy();
+    uint_t txtYOffsetCentered = 0;
+    if (rectDy>dy)
+        txtYOffsetCentered = (rectDy-dy)/2;
+    
+    Point p(rect.x()+txtXOffsetCentered, rect.y()+txtYOffsetCentered);
+    gr.drawText(text, length, p);
+}
+
+static void ShowEstablishingConnection()
+{
+    iPediaApplication& app=GetApp();
+    Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
+
+    ArsLexis::Rectangle ar = g_progressRect;
+    Graphics::FontSetter setFont(gr, Font(11));
+    Graphics::ColorSetter setBg(gr, Graphics::colorBackground, RGB(255,255,255));
+    Graphics::ColorSetter setFg(gr, Graphics::colorText, RGB(0,0,0));
+    DrawTextInRect(gr, ar, _T("Establishing connection..."));
+}
+
 // try to establish internet connection.
 // If can't (e.g. because tcp/ip stack is not working), display a dialog box
 // informing about that and return false
@@ -131,6 +184,15 @@ Definition& currentDefinition()
 // Can be called multiple times - will do nothing if connection is already established.
 static bool fInitConnection()
 {
+    if (FDataConnectionEstablished())
+        return true;
+
+#if WIN32_PLATFORM_WFSP
+    // we only want to show that on a smartphone
+    // we also should on Pocket PC Phone Edition but I don't know
+    // how to distinguish between PPC and PPC Phone Edition
+    ShowEstablishingConnection();
+#endif
     if (InitDataConnection())
         return true;
 
@@ -530,7 +592,7 @@ static void MoveHistoryForwardOrBack(bool forward)
     {
         if (!g_definition->empty())
         {
-            setDisplayMode(showArticle);
+            SetDisplayMode(showArticle);
             SetScrollBar(g_definition);
             InvalidateRect(app.getMainWindow(), NULL, false);
             return;
@@ -584,7 +646,7 @@ static void SimpleOrExtendedSearch(HWND hwnd, String& term, bool simple)
         {
             if (displayMode()!=showArticle)
             {
-                setDisplayMode(showArticle);
+                SetDisplayMode(showArticle);
                 SetScrollBar(g_definition);
                 SetUIState(true);
                 InvalidateRect(hwnd,NULL,FALSE);                            
@@ -680,6 +742,13 @@ static void DoRegister(HWND hwnd, const String& oldRegCode)
     SetUIState(false);
 }
 
+void static DoExtendedSearchMenu(HWND hwnd)
+{
+    String term;
+    GetEditWinText(g_hwndEdit, term);            
+    DoExtendedSearch(hwnd,term);
+}
+
 static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     iPediaApplication& app = GetApp();
@@ -725,25 +794,21 @@ static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         
         case IDM_MENU_ABOUT:
-            setDisplayMode(showAbout);
+            SetDisplayMode(showAbout);
             SetMenu(hwnd);
             SetScrollBar(g_about);
             InvalidateRect(hwnd,NULL,FALSE);
             break;
         
         case IDM_MENU_TUTORIAL:
-            setDisplayMode(showTutorial);
+            SetDisplayMode(showTutorial);
             SetMenu(hwnd);
             SetScrollBar(g_about);
             InvalidateRect(hwnd,NULL,FALSE);
             break;
         
         case IDM_EXT_SEARCH:
-            {
-                String term;
-                GetEditWinText(g_hwndEdit, term);            
-                DoExtendedSearch(hwnd,term);
-            }
+            DoExtendedSearchMenu(hwnd);
             break;
         
         case ID_SEARCH_BTN:
@@ -967,7 +1032,7 @@ static void DoHandleArticleBody()
         SendMessage(g_hwndEdit, EM_SETSEL, 0, -1);
     }
     SetScrollBar(g_definition);
-    setDisplayMode(showArticle);
+    SetDisplayMode(showArticle);
     SetFocus(g_hwndEdit);
     InvalidateRect(app.getMainWindow(), NULL, FALSE);
 }
@@ -1060,16 +1125,6 @@ static void DoDisplayAlert(HWND hwnd, WPARAM wp, LPARAM lp, bool fCustom)
     SetUIState(true);
 }
 
-static void DrawTextInRect(Graphics& gr, ArsLexis::Rectangle& rect, const char_t *text)
-{
-    uint_t length = tstrlen(text);
-    uint_t dx = rect.dx();
-    gr.charsInWidth(text, length, dx);
-    uint_t dy = gr.fontHeight();
-    Point p(rect.x(), rect.y()+(rect.dy()-dy)/2);
-    gr.drawText(text, length, p);
-}
-
 static void OnPaint(HWND hwnd)
 {
     PAINTSTRUCT ps;
@@ -1138,18 +1193,7 @@ static void OnPaint(HWND hwnd)
         }
     }
 
-    /* RECT r = { 10, 40, 10+180, 40+40 };
-    DrawFancyRectangle(hdc, &r);
-
-    Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
- 
-    Graphics::FontSetter setFont(gr, Font());
-    Graphics::ColorSetter setBg(gr, Graphics::colorBackground, RGB(255,0,0));
-    Graphics::ColorSetter setFg(gr, Graphics::colorText, RGB(255,255,255));
-
-    ArsLexis::Rectangle ar = r;
-    DrawTextInRect(gr, ar, _T("This is a test")); */
-
+    // ShowEstablishingConnection();
     EndPaint (hwnd, &ps);
 }
 

@@ -1,12 +1,9 @@
-## 17. add a dialog during InitDataConnection()
 ## 18. refresh the display after selecting a menu item
 ## 14. try to eliminate the delay between pressing "Lookup" and showing the progress
        dialog on sm
 
     * POSSIBLY AFTER V1 *
-## 13. in PPC, when SIP state is changed in enter reg code dialog and we get back
-       to main screen, SIP changes are not reflected.
-## 1. ability to change fonts (like in iNoah/sm)
+## 1. ability to change font size (like in iNoah/sm)
 ## 2. home screen plugin (e.g. display recent article)
 ## 3. bookmarks
 ## 4. cache recent articles in memory so that one can navigate history
@@ -16,8 +13,14 @@
 ## 7. shorter connection timeout so that when the server is down, doesn't wait so long?
 ## 8. ability to cancel request e.g. during transfer we change to a form with only
 "Cancel" button and progress report.
+## 9. in PPC, when SIP state is changed in enter reg code dialog and we get back
+       to main screen, SIP changes are not reflected.
+## 10. ability to select a font on PPC
+## 11. ability to change background color/text color
+## 12. support text-to-speech via festival and speex
 
         *  DONE   *
+## 17. add a dialog during InitDataConnection() (2004-08-19)
 
 ## 16. on ppc, fix the progress dialog (font doesn't show on ppc 2003/dell axim 
 30 although it does show on emu 2002) (2004-08-19)
