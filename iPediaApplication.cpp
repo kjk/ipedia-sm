@@ -1,14 +1,11 @@
 #include <iPediaApplication.hpp>
+#include <LookupManager.hpp>
+#include <LookupHistory.hpp>
+#include <PrefsStore.hpp>
+#include <SocketConnection.hpp>
 #include <SysUtils.hpp>
 #include <DeviceInfo.hpp>
-//#include "MainForm.hpp"
-//#include "RegistrationForm.hpp"
-//#include "SearchResultsForm.hpp"
-#include "LookupManager.hpp"
-#include "LookupHistory.hpp"
-//#include <PrefsStore.hpp>
-#include <SocketConnection.hpp>
-//IMPLEMENT_APPLICATION_INSTANCE(appFileCreator)
+#include <ipedia.h>
 
 using namespace ArsLexis;
 
@@ -219,16 +216,17 @@ DWORD iPediaApplication::waitForEvent()
     else
         handled=Application::handleApplicationEvent(event);
     return handled;
-}
+}*/
 
 namespace {
 
     enum PreferenceId 
     {
         cookiePrefId,
-        serialNumberPrefId,
-        serialNumberRegFlagPrefId,
+        regCodePrefId,
+        serialNumberRegFlagPrefId, // unused
         lastArticleCountPrefId,
+        databaseTimePrefId,
         lookupHistoryFirstPrefId,
         renderingPrefsFirstPrefId=lookupHistoryFirstPrefId+LookupHistory::reservedPrefIdCount,
         
@@ -236,31 +234,31 @@ namespace {
     };
 
     // These globals will be removed by dead code elimination.
-    ArsLexis::StaticAssert<(sizeof(uint_t) == sizeof(ushort_t))> uint_t_the_same_size_as_UInt16;
-    ArsLexis::StaticAssert<(sizeof(bool) == sizeof(Boolean))> bool_the_same_size_as_Boolean;
+    //ArsLexis::StaticAssert<(sizeof(uint_t) == sizeof(ushort_t))> uint_t_the_same_size_as_UInt16;
+    //ArsLexis::StaticAssert<(sizeof(bool) == sizeof(Boolean))> bool_the_same_size_as_Boolean;
     
-}*/
+}
 
 void iPediaApplication::loadPreferences()
 {
-   /* 
     Preferences prefs;
     // PrefsStoreXXXX seem to be rather heavyweight objects (writer is >480kB), so it might be a good idea not to allocate them on stack.
-    std::auto_ptr<PrefsStoreReader> reader(new PrefsStoreReader(appPrefDatabase, appFileCreator, sysFileTPreferences));
+    std::auto_ptr<PrefsStoreReader> reader(new PrefsStoreReader(appPrefDatabase, appFileCreator, 0));
 
-    status_t         error;
-    const char* text;
+    status_t error;
+    const char_t* text;
 
     if (errNone!=(error=reader->ErrGetStr(cookiePrefId, &text))) 
         goto OnError;
     prefs.cookie=text;
-    if (errNone!=(error=reader->ErrGetStr(serialNumberPrefId, &text))) 
+    if (errNone!=(error=reader->ErrGetStr(regCodePrefId, &text))) 
         goto OnError;
-    prefs.serialNumber=text;
-    if (errNone!=(error=reader->ErrGetBool(serialNumberRegFlagPrefId, safe_reinterpret_cast<Boolean*>(&prefs.serialNumberRegistered))))
-        goto OnError;
+    prefs.regCode=text;
     if (errNone!=(error=reader->ErrGetLong(lastArticleCountPrefId, &prefs.articleCount))) 
         goto OnError;
+    if (errNone!=(error=reader->ErrGetStr(databaseTimePrefId, &text))) 
+        goto OnError;
+    prefs.databaseTime=text;
     if (errNone!=(error=prefs.renderingPreferences.serializeIn(*reader, renderingPrefsFirstPrefId)))
         goto OnError;
     preferences_=prefs;    
@@ -268,24 +266,24 @@ void iPediaApplication::loadPreferences()
     if (errNone!=(error=history_->serializeIn(*reader, lookupHistoryFirstPrefId)))
         goto OnError;
     return;
-           
-OnError:*/
-    return;        
+            
+OnError:
+    return;         
 }
 
 void iPediaApplication::savePreferences()
 {
-    /*
-    status_t   error;
-    std::auto_ptr<PrefsStoreWriter> writer(new PrefsStoreWriter(appPrefDatabase, appFileCreator, sysFileTPreferences));
+    
+    status_t error;
+    std::auto_ptr<PrefsStoreWriter> writer(new PrefsStoreWriter(appPrefDatabase, appFileCreator, 0));
 
     if (errNone!=(error=writer->ErrSetStr(cookiePrefId, preferences_.cookie.c_str())))
         goto OnError;
-    if (errNone!=(error=writer->ErrSetStr(serialNumberPrefId, preferences_.serialNumber.c_str())))
-        goto OnError;
-    if (errNone!=(error=writer->ErrSetBool(serialNumberRegFlagPrefId, preferences_.serialNumberRegistered)))
+    if (errNone!=(error=writer->ErrSetStr(regCodePrefId, preferences_.regCode.c_str())))
         goto OnError;
     if (errNone!=(error=writer->ErrSetLong(lastArticleCountPrefId, preferences_.articleCount))) 
+        goto OnError;
+    if (errNone!=(error=writer->ErrSetStr(databaseTimePrefId, preferences_.databaseTime.c_str())))
         goto OnError;
     if (errNone!=(error=preferences_.renderingPreferences.serializeOut(*writer, renderingPrefsFirstPrefId)))
         goto OnError;
@@ -295,9 +293,9 @@ void iPediaApplication::savePreferences()
     if (errNone!=(error=writer->ErrSavePreferences()))
         goto OnError;
     return;        
-OnError:*/
+OnError:
     //! @todo Diplay alert that saving failed?
-    return;
+    return; 
 }
 
 ArsLexis::String iPediaApplication::popCustomAlert()

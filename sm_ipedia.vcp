@@ -917,6 +917,7 @@ DEP_CPP_IPEDI=\
 	"..\ipedia\Src\LookupHistory.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
+	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	
 
@@ -1597,6 +1598,46 @@ DEP_CPP_PARAG=\
 # End Source File
 # Begin Source File
 
+SOURCE=.\PrefsStore.cpp
+
+!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+
+NODEP_CPP_PREFS=\
+	".\PrefsStore.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+
+DEP_CPP_PREFS=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	
+NODEP_CPP_PREFS=\
+	".\PrefsStore.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+
+NODEP_CPP_PREFS=\
+	".\PrefsStore.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+
+DEP_CPP_PREFS=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Utility.hpp"\
+	".\PrefsStore.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\Registration.cpp
 
 !IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
@@ -1793,6 +1834,7 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
 	
@@ -2517,6 +2559,10 @@ SOURCE=..\ars_framework\Src\NetLibrary.hpp
 # Begin Source File
 
 SOURCE=..\ars_framework\Src\ParagraphElement.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\PrefsStore.hpp
 # End Source File
 # Begin Source File
 

@@ -13,11 +13,13 @@
 #include <Definition.hpp>
 #include <BaseTypes.hpp>
 #include <LookupManagerBase.hpp>
+#include <Definition.hpp>
 
 extern HWND hwndMain;
 extern HINSTANCE g_hInst;
 extern ArsLexis::String recentWord;
 extern ArsLexis::String searchWord;
+extern Definition *definition_;
 
 class RenderingProgressReporter: public Definition::RenderingProgressReporter
 {

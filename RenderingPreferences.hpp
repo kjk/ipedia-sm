@@ -4,6 +4,8 @@
 #include <Debug.hpp>
 #include <BaseTypes.hpp>
 #include <Graphics.hpp>
+#include <PrefsStore.hpp>
+
 
 enum HyperlinkType
 {
@@ -63,8 +65,8 @@ public:
         {}
         
         enum {reservedPrefIdCount=3};
-        //Err serializeOut(ArsLexis::PrefsStoreWriter& writer, int uniqueId) const;
-        //Err serializeIn(ArsLexis::PrefsStoreReader& reader, int uniqueId);
+        ArsLexis::status_t serializeOut(ArsLexis::PrefsStoreWriter& writer, int uniqueId) const;
+        ArsLexis::status_t serializeIn(ArsLexis::PrefsStoreReader& reader, int uniqueId);
         
     };
     
@@ -96,8 +98,8 @@ public:
     {backgroundColor_=color;}
     
     enum {reservedPrefIdCount=2+(hyperlinkTypesCount_+stylesCount_)*StyleFormatting::reservedPrefIdCount};
-    //Err serializeOut(ArsLexis::PrefsStoreWriter& writer, int uniqueId) const;
-    //Err serializeIn(ArsLexis::PrefsStoreReader& reader, int uniqueId);
+    ArsLexis::status_t serializeOut(ArsLexis::PrefsStoreWriter& writer, int uniqueId) const;
+    ArsLexis::status_t serializeIn(ArsLexis::PrefsStoreReader& reader, int uniqueId);
 
 private:
     

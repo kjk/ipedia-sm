@@ -4,6 +4,7 @@
 #include "sm_ipedia.h"
 #include "LastResults.h"
 #include "Registration.h"
+#include "Hyperlinks.h"
 
 #include <SysUtils.hpp>
 #include <iPediaApplication.hpp>
@@ -13,6 +14,8 @@
 #include <ipedia_rsc.h>
 
 #include <Definition.hpp>
+#include <DefinitionElement.hpp>
+#include <GenericTextElement.hpp>
 #include <Debug.hpp>
 
 #include <objbase.h>
@@ -267,7 +270,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     InvalidateRect(hwnd,NULL,TRUE);
                     break;            
                 }
-                
+                case IDM_MENU_HYPERS:
+                {
+                    if (!definition_->empty())
+                    {
+                        if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_HYPERLINKS), hwnd,HyperlinksDlgProc))
+                        {
+                            iPediaApplication& app=iPediaApplication::instance();
+                            LookupManager* lookupManager=app.getLookupManager(true);
+                            if (lookupManager && !lookupManager->lookupInProgress())
+                                lookupManager->lookupTerm(searchWord);
+                            SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)recentWord.c_str());
+                            int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
+                            SendMessage(hwndEdit, EM_SETSEL, 0,len);
+                            
+                            InvalidateRect(hwnd,NULL,TRUE);
+                        }
+                    }
+                    break;
+                }
                 case IDM_MENU_RANDOM:
                 {
                     iPediaApplication& app=iPediaApplication::instance();
