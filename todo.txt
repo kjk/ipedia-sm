@@ -1,6 +1,6 @@
+## 18. figure out the "Data call. invalid skin" problem.
 ## 9. sm, in "Extended search result", don't select any string in a list if we're 
 in the text field.
-## 10. fix "hyperlinks" list in PPC build
 ## 13. in PPC, when SIP state is changed in enter reg code dialog and we get back
        to main screen, SIP changes are not reflected.
 ## 14. try to eliminate the delay between pressing "Lookup" and showing the progress
@@ -22,7 +22,13 @@ in the text field.
 "Cancel" button and progress report.
 ## 9. improve (de-couple) LastResults.cpp dialog
 
+
         *  DONE   *
+
+## 19. parser hangs on "neal ford" both ppc and sm, palm works just fine 
+(2004-08-17)
+
+## 10. fix "hyperlinks" list in PPC build (2004-08-17)
 
 ## 15. on ppc, "Search" button is not default (2004-08-17)
 

@@ -111,8 +111,7 @@ void prepareAbout()
         text->setJustification(DefinitionElement::justifyCenter);
         elems.push_back(text=new FormattedTextElement(_T("how to register")));
         text->setJustification(DefinitionElement::justifyCenter);
-        // url doesn_T('t really matter, it')s only to establish a hotspot
-        text->setHyperlink(_T(""), hyperlinkTerm);
+        text->setHyperlink(_T("How to register"), hyperlinkTerm);
         text->setActionCallback( unregisteredActionCallback, NULL);
         elems.push_back(text=new FormattedTextElement(_T(")")));
         text->setJustification(DefinitionElement::justifyCenter);
@@ -135,7 +134,12 @@ void prepareAbout()
 
     elems.push_back(text=new FormattedTextElement(_T("ArsLexis")));
     text->setJustification(DefinitionElement::justifyCenter);
-    text->setHyperlink(_T("http://www.arslexis.com/pda/palm.html"), hyperlinkExternal);
+
+#ifdef WIN32_PLATFORM_PSPC
+    text->setHyperlink(_T("http://www.arslexis.com/pda/ppc.html"), hyperlinkExternal);
+#else
+    text->setHyperlink(_T("http://www.arslexis.com/pda/sm.html"), hyperlinkExternal);
+#endif
 
     elems.push_back(new LineBreakElement(1,4*divider));
     elems.push_back(text=new FormattedTextElement(_T("Data \251 ")));
@@ -143,8 +147,7 @@ void prepareAbout()
 
     elems.push_back(text=new FormattedTextElement(_T("WikiPedia")));
     text->setJustification(DefinitionElement::justifyCenter);
-    // url doesn_T('t really matter, it')s only to establish a hotspot
-    text->setHyperlink(_T(""), hyperlinkTerm);
+    text->setHyperlink(_T("WikiPedia"), hyperlinkTerm);
     text->setActionCallback( wikipediaActionCallback, NULL);
 
     elems.push_back(new LineBreakElement(1,2*divider));
@@ -163,8 +166,7 @@ void prepareAbout()
 
     elems.push_back(text=new FormattedTextElement(_T("tutorial")));
     text->setJustification(DefinitionElement::justifyLeft);
-    // url doesn_T('t really matter, it')s only to establish a hotspot
-    text->setHyperlink(_T(""), hyperlinkTerm);
+    text->setHyperlink(_T("Tutorial"), hyperlinkTerm);
     text->setActionCallback( tutorialActionCallback, NULL);
 #else
     /* elems.push_back(new LineBreakElement(1,2));
@@ -193,8 +195,7 @@ void prepareTutorial()
     elems.push_back(text=new FormattedTextElement(_T("Go back to main screen.")));
     text->setJustification(DefinitionElement::justifyLeft);
     text->setParent(parent);
-    // url doesn_T('t really matter, it')s only to establish a hotspot
-    text->setHyperlink(_T(""), hyperlinkTerm);
+    text->setHyperlink(_T("Main screen"), hyperlinkTerm);
     text->setActionCallback( aboutActionCallback, NULL);
     elems.push_back(new LineBreakElement(2,3));
 
@@ -259,8 +260,7 @@ void prepareTutorial()
     elems.push_back(text=new FormattedTextElement(_T("click here")));
     text->setJustification(DefinitionElement::justifyLeft);
     text->setParent(parent);    
-    // url doesn_T('t really matter, it')s only to establish a hotspot
-    text->setHyperlink(_T(""), hyperlinkTerm);
+    text->setHyperlink(_T("Random article"), hyperlinkTerm);
     text->setActionCallback( randomArticleActionCallback, NULL);
     elems.push_back(text=new FormattedTextElement(_T(") to get a random article.")));
     text->setParent(parent);    
@@ -285,7 +285,11 @@ void prepareTutorial()
     text->setParent(parent);    
 
     elems.push_back(text=new FormattedTextElement(_T("arslexis.com")));
-    text->setHyperlink(_T("http://www.arslexis.com/pda/palm.html"), hyperlinkExternal);
+#ifdef WIN32_PLATFORM_PSPC
+    text->setHyperlink(_T("http://www.arslexis.com/pda/ppc.html"), hyperlinkExternal);
+#else
+    text->setHyperlink(_T("http://www.arslexis.com/pda/sm.html"), hyperlinkExternal);
+#endif
     text->setJustification(DefinitionElement::justifyLeft);
     text->setParent(parent);    
 
@@ -298,8 +302,7 @@ void prepareTutorial()
     elems.push_back(text=new FormattedTextElement(_T("Go back to main screen.")));
     text->setJustification(DefinitionElement::justifyLeft);
     text->setParent(parent);    
-    // url doesn_T('t really matter, it')s only to establish a hotspot
-    text->setHyperlink(_T(""), hyperlinkTerm);
+    text->setHyperlink(_T("Main screen"), hyperlinkTerm);
     text->setActionCallback( aboutActionCallback, NULL );
 
     (*g_tutorial).replaceElements(elems);
@@ -339,15 +342,18 @@ void prepareHowToRegister()
 #ifdef ARSLEXIS_VERSION
     elems.push_back(text=new FormattedTextElement(_T("our website ")));
     elems.push_back(text=new FormattedTextElement(_T("http://www.arslexis.com")));
-    text->setHyperlink(_T("http://www.arslexis.com/pda/palm.html"), hyperlinkExternal);
+#ifdef WIN32_PLATFORM_PSPC
+    text->setHyperlink(_T("http://www.arslexis.com/pda/ppc.html"), hyperlinkExternal);
+#else
+    text->setHyperlink(_T("http://www.arslexis.com/pda/sm.html"), hyperlinkExternal);
+#endif
 #endif
     elems.push_back(new LineBreakElement());
 
 #ifdef WIN32_PLATFORM_PSPC
     elems.push_back(text=new FormattedTextElement(_T("After obtaining registration code use menu item 'Options/Register' (or ")));
     elems.push_back(text=new FormattedTextElement(_T("click here")));
-    // url doesn_T('t really matter, it')s only to establish a hotspot
-    text->setHyperlink(_T(""), hyperlinkTerm);
+    text->setHyperlink(_T("Register"), hyperlinkTerm);
     text->setActionCallback( registerActionCallback, NULL );
     elems.push_back(text=new FormattedTextElement(_T(") to enter registration code. ")));
 #else
@@ -357,8 +363,7 @@ void prepareHowToRegister()
 
     elems.push_back(text=new FormattedTextElement(_T("Go back to main screen.")));
     text->setJustification(DefinitionElement::justifyLeft);
-    // url doesn_T('t really matter, it')s only to establish a hotspot
-    text->setHyperlink(_T(""), hyperlinkTerm);
+    text->setHyperlink(_T("Main screen"), hyperlinkTerm);
     text->setActionCallback( aboutActionCallback, NULL );
 
     (*g_register).replaceElements(elems);
@@ -388,8 +393,7 @@ void prepareWikipedia()
 
     elems.push_back(text=new FormattedTextElement(_T("Go back to main screen.")));
     text->setJustification(DefinitionElement::justifyLeft);
-    // url doesn_T('t really matter, it')s only to establish a hotspot
-    text->setHyperlink(_T(""), hyperlinkTerm);
+    text->setHyperlink(_T("Main screen"), hyperlinkTerm);
     text->setActionCallback( aboutActionCallback, NULL );
 
     (*g_wikipedia).replaceElements(elems);
