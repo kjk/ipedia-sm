@@ -15,7 +15,7 @@
 #include <LookupManagerBase.hpp>
 #include <Definition.hpp>
 
-extern HWND hwndMain;
+extern HWND g_hwndMain;
 extern HINSTANCE g_hInst;
 extern ArsLexis::String recentWord;
 extern ArsLexis::String searchWord;

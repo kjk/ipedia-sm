@@ -48,7 +48,7 @@ RenderingPreferences::RenderingPreferences():
 void RenderingPreferences::calculateIndentation()
 {
     const ArsLexis::char_t* bullet=_T("\x95");
-    Graphics graphics(GetDC(hwndMain), hwndMain);
+    Graphics graphics(GetDC(g_hwndMain), g_hwndMain);
     standardIndentation_=graphics.textWidth(bullet, 1)+bulletIndentation_;
 }
 
