@@ -4,6 +4,8 @@
 #include <LookupManagerBase.hpp>
 #include <Definition.hpp>
 
+using ArsLexis::char_t;
+
 class CommonProgressReporter : public ArsLexis::DefaultLookupProgressReporter
 {
 protected:    
@@ -26,17 +28,15 @@ protected:
     void DrawProgressInfo(const ArsLexis::LookupProgressReportingSupport &support, ArsLexis::Graphics &offscreen, const ArsLexis::Rectangle &bounds, bool percentProgEnabled);
     void DrawProgressBar(ArsLexis::Graphics& gr, uint_t percent, const ArsLexis::Rectangle& bounds);
     void DrawProgressRect(HDC hdc, const ArsLexis::Rectangle& bounds);
-
-
 };
 
 class RenderingProgressReporter: public Definition::RenderingProgressReporter, CommonProgressReporter
 {
     HWND hwndMain_;
-    ArsLexis::String waitText_;
+    const char_t* waitText_;
     RECT progressArea_;
 public:
-    RenderingProgressReporter(HWND hwnd, RECT progressArea, ArsLexis::String& text);
+    RenderingProgressReporter(HWND hwnd, RECT progressArea, const char_t* text);
     void setProgressArea(const RECT &progressArea)
     {progressArea_=progressArea;}
     virtual void reportProgress(uint_t percent);

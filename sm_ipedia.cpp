@@ -266,11 +266,11 @@ void OnCreate(HWND hwnd)
 
     LookupManager* lookupManager=app.getLookupManager(true);
     lookupManager->setProgressReporter(new DownloadingProgressReporter());
-    g_RenderingProgressReporter = new RenderingProgressReporter(hwnd, g_progressRect, String(_T("Formatting article...")));
+    g_RenderingProgressReporter = new RenderingProgressReporter(hwnd, g_progressRect, _T("Formatting article..."));
     g_definition->setRenderingProgressReporter(g_RenderingProgressReporter);
     g_definition->setHyperlinkHandler(&app.hyperlinkHandler());
     
-    g_RegistrationProgressReporter = new RenderingProgressReporter(hwnd, g_progressRect, String(_T("Registering application...")));
+    g_RegistrationProgressReporter = new RenderingProgressReporter(hwnd, g_progressRect, _T("Registering application..."));
 
     g_articleCountSet = app.preferences().articleCount;
     
