@@ -2,6 +2,7 @@
 #include "LastResults.h"
 #include "Registration.h"
 #include "Hyperlinks.h"
+#include "DefaultArticles.h"
 
 #include <SysUtils.hpp>
 #include <iPediaApplication.hpp>
@@ -41,6 +42,7 @@ bool g_fRegistration = false;
 int  g_scrollBarDx = 0;
 int  g_menuDy = 0;
 bool g_lbuttondown = false;
+
 enum ScrollUnit
 {
     scrollLine,
@@ -50,106 +52,110 @@ enum ScrollUnit
     scrollPosition
 };
 
-const int ErrorsTableEntries = 24;
+const int ErrorsTableEntries = 25;
 
 ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
 {
-        ErrorsTableEntry( romIncompatibleAlert,
-        _T("System incompatible"),
-        _T("System Version 4.0 or greater is required to run iPedia.")),  
-        
-        ErrorsTableEntry( networkUnavailableAlert,    
-        _T("Network unavailable"),
-        _T("Unable to initialize network subsystem.")),       
-        
-        ErrorsTableEntry( cantConnectToServerAlert,
-        _T("Server unavailable"),
-        _T("Can't connect to the server.")),
-        
-        ErrorsTableEntry( articleNotFoundAlert,
-        _T("Article not found"),
-        _T("Encyclopedia article for '^1' was not found.")),
-        
-        ErrorsTableEntry( articleTooLongAlert,
-        _T("Article too long"),
-        _T("Article is too long for iPedia to process.")),
-        
-        ErrorsTableEntry( notEnoughMemoryAlert,
-        _T("Error"),
-        _T("Not enough memory to complete current operation.")),
-        
-        ErrorsTableEntry( serverFailureAlert,
-        _T("Server error"),
-        _T("Unable to complete request due to server error.")),
-        
-        ErrorsTableEntry( invalidRegCodeAlert,
-        _T("Invalid registration code"),
-        _T("Invalid registration code sent. Please check registration code (using menu 'Options/Register'). Please contact support@arslexis.com if the problem persists.")),
-        
-        ErrorsTableEntry( invalidCookieAlert,
-        _T("Invalid cookie"),
-        _T("Invalid cookie sent. Please contact support@arslexis.com if the problem persists.")),
-        
-        ErrorsTableEntry( alertRegistrationFailed,
-        _T("Wrong registration code"),
-        _T("Incorrect registration code. Contact support@arslexis.com in case of problems.")),
-        
-        ErrorsTableEntry( alertRegistrationOk,
-        _T("Registration successful"),
-        _T("Thank you for registering iPedia.")),
-        
-        ErrorsTableEntry( lookupLimitReachedAlert,
-        _T("Trial expired"),
-        _T("Your unregistered version expired. Please register purchasing registration code and entering it using menu 'Register'.")),
-        
-        ErrorsTableEntry( unsupportedDeviceAlert,
-        _T("Unsupported device"),
-        _T("Your hardware configuration is unsupported. Please contact support@arslexis.com if the problem persists.")),
-        
-        // this shouldn't really happen, means bug on the client
-        ErrorsTableEntry( unexpectedRequestArgumentAlert,
-        _T("Unexpected request argument"),
-        _T("Unexpected request argument. Please contact support@arslexis.com if the problem persists.")),
-        
-        ErrorsTableEntry( requestArgumentMissingAlert,
-        _T("Request argument missing"),
-        _T("Request argument missing. Please contact support@arslexis.com if the problem persists.")),
-        
-        ErrorsTableEntry( invalidProtocolVersionAlert,
-        _T("Invalid protocol version"),
-        _T("Invalid protocol version. Please contact support@arslexis.com if the problem persists.")),
-        
-        ErrorsTableEntry( userDisabledAlert,
-        _T("User disabled"),
-        _T("This user has been disabled. Please contact support@arslexis.com if the problem persists.")),
-        
-        ErrorsTableEntry( malformedRequestAlert,
-        _T("Malformed request"),
-        _T("Server rejected your query. Please contact support@arslexis.com if the problem persists.")),
-        
-        ErrorsTableEntry( invalidRequestAlert,
-        _T("Invalid request"),
-        _T("Client sent invalid request. Please contact support@arslexis.com if the problem persists.")),
-        
-        ErrorsTableEntry( noWebBrowserAlert,
-        _T("No web browser"),
-        _T("Web browser is not installed on this device.")),
-        
-        ErrorsTableEntry( malformedResponseAlert,
-        _T("Malformed response"),
-        _T("Server returned malformed response. Please contact support@arslexis.com if the problem persists.")),
-        
-        ErrorsTableEntry( connectionTimedOutAlert,
-        _T("Connection timed out"),
-        _T("Connection timed out.")),
-        
-        ErrorsTableEntry( connectionErrorAlert,
-        _T("Error"),
-        _T("Connection terminated.")),
-        
-        ErrorsTableEntry( connectionServerNotRunning,
-        _T("Error"),
-        _T("The iPedia server is not available. Please contact support@arslexis.com if the problem persists."))
+    ErrorsTableEntry(romIncompatibleAlert,
+    _T("System incompatible"),
+    _T("System Version 4.0 or greater is required to run iPedia.")),
+
+    ErrorsTableEntry(networkUnavailableAlert,
+    _T("Network unavailable"),
+    _T("Unable to initialize network subsystem.")),
+
+    ErrorsTableEntry(cantConnectToServerAlert,
+    _T("Server unavailable"),
+    _T("Can't connect to the server.")),
+
+    ErrorsTableEntry(articleNotFoundAlert,
+    _T("Article not found"),
+    _T("Encyclopedia article for '^1' was not found.")),
+
+    ErrorsTableEntry(articleTooLongAlert,
+    _T("Article too long"),
+    _T("Article is too long for iPedia to process.")),
+
+    ErrorsTableEntry(notEnoughMemoryAlert,
+    _T("Error"),
+    _T("Not enough memory to complete current operation.")),
+
+    ErrorsTableEntry(serverFailureAlert,
+    _T("Server error"),
+    _T("Unable to complete request due to server error.")),
+
+    ErrorsTableEntry(invalidRegCodeAlert,
+    _T("Invalid registration code"),
+    _T("Invalid registration code sent. Please check registration code (using menu 'Options/Register'). Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorsTableEntry(invalidCookieAlert,
+    _T("Invalid cookie"),
+    _T("Invalid cookie sent. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorsTableEntry(alertRegistrationFailed,
+    _T("Wrong registration code"),
+    _T("Incorrect registration code. Contact support@arslexis.com in case of problems.")),
+
+    ErrorsTableEntry(alertRegistrationOk,
+    _T("Registration successful"),
+    _T("Thank you for registering iPedia.")),
+
+    ErrorsTableEntry(lookupLimitReachedAlert,
+    _T("Trial expired"),
+    _T("Your unregistered version expired. Please register by purchasing registration code and entering it using menu 'Options/Register'.")),
+
+    ErrorsTableEntry(forceUpgradeAlert,
+    _T("Upgrade required"),
+    _T("You need to upgrade iPedia to a newer version. Use menu 'Options/Check for updates' or press Update button to download newer version.")),
+
+    ErrorsTableEntry(unsupportedDeviceAlert,
+    _T("Unsupported device"),
+    _T("Your hardware configuration is unsupported. Please contact support@arslexis.com if the problem persists.")),
+
+    // this shouldn't really happen, means bug on the client
+    ErrorsTableEntry(unexpectedRequestArgumentAlert,
+    _T("Unexpected request argument"),
+    _T("Unexpected request argument. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorsTableEntry(requestArgumentMissingAlert,
+    _T("Request argument missing"),
+    _T("Request argument missing. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorsTableEntry(invalidProtocolVersionAlert,
+    _T("Invalid protocol version"),
+    _T("Invalid protocol version. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorsTableEntry(userDisabledAlert,
+    _T("User disabled"),
+    _T("This user has been disabled. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorsTableEntry(malformedRequestAlert,
+    _T("Malformed request"),
+    _T("Server rejected your query. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorsTableEntry(invalidRequestAlert,
+    _T("Invalid request"),
+    _T("Client sent invalid request. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorsTableEntry(noWebBrowserAlert,
+    _T("No web browser"),
+    _T("Web browser is not installed on this device.")),
+
+    ErrorsTableEntry(malformedResponseAlert,
+    _T("Malformed response"),
+    _T("Server returned malformed response. Please contact support@arslexis.com if the problem persists.")),
+
+    ErrorsTableEntry(connectionTimedOutAlert,
+    _T("Connection timed out"),
+    _T("Connection timed out.")),
+
+    ErrorsTableEntry(connectionErrorAlert,
+    _T("Error"),
+    _T("Connection terminated.")),
+
+    ErrorsTableEntry(connectionServerNotRunning,
+    _T("Error"),
+    _T("The iPedia server is not available. Please contact support@arslexis.com if the problem persists."))
 };
 
 static RECT g_progressRect = { 0, 0, 0, 0 };
@@ -160,18 +166,29 @@ TCHAR szTitle[]   = TEXT("iPedia");
 iPediaApplication iPediaApplication::instance_;
 
 Definition *g_definition = new Definition();
-static bool g_forceLayoutRecalculation=false;
-RenderingProgressReporter* rep; 
+Definition *g_about = new Definition();
+Definition *g_register = new Definition();
+Definition *g_tutorial = new Definition();
+Definition *g_wikipedia = new Definition();
+DisplayMode g_displayMode = showAbout;
+
+GenericTextElement* g_articleCountElement = NULL;
+long g_articleCountSet = -1;
+
+bool g_forceLayoutRecalculation = false;
+bool g_forceAboutRecalculation = false;
+
+RenderingProgressReporter* rep;
 RenderingPreferences* prefs= new RenderingPreferences();
 LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+
 void CopyToClipboard();
 
 static int  g_stressModeCnt = 0;
-bool rec=false;
 
 bool g_isAboutVisible = false;
 
-void setUI(bool enable = true);
+void setUIState(bool enable = true);
 bool g_uiEnabled = true;
 
 String articleCountText;
@@ -186,9 +203,9 @@ HWND      g_hwndEdit         = NULL;
 HWND      g_hwndScroll       = NULL;
 HWND      g_hWndMenuBar      = NULL;   // Current active menubar
 HWND      g_hwndSearchButton = NULL;
-HBITMAP   g_searchBtnUpBmp             = NULL;
-HBITMAP   g_searchBtnDownBmp             = NULL;
-HBITMAP   g_searchBtnDiasabledBmp             = NULL;
+HBITMAP   g_searchBtnUpBmp   = NULL;
+HBITMAP   g_searchBtnDownBmp = NULL;
+HBITMAP   g_searchBtnDiasabledBmp = NULL;
 
 WNDPROC   g_oldEditWndProc   = NULL;
 
@@ -205,6 +222,39 @@ void moveHistoryBack();
 void setScrollBar(Definition* definition);
 void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar);
 void SimpleOrExtendedSearch(HWND hwnd, bool simple);
+void DrawSearchButton(LPDRAWITEMSTRUCT lpdis);
+
+DisplayMode displayMode()
+{
+    return g_displayMode;
+}
+
+void setDisplayMode(DisplayMode displayMode)
+{
+    g_displayMode=displayMode;
+}
+
+Definition& currentDefinition()
+{
+    switch( displayMode() )
+    {
+        case showArticle:
+            return (*g_definition);
+        case showAbout:
+            return (*g_about);
+        case showRegister:
+            return (*g_register);
+        case showTutorial:
+            return (*g_tutorial);
+        case showWikipedia:
+            return (*g_wikipedia);
+        default:
+            // shouldn't happen
+            assert(0);
+            break;
+    }
+    return (*g_about);
+}
 
 HANDLE    g_hConnection = NULL;
 // try to establish internet connection.
@@ -328,7 +378,7 @@ void OnCreate(HWND hwnd)
         g_hInst,
         NULL);
 
-    setScrollBar(g_definition);
+    setScrollBar(g_about);
     (void)SendMessage(
         mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK,
         MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
@@ -344,6 +394,18 @@ void OnCreate(HWND hwnd)
     rep = new RenderingProgressReporter(hwnd);
     g_definition->setRenderingProgressReporter(rep);
     g_definition->setHyperlinkHandler(&app.hyperlinkHandler());
+    
+    g_articleCountSet = app.preferences().articleCount;
+    
+    g_about->setHyperlinkHandler(&app.hyperlinkHandler());
+    g_tutorial->setHyperlinkHandler(&app.hyperlinkHandler());
+    g_register->setHyperlinkHandler(&app.hyperlinkHandler());
+    g_wikipedia->setHyperlinkHandler(&app.hyperlinkHandler());
+
+    prepareAbout();
+    prepareHowToRegister();
+    prepareTutorial();
+    prepareWikipedia();
 
     setMenu(hwnd);
     SetFocus(g_hwndEdit);
@@ -367,40 +429,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
 #ifdef WIN32_PLATFORM_PSPC
         case WM_DRAWITEM:
-        {
-            HDC hdcMem; 
-            LPDRAWITEMSTRUCT lpdis;
-            lpdis = (LPDRAWITEMSTRUCT) lp; 
-            hdcMem = CreateCompatibleDC(lpdis->hDC); 
-            if (lpdis->itemState & ODS_DISABLED)
-                SelectObject(hdcMem, g_searchBtnDiasabledBmp);
-            else
-            {
-                if (lpdis->itemState & ODS_SELECTED)  // if selected 
-                    SelectObject(hdcMem, g_searchBtnDownBmp); 
-                else 
-                    SelectObject(hdcMem, g_searchBtnUpBmp); 
-            };
- 
-            // Destination 
-            StretchBlt( 
-                lpdis->hDC,         // destination DC 
-                lpdis->rcItem.left, // x upper left 
-                lpdis->rcItem.top,  // y upper left 
- 
-                // The next two lines specify the width and 
-                // height. 
-                lpdis->rcItem.right - lpdis->rcItem.left, 
-                lpdis->rcItem.bottom - lpdis->rcItem.top, 
-                hdcMem,    // source device context 
-                0, 0,      // x and y upper left 
-                20,        // source bitmap width 
-                20,        // source bitmap height 
-                SRCCOPY);  // raster operation 
- 
-            DeleteDC(hdcMem); 
+            DrawSearchButton((LPDRAWITEMSTRUCT) lp);
             return TRUE; 
-        }
 #endif
         case WM_SETTINGCHANGE:
         {
@@ -566,10 +596,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         msg.c_str(),
                         ErrorsTable[j].title.c_str(),
                         MB_OK|MB_ICONEXCLAMATION);
-                    setUI(true);
                     break;
                 }
             }
+            setUIState(true);
             break;
         }
 
@@ -601,8 +631,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         int len = SendMessage(g_hwndEdit, EM_LINELENGTH, 0,0);
                         SendMessage(g_hwndEdit, EM_SETSEL, 0,len);
                     }
-                    g_isAboutVisible=false;
+                    //g_isAboutVisible=false;
                     setScrollBar(g_definition);
+                    setDisplayMode(showArticle);
                     InvalidateRect(g_hwndMain, NULL, TRUE);
                     break;
                 }
@@ -610,12 +641,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 case LookupFinishedEventData::outcomeList:
                     recentWord.assign(lookupManager->lastInputTerm());
                     SendMessage(hwnd, WM_COMMAND, IDM_MENU_RESULTS, 0);
-                    setUI(true);
+                    setUIState(true);
                     break;
 
                 case LookupFinishedEventData::outcomeRegCodeValid:
                 {
-                    setUI(true);
+                    setUIState(true);
                     g_fRegistration = false;
                     iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
                     assert(!g_newRegCode.empty());
@@ -636,7 +667,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 case LookupFinishedEventData::outcomeRegCodeInvalid:
                 {
                     g_fRegistration = false;
-                    setUI(true);
+                    setUIState(true);
                     iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
                     if (MessageBox(hwnd, 
                         _T("Incorrect registration code. Contact support@arslexis.com in case of problems. Do you want to re-enter the code ?"), 
@@ -657,7 +688,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                             if (lookupManager && !lookupManager->lookupInProgress())
                             {
                                 lookupManager->verifyRegistrationCode(g_newRegCode);
-                                setUI(false);
+                                setUIState(false);
                                 g_fRegistration = true;
                             }
                         }
@@ -693,7 +724,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
 static void DoRegister()
 {
-    CopyToClipboard();
     if (!fInitConnection())
         return;
 
@@ -706,7 +736,7 @@ static void DoRegister()
         if (lookupManager && !lookupManager->lookupInProgress())
         {
             lookupManager->verifyRegistrationCode(g_newRegCode);
-            setUI(false);
+            setUIState(false);
             g_fRegistration = true;
         }
     }
@@ -715,7 +745,7 @@ static void DoRegister()
 }
 
 LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
-{    
+{
     iPediaApplication& app=iPediaApplication::instance();
     LookupManager* lookupManager=app.getLookupManager(true);
 
@@ -724,20 +754,19 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
     LRESULT lResult = TRUE;
 
-
     switch (wp)
     {   
         case IDM_MENU_CLIPBOARD:
             CopyToClipboard();
             break;
-
+        
         case IDM_MENU_STRESS_MODE:
             g_stressModeCnt = 100;
             SendMessage(hwnd, WM_COMMAND, IDM_MENU_RANDOM, 0);
             break;
-            
+        
         case IDM_ENABLE_UI:
-            setUI(true);
+            setUIState(true);
             if (g_stressModeCnt>0)
             {
                 g_stressModeCnt--;
@@ -759,38 +788,48 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         
         case IDM_MENU_ABOUT:
-            g_isAboutVisible = true;
+            //g_isAboutVisible = true;
+            setDisplayMode(showAbout);
             setMenu(hwnd);
-            setScrollBar(g_definition);
+            setScrollBar(g_about);
             InvalidateRect(hwnd,NULL,TRUE);
             break;
-
+        
+        case IDM_MENU_TUTORIAL:
+            setDisplayMode(showTutorial);
+            setMenu(hwnd);
+            setScrollBar(g_about);
+            InvalidateRect(hwnd,NULL,TRUE);
+            break;
+        
         case IDM_EXT_SEARCH:
             SimpleOrExtendedSearch(hwnd, false);
             break;
-            
+        
         case ID_SEARCH_BTN:
-            // intentional fall-through
+        // intentional fall-through
         case ID_SEARCH_BTN2:
-            // intentional fall-through
+        // intentional fall-through
         case ID_SEARCH:
+        // intentional fall-through
             SimpleOrExtendedSearch(hwnd, true);
             break;
-
+        
         case IDM_MENU_HYPERS:
         {
             if (!fInitConnection())
                 break;
-            if (!g_definition->empty())
+            Definition &def = currentDefinition();
+            if (!def.empty())
             {
                 if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_HYPERLINKS), hwnd,HyperlinksDlgProc))
                 {
-                    if (lookupManager && !lookupManager->lookupInProgress())
-                    {
-                        lookupManager->lookupTerm(searchWord);                            
-                        setUI(false);
-                        InvalidateRect(hwnd,NULL,TRUE);
-                    }
+                /*if (lookupManager && !lookupManager->lookupInProgress())
+                {
+                    lookupManager->lookupTerm(searchWord);*/
+                    //setUIState(false);
+                    InvalidateRect(hwnd,NULL,TRUE);
+                    //}
                 }
             }
             break;
@@ -801,15 +840,16 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 break;
             if (lookupManager && !lookupManager->lookupInProgress())
             {
-                setUI(false);
+                setUIState(false);
                 lookupManager->lookupRandomTerm();
             }
             break;
         }
         case IDM_MENU_REGISTER:
+        {
             DoRegister();
             break;
-
+        }
         case IDM_MENU_PREV:
             // intentionally fall through
         case ID_PREV_BTN:
@@ -824,27 +864,31 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
         case IDM_MENU_RESULTS:
         {
-            int res = DialogBox(g_hInst, MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc);
+            int res=DialogBox(g_hInst, MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc);
             if (res)
             {
-                if (1==res)
-                    lookupManager->lookupIfDifferent(searchWord);
-                else
-                    lookupManager->search(searchWord);
-                setUI(false);
+                if (lookupManager && !lookupManager->lookupInProgress())
+                {
+                    if (1==res)
+                        lookupManager->lookupIfDifferent(searchWord);
+                    else
+                        lookupManager->search(searchWord);
+                    setUIState(false);
+                }
+                InvalidateRect(hwnd,NULL,TRUE);
             }
-            InvalidateRect(hwnd,NULL,TRUE);
             break;
         }
         default:
-            lResult  = DefWindowProc(hwnd, msg, wp, lp);
-    };
-
+        lResult  = DefWindowProc(hwnd, msg, wp, lp);
+    }
     return lResult;
 }
+        
 
 bool InitInstance (HINSTANCE hInstance, int CmdShow )
 {
+
     g_hInst = hInstance;
     g_hwndMain = CreateWindow(szAppName,
             szTitle,
@@ -962,23 +1006,18 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
 
     if (!onlyProgress)
     {
-        if (g_definition->empty()||g_isAboutVisible)
+        /*if (g_definition->empty()||g_isAboutVisible)
             DrawAboutInfo(hdc, rect);
         else
-        {
+        {*/
+            Definition &def = currentDefinition();
             repaintDefiniton(hwnd);
             if (g_forceLayoutRecalculation) 
-                setScrollBar(g_definition);
+                setScrollBar(&def);
             if (g_forceLayoutRecalculation)
                 PostMessage(g_hwndMain,WM_COMMAND, IDM_ENABLE_UI, 0);
             g_forceLayoutRecalculation = false;
-        }
-    }
-
-    if (rec)
-    {
-        setScrollBar(g_definition);
-        rec=false;
+        /*}*/
     }
 
     if (lookupManager && lookupManager->lookupInProgress() && !g_fRegistration)
@@ -1002,7 +1041,7 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
     }
 }
             
-void DrawAboutInfo(HDC hdc, RECT rect)
+/*void DrawAboutInfo(HDC hdc, RECT rect)
 {
     iPediaApplication& app=iPediaApplication::instance();
     LOGFONT logfnt;
@@ -1058,7 +1097,7 @@ void DrawAboutInfo(HDC hdc, RECT rect)
     SelectObject(hdc,fnt);
     DeleteObject(fnt2);
     DeleteObject(fnt3);
-}
+}*/
 
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -1066,24 +1105,18 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         case WM_KEYDOWN:
         {
-            if (VK_TACTION==wp) 
-            { 
-                if (g_uiEnabled)
-                    SendMessage(g_hwndMain,WM_COMMAND, ID_SEARCH, 0);
-                return 0; 
-            } 
-
-            if (g_definition&&!g_isAboutVisible)
+            switch (wp) 
             {
-                switch (wp) 
-                {
-                    case VK_DOWN:
-                        scrollDefinition(1, scrollPage, true);
-                        return 0;
-                    case VK_UP:
-                        scrollDefinition(-1, scrollPage, true);
-                        return 0;
-                }
+                case VK_TACTION:
+                    if (g_uiEnabled)
+                        SendMessage(g_hwndMain,WM_COMMAND, ID_SEARCH, 0);
+                    return 0; 
+                case VK_DOWN:
+                    scrollDefinition(1, scrollPage, true);
+                    return 0;
+                case VK_UP:
+                    scrollDefinition(-1, scrollPage, true);
+                    return 0;
             }
             break;
        }
@@ -1217,6 +1250,7 @@ void setMenuBarButtonState(int buttonID, bool state)
 
 void setMenu(HWND hwnd)
 {
+    Definition &def = currentDefinition();
     HWND hwndMB = SHFindMenuBar (hwnd);
     if (hwndMB) 
     {
@@ -1238,13 +1272,13 @@ void setMenu(HWND hwnd)
 
         unsigned int previousHistoryTermEnabled = MF_GRAYED;
         if (lookupManager->hasPreviousHistoryTerm()||
-            (g_isAboutVisible&&!g_definition->empty()))
+            ((displayMode()!=showArticle)&&!(def.empty())))
             previousHistoryTermEnabled = MF_ENABLED;
 
         EnableMenuItem(hMenu, IDM_MENU_PREV, previousHistoryTermEnabled);
         
         unsigned int clipboardEnabled = MF_GRAYED;
-        if (!g_definition->empty())
+        if (!def.empty())
             clipboardEnabled = MF_ENABLED;
         EnableMenuItem(hMenu, IDM_MENU_CLIPBOARD, clipboardEnabled);
 
@@ -1259,8 +1293,8 @@ void setMenu(HWND hwnd)
 
         EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_GRAYED);
         Definition::ElementPosition_t pos;
-        for(pos=g_definition->firstElementPosition();
-            pos!=g_definition->lastElementPosition();
+        for(pos=def.firstElementPosition();
+            pos!=def.lastElementPosition();
             pos++)
         {
             DefinitionElement *curr=*pos;
@@ -1282,7 +1316,9 @@ void setupAboutWindow()
     iPediaApplication &app=iPediaApplication::instance();
     if (app.preferences().articleCount!=-1)
     {
-        articleCountText.erase();
+        updateArticleCountEl(app.preferences().articleCount, app.preferences().databaseTime);
+        g_forceAboutRecalculation = true;
+        /*articleCountText.erase();
         databaseDateText.erase();
         dateText.erase();
         int articleCount = app.preferences().articleCount;
@@ -1297,8 +1333,9 @@ void setupAboutWindow()
         dateText.append(1, _T('-'));
         dateText.append(dbTime, 4, 2);
         dateText.append(1, _T('-'));
-        dateText.append(dbTime, 6, 2);
+        dateText.append(dbTime, 6, 2);*/
     }
+    
 }
 
 // Try to launch IE with a given url
@@ -1315,7 +1352,7 @@ bool GotoURL(LPCTSTR lpszUrl)
     return ShellExecuteEx(&sei);
 }
 
-void setUI(bool enabled)
+void setUIState(bool enabled)
 {
     iPediaApplication& app=iPediaApplication::instance();
     LookupManager* lookupManager=app.getLookupManager(true);
@@ -1349,31 +1386,32 @@ void handleExtendSelection(HWND hwnd, int x, int y, bool finish)
     const LookupManager* lookupManager=app.getLookupManager();
     if (lookupManager && lookupManager->lookupInProgress())
         return;
-
-    if (g_definition->empty())
+    Definition &def = currentDefinition();
+    if (def.empty())
         return;
     ArsLexis::Point point(x,y);
     Graphics graphics(GetDC(hwnd), hwnd);
-    g_definition->extendSelection(graphics, app.preferences().renderingPreferences, point, finish);         
+    def.extendSelection(graphics, app.preferences().renderingPreferences, point, finish);         
 }
 
 void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
 {
-    if (g_definition->empty()||g_isAboutVisible)
+    Definition &def = currentDefinition();
+    if (def.empty()||g_isAboutVisible)
         return;
     switch(unit)
     {
         case scrollPage:
-            units*=(g_definition->shownLinesCount());
+            units*=(def.shownLinesCount());
             break;
         case scrollEnd:
-            units = g_definition->totalLinesCount();
+            units = def.totalLinesCount();
             break;
         case scrollHome:
-            units = -(int)g_definition->totalLinesCount();
+            units = -(int)def.totalLinesCount();
             break;
         case scrollPosition:
-            units = units - g_definition->firstShownLine();
+            units = units - def.firstShownLine();
             break;
     }
     repaintDefiniton(g_hwndMain, units);
@@ -1381,6 +1419,7 @@ void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
 
 void repaintDefiniton(HWND hwnd, int scrollDelta)
 {
+    Definition &def=currentDefinition();
     RECT rect;
     GetClientRect (g_hwndMain, &rect);
     rect.top    +=22;
@@ -1395,7 +1434,11 @@ void repaintDefiniton(HWND hwnd, int scrollDelta)
 
     Graphics gr(GetDC(g_hwndMain), g_hwndMain);
     bool doubleBuffer=false;
-    
+    if ( (true == g_forceAboutRecalculation) && (displayMode() == showAbout) )
+    {
+        g_forceLayoutRecalculation = true;
+        g_forceAboutRecalculation = false;
+    }   
     /*HDC offscreenDc=::CreateCompatibleDC(gr.handle());
     if (offscreenDc) 
     {
@@ -1406,9 +1449,9 @@ void repaintDefiniton(HWND hwnd, int scrollDelta)
             {
                 Graphics offscreen(offscreenDc, NULL);
                 if (0 != scrollDelta)
-                    g_definition->scroll(offscreen,*prefs, scrollDelta);
+                    def->scroll(offscreen,*prefs, scrollDelta);
                 else
-                    g_definition->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
+                    def->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
                 offscreen.copyArea(defRect, gr, defRect.topLeft);
             }
             ::SelectObject(offscreenDc, oldBitmap);
@@ -1422,11 +1465,11 @@ void repaintDefiniton(HWND hwnd, int scrollDelta)
         doubleBuffer=false;*/
     if (!doubleBuffer)
         if (0 != scrollDelta)
-            g_definition->scroll(gr,*prefs, scrollDelta);
+            def.scroll(gr,*prefs, scrollDelta);
         else
-            g_definition->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
+            def.render(gr, defRect, *prefs, g_forceLayoutRecalculation);
     
-    setScrollBar(g_definition);
+    setScrollBar(&def);
 }
 
 void CopyToClipboard()
@@ -1458,9 +1501,10 @@ static void handleMoveHistory(bool forward)
 {
     iPediaApplication& app=iPediaApplication::instance();
     LookupManager* lookupManager=app.getLookupManager(true);
-    if (g_isAboutVisible) 
+    if (displayMode()!=showArticle)//g_isAboutVisible) 
     {
-        g_isAboutVisible = false;
+        setDisplayMode(showArticle);
+        //g_isAboutVisible = false;
         if (!g_definition->empty())
         {
             SendMessage(g_hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)lookupManager->lastInputTerm().c_str());
@@ -1476,7 +1520,7 @@ static void handleMoveHistory(bool forward)
         if (!fInitConnection())
             return;
         lookupManager->moveHistory(forward);
-        setUI(false);
+        setUIState(false);
     }
 }
 
@@ -1489,6 +1533,7 @@ void moveHistoryBack()
 {
     handleMoveHistory(false);
 }
+
 
 void SimpleOrExtendedSearch(HWND hwnd, bool simple)
 {
@@ -1510,26 +1555,60 @@ void SimpleOrExtendedSearch(HWND hwnd, bool simple)
         if (!simple)
         {
             lookupManager->search(term);
-            setUI(false);
+            setUIState(false);
             InvalidateRect(hwnd,NULL,TRUE);
         }
         else
         {
             if (lookupManager->lookupIfDifferent(term))
             {
-                setUI(false);
+                setUIState(false);
                 InvalidateRect(hwnd,NULL,TRUE);
             }
             else
             {
-                if (g_isAboutVisible)
+                if (displayMode()!=showArticle)//g_isAboutVisible)
                 {
-                    g_isAboutVisible = false;
+                    //g_isAboutVisible = false;
+                    setDisplayMode(showArticle);
                     setScrollBar(g_definition);
-                    setUI(true);
+                    setUIState(true);
                     InvalidateRect(hwnd,NULL,TRUE);                            
                 }
             }
         }
     }
+}
+
+void DrawSearchButton(LPDRAWITEMSTRUCT lpdis)
+{
+    HDC hdcMem; 
+    hdcMem = CreateCompatibleDC(lpdis->hDC); 
+    if (lpdis->itemState & ODS_DISABLED)
+        SelectObject(hdcMem, g_searchBtnDiasabledBmp);
+    else
+    {
+        if (lpdis->itemState & ODS_SELECTED)  // if selected 
+            SelectObject(hdcMem, g_searchBtnDownBmp); 
+        else 
+            SelectObject(hdcMem, g_searchBtnUpBmp); 
+    };
+    
+    // Destination 
+    StretchBlt( 
+        lpdis->hDC,         // destination DC 
+        lpdis->rcItem.left, // x upper left 
+        lpdis->rcItem.top,  // y upper left 
+        
+        // The next two lines specify the width and 
+        // height. 
+        lpdis->rcItem.right - lpdis->rcItem.left, 
+        lpdis->rcItem.bottom - lpdis->rcItem.top, 
+        hdcMem,    // source device context 
+        0, 0,      // x and y upper left 
+        20,        // source bitmap width 
+        20,        // source bitmap height 
+        SRCCOPY);  // raster operation 
+    
+    DeleteDC(hdcMem); 
 }

@@ -18,13 +18,34 @@
 extern HWND g_hwndMain;
 extern HINSTANCE g_hInst;
 extern Definition *g_definition;
-
 extern ArsLexis::String recentWord;
 extern ArsLexis::String searchWord;
+
 
 bool GotoURL(LPCTSTR lpszUrl);
 void setupAboutWindow();
 void setMenu(HWND hwnd);
+
+extern Definition *g_about;
+extern Definition *g_register;
+extern Definition *g_tutorial;
+extern Definition *g_wikipedia;
+extern GenericTextElement* g_articleCountElement;
+extern long g_articleCountSet;
+extern bool g_forceLayoutRecalculation;
+
+enum DisplayMode
+{
+    showAbout,
+    showTutorial,
+    showRegister,
+    showArticle,
+    showWikipedia
+};
+
+void setDisplayMode(DisplayMode mode);
+DisplayMode displayMode();
+Definition& currentDefinition();
 
 class RenderingProgressReporter: public Definition::RenderingProgressReporter
 {

@@ -17,6 +17,7 @@ struct LookupFinishedEventData;
 #define serverLocalhost      _T("192.168.0.1:9000")
 #define serverLocalhost2     _T("127.0.0.1:9000")
 #define serverIpediaArslexis _T("ipedia.arslexis.com:9000")
+#define serverZjednoczenie   _T("10.10.101.129:9000")
 
 #define serverToUse serverMarek
 

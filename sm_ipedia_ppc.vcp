@@ -158,7 +158,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
-# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib winsock.lib wininet.lib cellcore.lib coredll.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib winsock.lib wininet.lib cellcore.lib coredll.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
 
 !ENDIF 
 
@@ -317,6 +317,119 @@ DEP_CPP_COMMON=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\DefaultArticles.cpp
+
+!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+
+DEP_CPP_DEFAU=\
+	".\iPediaApplication.hpp"\
+	".\iPediaHyperlinkHandler.hpp"\
+	".\sm_ipedia.h"\
+	
+NODEP_CPP_DEFAU=\
+	".\Definition.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+
+DEP_CPP_DEFAU=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\FormattedTextElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Geometry.hpp"\
+	"..\ars_framework\Src\Graphics.hpp"\
+	"..\ars_framework\Src\Library.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
+	"..\ars_framework\Src\Logging.hpp"\
+	"..\ars_framework\Src\LookupManagerBase.hpp"\
+	"..\ars_framework\Src\NativeGeometry.hpp"\
+	"..\ars_framework\Src\NativeSocks.hpp"\
+	"..\ars_framework\Src\NetLibrary.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	"..\ars_framework\Src\Resolver.hpp"\
+	"..\ars_framework\Src\Socket.hpp"\
+	"..\ars_framework\Src\SocketAddress.hpp"\
+	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	"..\ipedia\Rsc\ipedia_Rsc.h"\
+	"..\ipedia\Src\ipedia.h"\
+	".\iPediaApplication.hpp"\
+	".\iPediaHyperlinkHandler.hpp"\
+	".\PrefsStore.hpp"\
+	".\RenderingPreferences.hpp"\
+	".\sm_ipedia.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+
+DEP_CPP_DEFAU=\
+	".\iPediaApplication.hpp"\
+	".\iPediaHyperlinkHandler.hpp"\
+	".\sm_ipedia.h"\
+	
+NODEP_CPP_DEFAU=\
+	".\Definition.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+
+DEP_CPP_DEFAU=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\Definition.hpp"\
+	"..\ars_framework\Src\DefinitionElement.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\FontEffects.hpp"\
+	"..\ars_framework\Src\FormattedTextElement.hpp"\
+	"..\ars_framework\Src\GenericTextElement.hpp"\
+	"..\ars_framework\Src\Geometry.hpp"\
+	"..\ars_framework\Src\Graphics.hpp"\
+	"..\ars_framework\Src\Library.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
+	"..\ars_framework\Src\Logging.hpp"\
+	"..\ars_framework\Src\LookupManagerBase.hpp"\
+	"..\ars_framework\Src\NativeGeometry.hpp"\
+	"..\ars_framework\Src\NativeSocks.hpp"\
+	"..\ars_framework\Src\NetLibrary.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
+	"..\ars_framework\Src\Rendering.hpp"\
+	"..\ars_framework\Src\Resolver.hpp"\
+	"..\ars_framework\Src\Socket.hpp"\
+	"..\ars_framework\Src\SocketAddress.hpp"\
+	"..\ars_framework\Src\SocketConnection.hpp"\
+	"..\ars_framework\Src\SysUtils.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
+	"..\ipedia\Rsc\ipedia_Rsc.h"\
+	"..\ipedia\Src\ipedia.h"\
+	".\iPediaApplication.hpp"\
+	".\iPediaHyperlinkHandler.hpp"\
+	".\PrefsStore.hpp"\
+	".\RenderingPreferences.hpp"\
+	".\sm_ipedia.h"\
 	
 
 !ENDIF 
@@ -1995,11 +2108,12 @@ DEP_CPP_PREFS=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
-	
-NODEP_CPP_PREFS=\
-	".\ipapi.h"\
-	".\ms.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	{$(INCLUDE)}"winuserm.h"\
 	
 
 !ENDIF 
@@ -2381,6 +2495,7 @@ DEP_CPP_SM_IP=\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\LookupHistory.hpp"\
 	"..\ipedia\Src\LookupManager.hpp"\
+	".\DefaultArticles.h"\
 	".\HyperLinks.h"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
@@ -2449,13 +2564,13 @@ DEP_CPP_SM_IP=\
 	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
-	
-NODEP_CPP_SM_IP=\
-	".\ipapi.h"\
-	".\ms.h"\
-	".\niqueid.h"\
-	".\onnmgr.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"connmgr.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"uniqueid.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ENDIF 
@@ -2689,11 +2804,11 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	
-NODEP_CPP_WINDE=\
-	".\ipapi.h"\
-	".\ms.h"\
-	".\ygshell.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ENDIF 
@@ -2901,6 +3016,10 @@ SOURCE=..\ars_framework\Src\BulletElement.hpp
 # Begin Source File
 
 SOURCE=..\ars_framework\Src\Debug.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DefaultArticles.h
 # End Source File
 # Begin Source File
 

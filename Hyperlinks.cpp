@@ -54,23 +54,24 @@ BOOL CALLBACK HyperlinksDlgProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
                     HWND ctrl = GetDlgItem(hDlg, IDC_LIST_HYPERLINKS);
                     int idx = SendMessage(ctrl, LB_GETCURSEL, 0, 0);
                     GenericTextElement *txtEl=(GenericTextElement*)SendMessage(ctrl, LB_GETITEMDATA, idx, 0);
-                    if(txtEl->hyperlinkProperties()->type==hyperlinkExternal)
-                    {
-                        GotoURL(txtEl->hyperlinkProperties()->resource.c_str());
-                        EndDialog(hDlg, 0);
-                        break;
-                    }
-                    else
+                    if((txtEl->hyperlinkProperties()->type==hyperlinkTerm)||
+                       (txtEl->hyperlinkProperties()->type==hyperlinkBookmark))
                     {
                         int len = SendMessage(ctrl, LB_GETTEXTLEN, idx, 0);
                         TCHAR *buf = new TCHAR[len+1];
                         SendMessage(ctrl, LB_GETTEXT, idx, (LPARAM) buf);
                         searchWord.assign(buf);
                         recentWord.assign(buf);
-                        delete buf;
-                        EndDialog(hDlg, 1);
-                        break;
                     }
+
+                    txtEl->performAction(currentDefinition());
+                    EndDialog(hDlg, 1);
+                    break;
+                    /*if(txtEl->hyperlinkProperties()->type==hyperlinkExternal)
+                    {
+                        GotoURL(txtEl->hyperlinkProperties()->resource.c_str());
+                        break;
+                    }*/
                 }
             }
         }
@@ -114,8 +115,9 @@ BOOL InitHyperlinks(HWND hDlg)
 
     
     Definition::ElementPosition_t pos;
-    for(pos=g_definition->firstElementPosition();
-        pos!=g_definition->lastElementPosition();
+    Definition &def = currentDefinition();
+    for(pos=def.firstElementPosition();
+        pos!=def.lastElementPosition();
         pos++)
     {
         DefinitionElement *curr=*pos;
