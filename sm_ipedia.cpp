@@ -148,6 +148,9 @@ RenderingProgressReporter* rep;
 RenderingPreferences* prefs= new RenderingPreferences();
 
 bool isAboutVisible = false;
+void setUI(bool enable = true);
+bool g_uiEnabled = true;
+int  stressModeCnt = 0;
 
 static bool g_forceLayoutRecalculation=false;
 bool rec=false;
@@ -157,6 +160,7 @@ using ArsLexis::String;
 using ArsLexis::Graphics;
 using ArsLexis::char_t;
 
+HWND g_hWndMenuBar;   // Current active menubar
 
 String articleCountText;
 String databaseDateText;
@@ -172,6 +176,7 @@ HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
 void paint(HWND hwnd, HDC hdc, RECT rcpaint);
 void DrawProgressBar(Graphics& gr, uint_t percent, const ArsLexis::Rectangle& bounds);
 void DrawProgressRect(HDC hdc, const ArsLexis::Rectangle& bounds);
+
 RECT progressRect = { 7, 80, 162, 125 };
 
 TCHAR szAppName[] = TEXT("iPedia");
@@ -216,6 +221,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             if (!SHCreateMenuBar(&mbi)) {
                 PostQuitMessage(0);
             }
+            g_hWndMenuBar = mbi.hwndMB;
 
             hwndEdit = CreateWindow(
                 TEXT("edit"),
@@ -273,6 +279,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             if (lookupManager && !lookupManager->lookupInProgress())
             switch (wp)
             {
+                case IDM_MENU_STRESS_MODE:
+                    stressModeCnt=100;
+                    SendMessage(hwnd, WM_COMMAND, IDM_MENU_RANDOM, 0);
+                break;
+                case IDM_ENABLE_UI:
+                {
+                    setUI(true);
+                    if(stressModeCnt>0)
+                    {
+                        stressModeCnt--;
+                        SendMessage(hwnd, WM_COMMAND, IDM_MENU_RANDOM, 0);
+                    }
+                    break;
+                }
                 case IDOK:
                 {
                     SendMessage(hwnd,WM_CLOSE,0,0);
@@ -304,11 +324,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     if (lookupManager && !lookupManager->lookupInProgress())
                     {
                         if(wp==IDM_EXT_SEARCH)
+                        {
                             lookupManager->search(term);
+                            setUI(false);
+                            InvalidateRect(hwnd,NULL,TRUE);
+                        }
                         else
-                            lookupManager->lookupIfDifferent(term);
+                        {
+                            if (lookupManager->lookupIfDifferent(term))
+                            {
+                                setUI(false);
+                                InvalidateRect(hwnd,NULL,TRUE);
+                            }
+                        }
                     }
-                    InvalidateRect(hwnd,NULL,TRUE);
                     break;            
                 }
                 case IDM_MENU_HYPERS:
@@ -318,8 +347,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_HYPERLINKS), hwnd,HyperlinksDlgProc))
                         {
                             if (lookupManager && !lookupManager->lookupInProgress())
+                            {
                                 lookupManager->lookupTerm(searchWord);                            
-                            InvalidateRect(hwnd,NULL,TRUE);
+                                setUI(false);
+                                InvalidateRect(hwnd,NULL,TRUE);
+                            }
                         }
                     }
                     break;
@@ -327,7 +359,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 case IDM_MENU_RANDOM:
                 {
                     if (lookupManager && !lookupManager->lookupInProgress())
+                    {
+                        setUI(false);
                         lookupManager->lookupRandomTerm();
+                    }
                     break;
                 }
                 case IDM_MENU_REGISTER:
@@ -338,6 +373,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         if (lookupManager && !lookupManager->lookupInProgress())
                         {
                             lookupManager->verifyRegistrationCode(newRegCode_);
+                            setUI(false);
                             registration = true;
                         }
                     }
@@ -362,7 +398,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         break;
                     }
                     if (lookupManager && !lookupManager->lookupInProgress())
+                    {
                         lookupManager->moveHistory(!(wp-IDM_MENU_NEXT));
+                        setUI(false);
+                    }
                     break;
                 }
                 case IDM_MENU_RESULTS:
@@ -375,10 +414,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         iPediaApplication& app=iPediaApplication::instance();
                         LookupManager* lookupManager=app.getLookupManager(true);
                         if (lookupManager && !lookupManager->lookupInProgress())
+                        {
                             if(res==1)
                                 lookupManager->lookupIfDifferent(searchWord);
                             else
                                 lookupManager->search(searchWord);
+                            setUI(false);
+                        }
                         InvalidateRect(hwnd,NULL,TRUE);
                     }
                     break;
@@ -487,10 +529,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     //DialogBox(g_hInst, MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc);                        
                     recentWord.assign(lookupManager->lastInputTerm());
                     SendMessage(hwnd, WM_COMMAND, IDM_MENU_RESULTS, 0);
+                    setUI(true);
                     break;
                 
                 case LookupFinishedEventData::outcomeRegCodeValid:
                 {
+                    setUI(true);
+                    registration = false;
                     iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
                     assert(!newRegCode_.empty());
                     // TODO: assert that it consists of numbers only
@@ -510,10 +555,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 case LookupFinishedEventData::outcomeRegCodeInvalid:
                 {
                     registration = false;
+                    setUI(true);
                     iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
-                    // TODO: should it be done as a message to ourselves?
-                    //UInt16 buttonId;
-                    //buttonId = FrmAlert(alertRegistrationFailed);
                     if(MessageBox(hwnd, 
                         _T("Incorrect registration code. Contact support@arslexis.com in case of problems. Do you want to re-enter the code ?"), 
                         _T("Wrong registration code"), 
@@ -533,7 +576,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                             if (lookupManager && !lookupManager->lookupInProgress())
                             {
                                 lookupManager->verifyRegistrationCode(newRegCode_);
-                                registration = false;
+                                setUI(false);
+                                registration = true;
                             }
                         }
                         else
@@ -788,14 +832,12 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
                 definition_->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
             if(g_forceLayoutRecalculation) 
                 setScrollBar(definition_);
-/*            if(g_forceLayoutRecalculation)
-            {
-                MSG msg;
-                while(PeekMessage(&msg, hwndMain,0 ,0, PM_REMOVE)
-                    &&(msg.message!=WM_PAINT))
-                    ;
-            }
-            */
+            if(g_forceLayoutRecalculation)
+                PostMessage(hwndMain,WM_COMMAND, IDM_ENABLE_UI, 0);
+                //setUI(true);
+                /*MSG msg;
+                while(PeekMessage(&msg, hwndMain,0 ,0, PM_NOREMOVE)
+                    GetMessage(&msg, hwndMain,0 ,0, PM_NOREMOVE);*/
             g_forceLayoutRecalculation=false;
         }
     }
@@ -834,7 +876,8 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         {
             if (VK_TACTION==wp) 
             { 
-                SendMessage(hwndMain,WM_COMMAND, ID_SEARCH, 0);
+                if(g_uiEnabled)
+                    SendMessage(hwndMain,WM_COMMAND, ID_SEARCH, 0);
                 return 0; 
             } 
 
@@ -1103,6 +1146,22 @@ BOOL GotoURL(LPCTSTR lpszUrl)
     sei.nShow = SW_SHOWMAXIMIZED;
 
     return ShellExecuteEx(&sei);
+}
+
+void setUI(bool enabled)
+{
+    TBBUTTONINFO    buttonInfo;
+
+    ZeroMemory( &buttonInfo, sizeof( TBBUTTONINFO ) );
+    buttonInfo.cbSize   = sizeof( TBBUTTONINFO );
+    buttonInfo.dwMask   = TBIF_STATE;
+    if(enabled)
+        buttonInfo.fsState = TBSTATE_ENABLED;
+    else
+        buttonInfo.fsState = TBSTATE_INDETERMINATE;
+    SendMessage( g_hWndMenuBar, TB_SETBUTTONINFO, ID_MENU_BTN, (LPARAM)(LPTBBUTTONINFO)&buttonInfo );
+    SendMessage( g_hWndMenuBar, TB_SETBUTTONINFO, ID_SEARCH, (LPARAM)(LPTBBUTTONINFO)&buttonInfo );
+    g_uiEnabled = enabled;
 }
 
 // end sm_ipedia.cpp

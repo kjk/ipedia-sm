@@ -55,6 +55,8 @@
 #define IDM_MENU_UPDATES                138
 #define IDM_MENU_ABOUT                  139
 #define IDM_EXT_SEARCH                  140
+#define IDM_ENABLE_UI                   141
+#define IDM_MENU_STRESS_MODE            142
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

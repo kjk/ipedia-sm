@@ -38,7 +38,7 @@ BEGIN
 		    MENUITEM "Check updates",       IDM_MENU_UPDATES
 		    MENUITEM "About",            	IDM_MENU_ABOUT
 	    END
-
+        MENUITEM "Stress mode",             IDM_MENU_STRESS_MODE
         MENUITEM "Quit",                    IDOK
     END
 END
