@@ -185,4 +185,7 @@ private:
 
 };
 
+iPediaApplication& GetApp();
+
+iPediaApplication::Preferences& GetPrefs();
 #endif

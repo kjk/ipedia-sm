@@ -26,9 +26,10 @@
 
 #include <Text.hpp>
 
+#include <EnterRegCodeDialog.hpp>
+
 #include "ProgressReporters.h"
 #include "LastResults.h"
-#include "Registration.h"
 #include "Hyperlinks.h"
 #include "DefaultArticles.h"
 #include "sm_ipedia.h"
@@ -37,6 +38,11 @@
 using ArsLexis::String;
 using ArsLexis::Graphics;
 using ArsLexis::char_t;
+
+// holds new registration code being checked while we send the request to
+// server to check it.
+// TODO: we should stick it in preferences
+ArsLexis::String g_newRegCode;
 
 bool g_fRegistration = false;
 
@@ -103,7 +109,6 @@ void moveHistoryBack();
 void setScrollBar(Definition* definition);
 void scrollDefinition(int units, ScrollUnit unit, bool updateScrollbar);
 void SimpleOrExtendedSearch(HWND hwnd, bool simple);
-static void DoRegister(const String& initCode);
 
 DWORD WINAPI formattingThreadProc(LPVOID lpParameter)
 {
@@ -181,12 +186,7 @@ static bool fInitConnection()
         ArsLexis::String errorMsg = _T("Unable to connect");
 #endif
         errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
-        MessageBox(
-            app.getMainWindow(),
-            errorMsg.c_str(),
-            TEXT("Error"),
-            MB_OK|MB_ICONERROR|MB_APPLMODAL|MB_SETFOREGROUND
-            );
+        MessageBox(app.getMainWindow(), errorMsg.c_str(), _T("Error"), MB_OK | MB_ICONERROR | MB_APPLMODAL | MB_SETFOREGROUND );
         return false;
     }
     else
@@ -293,6 +293,32 @@ void OnCreate(HWND hwnd)
 
     setMenu(hwnd);
     SetFocus(g_hwndEdit);
+}
+
+static void OnRegister(HWND hwnd)
+{
+    if (!fInitConnection())
+        return;
+
+    String newRegCode;
+    iPediaApplication& app=GetApp();
+    String oldRegCode = app.preferences().regCode;
+
+    bool fOk = FGetRegCodeFromUser(hwnd, oldRegCode, newRegCode);
+    if (!fOk)
+        return;
+
+    assert(!g_newRegCode.empty());
+
+    g_newRegCode = newRegCode;
+
+    LookupManager* lookupManager = app.getLookupManager(true);
+    if (lookupManager && !lookupManager->lookupInProgress())
+    {
+        lookupManager->verifyRegistrationCode(g_newRegCode);
+        setUIState(false);
+        g_fRegistration = true;
+    }
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -448,7 +474,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             int res = MessageBox(hwnd, 
                 _T("You need to upgrade iPedia to a newer version. You can do it right now or later using 'Options/Check for updates'. Would you like to do it now ?"),
                 _T("Upgrade required"),
-                MB_YESNO);
+                MB_YESNO | MB_APPLMODAL | MB_SETFOREGROUND );
             if (IDYES == res)
                 GotoURL(_T("http://arslexis.com/updates/sm-ipedia-1-0.html"));
             break;
@@ -472,15 +498,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             String title;
             app.getErrorTitle(data.alertId, title);
 
-            if(lookupLimitReachedAlert == data.alertId)
+            if (lookupLimitReachedAlert == data.alertId)
             {
-                int res = MessageBox(app.getMainWindow(), msg.c_str(), title.c_str(), MB_YESNO|MB_ICONEXCLAMATION);
+                int res = MessageBox(app.getMainWindow(), msg.c_str(), title.c_str(),
+                          MB_YESNO | MB_ICONEXCLAMATION | MB_APPLMODAL | MB_SETFOREGROUND );
                 if (IDYES == res)
                     SendMessage(hwnd, WM_COMMAND, IDM_MENU_REGISTER, 0);
             }
             else
             {
-                MessageBox(app.getMainWindow(), msg.c_str(), title.c_str(), MB_OK|MB_ICONEXCLAMATION);                        
+                // we need to do make it MB_APPLMODAL - if we don't if we switch
+                // to other app and return here, the dialog is gone but the app
+                // is blocked
+                MessageBox(app.getMainWindow(), msg.c_str(), title.c_str(),
+                           MB_OK | MB_ICONEXCLAMATION | MB_APPLMODAL | MB_SETFOREGROUND );
             }
 
             setUIState(true);
@@ -533,19 +564,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 {
                     setUIState(true);
                     g_fRegistration = false;
-                    iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
                     assert(!g_newRegCode.empty());
                     // TODO: assert that it consists of numbers only
+                    iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
                     if (g_newRegCode!=prefs.regCode)
                     {
                         assert(g_newRegCode.length()<=prefs.regCodeLength);
-                        prefs.regCode=g_newRegCode;
+                        prefs.regCode = g_newRegCode;
                         app.savePreferences();
                     }   
                     MessageBox(hwnd, 
                         _T("Thank you for registering iPedia."), 
                         _T("Registration successful"), 
-                        MB_OK|MB_ICONINFORMATION);
+                        MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
                     break;
                 }
 
@@ -554,19 +585,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     g_fRegistration = false;
                     setUIState(true);
                     iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
-                    if (MessageBox(hwnd, 
-                        _T("Incorrect registration code. Contact support@arslexis.com in case of problems. Do you want to re-enter the code ?"), 
-                        _T("Wrong registration code"), 
-                        MB_YESNO|MB_ICONERROR)==IDNO)
+                    int res = MessageBox(hwnd, 
+                        _T("Wrong registration code. Please contact support@arslexis.com if problem persists.\n\nRe-enter the code?"),
+                        _T("Wrong reg code"), MB_YESNO | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
+
+                    if (IDNO==res)
                     {
-                        // this is "Ok" button. Clear-out registration code (since it was invalid)
+                        // not re-entering the reg code - clear it out
+                        // (since it was invalid)
                         prefs.regCode = _T("");
                         app.savePreferences();
-                        g_newRegCode = _T("");
                     }
                     else
                     {
-                        DoRegister(g_newRegCode);
+                        OnRegister(hwnd);
                         break;
                     }
                 }
@@ -589,28 +621,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
     }
     return lResult;
-}
-
-static void DoRegister(const String& initCode)
-{
-    if (!fInitConnection())
-        return;
-
-    iPediaApplication& app=iPediaApplication::instance();
-    LookupManager* lookupManager=app.getLookupManager(true);
-
-    g_newRegCode = initCode;
-    if (DialogBox(app.getApplicationHandle(), MAKEINTRESOURCE(IDD_REGISTER), app.getMainWindow(),RegistrationDlgProc))
-    {
-        if (lookupManager && !lookupManager->lookupInProgress())
-        {
-            lookupManager->verifyRegistrationCode(g_newRegCode);
-            setUIState(false);
-            g_fRegistration = true;
-        }
-    }
-    else
-        g_newRegCode = _T("");
 }
 
 LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -706,7 +716,7 @@ LRESULT handleMenuCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         case IDM_MENU_REGISTER:
         {
-            DoRegister(app.preferences().regCode);
+            OnRegister(hwnd);
             break;
         }
         case IDM_MENU_PREV:
@@ -800,7 +810,9 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
     if (lookupManager && lookupManager->lookupInProgress() &&
         (rout && rin.topLeft) && (rout.extent.x>=rin.extent.x)
         && (rout.extent.y>=rin.extent.y))
+    {
             onlyProgress = true;
+    }
 
     rect.top    += 22;
     rect.left   += 2;
@@ -808,10 +820,10 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
     rect.bottom -= (2+g_menuDy);
     Graphics gr(hdc, hwnd);
 
-    if (!onlyProgress&&!g_recalculationInProgress)
+    if ( !onlyProgress && !g_recalculationInProgress)
     {
         Definition &def = currentDefinition();
-        if(g_forceLayoutRecalculation)
+        if (g_forceLayoutRecalculation)
         {
             DWORD threadID;
             g_recalculationInProgress = true;
@@ -821,15 +833,20 @@ void paint(HWND hwnd, HDC hdc, RECT rcpaint)
             repaintDefiniton();
     }
 
-    if (lookupManager && lookupManager->lookupInProgress() && !g_fRegistration)
+    if (lookupManager && lookupManager->lookupInProgress())
     {
-        Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());    
-        ArsLexis::Rectangle progressArea(g_progressRect);
-        lookupManager->showProgress(gr, progressArea);
-    }
 
-    if (lookupManager && lookupManager->lookupInProgress() && g_fRegistration)
-        g_RegistrationProgressReporter->reportProgress(-1);
+        if (g_fRegistration)
+        {
+            g_RegistrationProgressReporter->reportProgress(-1);
+        }
+        else
+        {
+            Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());    
+            ArsLexis::Rectangle progressArea(g_progressRect);
+            lookupManager->showProgress(gr, progressArea);
+        }
+    }
 }
             
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -865,13 +882,13 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_KILLFOCUS:
         {
             SHSipPreference(app.getMainWindow(), SIP_DOWN);
-		    break;
+            break;
         }*/
     }
     return CallWindowProc(g_oldEditWndProc, hwnd, msg, wp, lp);
 }
 
-void setMenuBarButtonState(int buttonID, bool state)
+static void SetMenuBarButtonState(int buttonID, bool state)
 {
     TBBUTTONINFO    buttonInfo;
     
@@ -922,11 +939,11 @@ void setMenu(HWND hwnd)
     EnableMenuItem(hMenu, IDM_MENU_CLIPBOARD, clipboardEnabled);
 
 #ifdef WIN32_PLATFORM_PSPC
-    //setMenuBarButtonState(ID_SEARCH_BTN2, g_uiEnabled);
+    //SetMenuBarButtonState(ID_SEARCH_BTN2, g_uiEnabled);
     if (g_uiEnabled)
     {
-        setMenuBarButtonState(ID_NEXT_BTN, lookupManager->hasNextHistoryTerm());
-        setMenuBarButtonState(ID_PREV_BTN, 
+        SetMenuBarButtonState(ID_NEXT_BTN, lookupManager->hasNextHistoryTerm());
+        SetMenuBarButtonState(ID_PREV_BTN, 
             lookupManager->hasPreviousHistoryTerm()||
             ((displayMode()!=showArticle)&&(!g_definition->empty())));
     }
@@ -969,23 +986,23 @@ void setUIState(bool enabled)
     LookupManager* lookupManager=app.getLookupManager(true);
 
 #ifdef WIN32_PLATFORM_PSPC
-    setMenuBarButtonState(ID_MENU_BTN, enabled);
-    setMenuBarButtonState(ID_OPTIONS_MENU_BTN, enabled);
+    SetMenuBarButtonState(ID_MENU_BTN, enabled);
+    SetMenuBarButtonState(ID_OPTIONS_MENU_BTN, enabled);
     if (enabled)
     {
-        setMenuBarButtonState(ID_NEXT_BTN, lookupManager->hasNextHistoryTerm());
-        setMenuBarButtonState(ID_PREV_BTN, lookupManager->hasPreviousHistoryTerm());
+        SetMenuBarButtonState(ID_NEXT_BTN, lookupManager->hasNextHistoryTerm());
+        SetMenuBarButtonState(ID_PREV_BTN, lookupManager->hasPreviousHistoryTerm());
     }
     else
     {
-        setMenuBarButtonState(ID_NEXT_BTN, false);
-        setMenuBarButtonState(ID_PREV_BTN, false);
+        SetMenuBarButtonState(ID_NEXT_BTN, false);
+        SetMenuBarButtonState(ID_PREV_BTN, false);
     }
-    //setMenuBarButtonState(ID_SEARCH_BTN2, enabled);
+    //SetMenuBarButtonState(ID_SEARCH_BTN2, enabled);
     EnableWindow(g_hwndSearchButton, enabled);
 #else
-    setMenuBarButtonState(ID_MENU_BTN, enabled);
-    setMenuBarButtonState(ID_SEARCH, enabled);
+    SetMenuBarButtonState(ID_MENU_BTN, enabled);
+    SetMenuBarButtonState(ID_SEARCH, enabled);
 #endif
 
     g_uiEnabled = enabled;

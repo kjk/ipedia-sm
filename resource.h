@@ -74,6 +74,8 @@
 #define IDB_SEARCH_BTN_DOWN             157
 #define IDB_SEARCH_BTN_DISABLED         158
 #define IDM_MENU_TUTORIAL               159
+#define IDM_LATER                       160
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

@@ -53,7 +53,7 @@ const iPediaApplication::ErrorInfo iPediaApplication::ErrorsTable[] =
 
     ErrorInfo(alertRegistrationFailed,
     _T("Wrong registration code"),
-    _T("Incorrect registration code. Contact support@arslexis.com in case of problems.")),
+    _T("Wrong registration code. Please contact support@arslexis.com if problem persists.\n\nRe-enter the code?.")),
 
     ErrorInfo(alertRegistrationOk,
     _T("Registration successful"),
@@ -404,4 +404,14 @@ bool iPediaApplication::initApplication(HINSTANCE hInstance,
         return false;
     //Initialization of appilcation successful
     return true;
+}
+
+iPediaApplication& GetApp()
+{
+    return iPediaApplication::instance();
+}
+
+iPediaApplication::Preferences& GetPrefs();
+{
+    return iPediaApplication::instance().preferences();
 }

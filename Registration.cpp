@@ -117,6 +117,9 @@ bool InitRegistrationDlg(HWND hDlg)
         //SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)prefs.regCode.c_str());
     //else
     g_hRegistrationDlg = hDlg;
+
+    // TODO: remove Registration.cpp and Registration.hpp but add SIP handling
+    // to EnterRegCode*
     SHSipPreference(hwndEdit, SIP_UP);
     SetFocus(hwndEdit);
     

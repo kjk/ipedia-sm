@@ -8,3 +8,8 @@ Repro:
 * while reg field is empty, press "Register" button
 Observed: nothing happens, menus are disabled - we can scroll and enter a word
 but not launch query
+
+
+        *  DONE   *
+5. common enter reg code dialog with iNoah (2004-08-12)
+
