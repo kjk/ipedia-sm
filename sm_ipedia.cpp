@@ -2,10 +2,15 @@
 //
 
 #include "sm_ipedia.h"
+#include "LastResults.h"
+#include "Registration.h"
+
 #include <SysUtils.hpp>
 #include <iPediaApplication.hpp>
 #include <LookupManager.hpp>
 #include <LookupManagerBase.hpp>
+#include <LookupHistory.hpp>
+#include <ipedia_rsc.h>
 
 #include <Definition.hpp>
 #include <Debug.hpp>
@@ -21,6 +26,107 @@
 #include <fonteffects.hpp>
 #include <sms.h>
 #include <uniqueid.h>
+
+const int ErrorsTableEntries = 16;
+
+ErrorsTableEntry ErrorsTable[ErrorsTableEntries] =
+{   
+    ErrorsTableEntry(
+        romIncompatibleAlert,
+        _T("System Incompatible"),
+        _T("System Version 4.0 or greater is required to run iPedia.")
+    ),
+
+    ErrorsTableEntry(
+        networkUnavailableAlert,
+        _T("Network Unavailable"),
+        _T("Unable to initialize network subsystem.")
+    ),
+    
+    ErrorsTableEntry(
+        cantConnectToServerAlert,
+        _T("Server unavailable"),
+        _T("Can't connect to the server.")
+    ),
+    
+    ErrorsTableEntry(
+        articleNotFoundAlert,
+        _T("Article not found"),
+        _T("Encyclopedia article for '^1' was not found.")
+    ),
+
+    ErrorsTableEntry(
+        articleTooLongAlert,
+        _T("Article too long"),
+        _T("Article is too long for iPedia to process.")
+    ),
+
+    ErrorsTableEntry(
+        notEnoughMemoryAlert,
+        _T("Error"),
+        _T("Not enough memory to complete current operation.")
+    ),
+
+    ErrorsTableEntry(
+        serverFailureAlert,
+        _T("Server Error"),
+        _T("Unable to complete request due to server error.")
+    ),
+
+    ErrorsTableEntry(
+        invalidAuthorizationAlert,
+        _T("Invalid Authorization"),
+        _T("Unable to complete request due to invalid authorization data. Please check if you entered serial number correctly.")
+    ),
+
+    ErrorsTableEntry(
+        trialExpiredAlert,
+        _T("Expired"),
+        _T("Your unregistered trial version expired. Please register to remove daily requests limit.")
+    ),
+
+    ErrorsTableEntry(
+        unsupportedDeviceAlert,
+        _T("Unsupported Device"),
+        _T("Your hardware configuration is unsupported.")
+    ),
+
+    ErrorsTableEntry(
+        malformedRequestAlert,
+        _T("Malformed Request"),
+        _T("Server rejected your query.")
+    ),
+
+    ErrorsTableEntry(
+        noWebBrowserAlert,
+        _T("No web browser"),
+        _T("Web browser is not installed on this device.")
+    ),
+
+    ErrorsTableEntry(
+        malformedResponseAlert,
+        _T("Malformed Response"),
+        _T("Server returned malformed response.")
+    ),
+
+    ErrorsTableEntry(
+        connectionTimedOutAlert,
+        _T("Timed Out"),
+        _T("Connection timed out.")
+    ),
+
+    ErrorsTableEntry(
+        connectionErrorAlert,
+        _T("Error"),
+        _T("Connection terminated.")
+    ),
+
+    ErrorsTableEntry(
+        connectionServerNotRunning,
+        _T("Error"),
+        _T("The iPedia server is not available. Please contact support@arslexis.com.")
+    )
+};
 
 iPediaApplication iPediaApplication::instance_;
 LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -39,6 +145,9 @@ using ArsLexis::char_t;
 
 
 String articleCountText;
+String recentWord;
+String searchWord;
+
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
 HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
@@ -66,9 +175,9 @@ HWND hwndScroll;
 //
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    LRESULT     lResult = TRUE;
-    HDC         hdc;
-
+    LRESULT		lResult = TRUE;
+	HDC			hdc;
+	bool customAlert = false;
 
     switch(msg)
     {
@@ -133,6 +242,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case WM_COMMAND:
+        {
             switch (wp)
             {
                 case IDOK:
@@ -165,10 +275,52 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         lookupManager->lookupRandomTerm();
                     break;
                 }
-            default:
-                return DefWindowProc(hwnd, msg, wp, lp);
+                case IDM_MENU_REGISTER:
+                {
+                    if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), hwnd,RegistrationDlgProc))
+                    {
+                        iPediaApplication& app=iPediaApplication::instance();
+                        LookupManager* lookupManager=app.getLookupManager(true);
+                        if (lookupManager && !lookupManager->lookupInProgress())
+                            lookupManager->verifyRegistrationCode(newRegCode_);
+                    }
+
+                    break;
+                }
+
+                case IDM_MENU_PREV:
+                case IDM_MENU_NEXT:
+                {
+                    iPediaApplication& app=iPediaApplication::instance();
+                    LookupManager* lookupManager=app.getLookupManager(true);
+                    if (lookupManager && !lookupManager->lookupInProgress())
+                        lookupManager->moveHistory(!(wp-IDM_MENU_NEXT));
+                    break;
+                }
+                case IDM_MENU_RESULTS:
+                {
+                    iPediaApplication& app=iPediaApplication::instance();
+                    LookupManager* lookupManager=app.getLookupManager();    
+
+                    if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc))
+                    {
+                        iPediaApplication& app=iPediaApplication::instance();
+                        LookupManager* lookupManager=app.getLookupManager(true);
+                        if (lookupManager && !lookupManager->lookupInProgress())
+                            lookupManager->lookupTerm(searchWord);
+                        SendMessage(hwndEdit, WM_SETTEXT, 0, (LPARAM)(LPCTSTR)recentWord.c_str());
+                        int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
+                        SendMessage(hwndEdit, EM_SETSEL, 0,len);
+
+                        InvalidateRect(hwnd,NULL,TRUE);
+                    }
+                    break;
+                }
+        		default:
+		        	lResult = DefWindowProc(hwnd, msg, wp, lp);
             }
             break;
+        }
         case WM_PAINT:
         {
             PAINTSTRUCT	ps;
@@ -202,6 +354,35 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             }
             break;
         }    
+        case iPediaApplication::appDisplayCustomAlertEvent:
+            customAlert = true;
+        case iPediaApplication::appDisplayAlertEvent:
+        {
+            iPediaApplication& app=iPediaApplication::instance();
+            iPediaApplication::DisplayAlertEventData data;
+            ArsLexis::EventData i;
+            i.wParam=wp; i.lParam=lp;
+            memcpy(&data, &i, sizeof(data));
+            for(int j=0; j<ErrorsTableEntries; j++)
+            {
+                if(ErrorsTable[j].errorCode == data.alertId)
+                {
+                    String msg = ErrorsTable[j].message;
+                    if(customAlert)
+                    {
+                        int pos=msg.find(_T("^1"));
+                        msg.replace(pos,2,app.popCustomAlert().c_str());
+                    }
+                    MessageBox(hwndMain, 
+                        msg.c_str(),
+                        ErrorsTable[j].title.c_str(),
+                        MB_OK|MB_ICONEXCLAMATION);
+                    break;
+                }
+            }
+            break;
+        }
+        
         case LookupManager::lookupStartedEvent:
         case LookupManager::lookupProgressEvent:
         {
@@ -219,23 +400,70 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             memcpy(&data, &i, sizeof(data));
             switch (data.outcome)
             {
-                case LookupFinishedEventData::outcomeDefinition:
+                case LookupFinishedEventData::outcomeArticleBody:
                 {   
                     assert(lookupManager!=0);
                     if (lookupManager)
                     {
                         definition_->replaceElements(lookupManager->lastDefinitionElements());
                         g_forceLayoutRecalculation=true;
+                        //const LookupHistory& history=app.history();
                     }
                     InvalidateRect(hwndMain, NULL, TRUE);
                     break;
                 }
-            }            
+
+                case LookupFinishedEventData::outcomeList:
+                    //DialogBox(g_hInst, MAKEINTRESOURCE(IDD_LAST_RESULTS), hwnd,LastResultsDlgProc);                        
+                    recentWord.assign(lookupManager->lastInputTerm());
+                    SendMessage(hwnd, WM_COMMAND, IDM_MENU_RESULTS, 0);
+                    break;
+                
+                case LookupFinishedEventData::outcomeRegCodeValid:
+                {
+                    iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
+                    assert(!newRegCode_.empty());
+                    // TODO: assert that it consists of numbers only
+                    if (newRegCode_!=prefs.regCode)
+                    {
+                        assert(newRegCode_.length()<=prefs.regCodeLength);
+                        prefs.regCode=newRegCode_;
+                        //app.savePreferences();
+                    }   
+
+                    //FrmAlert(alertRegistrationOk);
+                    //closePopup();
+                }
+                
+                case LookupFinishedEventData::outcomeRegCodeInvalid:
+                {
+                    iPediaApplication::Preferences& prefs=iPediaApplication::instance().preferences();
+                    // TODO: should it be done as a message to ourselves?
+                    //UInt16 buttonId;
+                    //buttonId = FrmAlert(alertRegistrationFailed);
+            
+                    /*if (0==buttonId)
+                    {
+                        // this is "Ok" button. Clear-out registration code (since it was invalid)
+                        prefs.regCode = "";
+                        app.savePreferences();
+                        closePopup();
+                        return;
+                    } */  
+                    // this must be "Re-enter registration code" button
+                    //assert(1==buttonId);
+                }
+            }   
+            
             assert(0!=app.preferences().articleCount);
-            articleCountText.assign(_T("Number of articles: "));
-            char_t buffer[16];
-            int len= tprintf(buffer, _T("%ld"), app.preferences().articleCount);
-            articleCountText.append(buffer, len);
+            if(app.preferences().articleCount!=-1)
+            {
+                articleCountText.assign(_T("Number of articles: "));
+                char_t buffer[16];
+                int len= tprintf(buffer, _T("%ld"), app.preferences().articleCount);
+                articleCountText.append(buffer, len);
+            }
+            lookupManager->handleLookupFinishedInForm(data);
             InvalidateRect(hwnd,NULL,TRUE);
         }
         break;
@@ -247,11 +475,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             PostQuitMessage(0);
         break;
 
-        default:
-            lResult = DefWindowProc(hwnd, msg, wp, lp);
-        break;
-    }
-    return (lResult);
+		default:
+			lResult = DefWindowProc(hwnd, msg, wp, lp);
+  		break;
+        
+	}
+	return (lResult);
 }
 
 
