@@ -642,7 +642,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
         case WM_CLOSE:
-            deinitConnection();
             DestroyWindow(hwnd);
             break;
         case WM_DESTROY:
@@ -693,7 +692,7 @@ BOOL InitApplication ( HINSTANCE hInstance )
     wc.lpszMenuName = NULL;
     wc.lpszClassName = szAppName;
 
-    f = (RegisterClass(&wc));
+    f = RegisterClass(&wc);
 
     return f;
 }
@@ -705,25 +704,28 @@ int WINAPI WinMain(HINSTANCE hInstance,
                    int        CmdShow)
 
 {
-    HWND hHelloWnd = NULL;
-    
-    hHelloWnd = FindWindow(szAppName, szTitle);	
-    if (hHelloWnd) 
+    // if we're already running, then just bring our window to front
+    HWND hwndPrev = FindWindow(szAppName, szTitle);
+    if (hwndPrev) 
     {
-        SetForegroundWindow (hHelloWnd);    
+        SetForegroundWindow(hwndPrev);    
         return 0;
     }
 
-    if ( !hPrevInstance )
+    if (!hPrevInstance)
     {
-        if ( !InitApplication ( hInstance ) )
-            return (FALSE); 
+        if (!InitApplication(hInstance))
+            return FALSE;
     }
 
-    if ( !InitInstance( hInstance, CmdShow )  )
-        return (FALSE);
+    if (InitInstance(hInstance, CmdShow))
+        return FALSE;
     
-    return iPediaApplication::instance().waitForEvent();
+    int retVal = iPediaApplication::instance().waitForEvent();
+
+    deinitConnection();
+    return retVal;
+
 }
 
 void setScrollBar(Definition* definition_)
