@@ -103,7 +103,7 @@ to ignore the case when a preference item is missing.
     
     
     PrefsStoreReader::PrefsStoreReader(const char_t *dbName, ulong_t dbCreator, ulong_t dbType)
-        : _dbName(dbName), _dbCreator(dbCreator), _dbType(dbType),_fHandle(INVALID_HANDLE_VALUE)
+        : _dbName(dbName), _dbCreator(dbCreator), _dbType(dbType),_handle(INVALID_HANDLE_VALUE)
     {
         TCHAR szPath[MAX_PATH];
         BOOL f = SHGetSpecialFolderPath(iPediaApplication::instance().getMainWindow(), szPath, STORE_FOLDER, FALSE);
@@ -118,7 +118,7 @@ to ignore the case when a preference item is missing.
         fullPath.append(myDBName);
         delete myDBName;
         //fullPath+=fileName;
-        _fHandle = CreateFile(fullPath.c_str(), 
+        _handle = CreateFile(fullPath.c_str(), 
             GENERIC_READ, FILE_SHARE_READ, NULL, 
             OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 
             NULL); 
@@ -136,7 +136,7 @@ to ignore the case when a preference item is missing.
             strPointers_.pop_front();
         }
         //strPointers_.push_back(prefItem.value.strVal);
-        CloseHandle(_fHandle);
+        CloseHandle(_handle);
 
     }
     
@@ -228,37 +228,41 @@ to ignore the case when a preference item is missing.
 
     status_t PrefsStoreReader::ErrLoadPreferences()
     {
-        if(_fHandle==INVALID_HANDLE_VALUE)
+        if (INVALID_HANDLE_VALUE==_handle)
             return psErrNoPrefDatabase;
+
         PrefItem prefItem;
-        ulong_t read=0;
-        int size=0;
+        DWORD read=0;
+        DWORD size=0;
         do
         {
-            ReadFile(_fHandle, &prefItem.uniqueId, sizeof(prefItem.uniqueId),&read, NULL);
-            if(read==0) 
+            ReadFile(_handle, &prefItem.uniqueId, sizeof(prefItem.uniqueId), &read, NULL);
+            if (0==read) 
                 return errNone;
-            if(read!=sizeof(prefItem.uniqueId)) 
+            if (read!=sizeof(prefItem.uniqueId)) 
                 return psErrDatabaseCorrupted;
-            ReadFile(_fHandle, &size, sizeof(size),&read, NULL);
-            if(read!=sizeof(size)) 
+
+            ReadFile(_handle, &size, sizeof(size), &read, NULL);
+            if (read!=sizeof(size)) 
                 return psErrDatabaseCorrupted;
-            ReadFile(_fHandle, &prefItem.type, sizeof(prefItem.type),&read, NULL);
-            if(read!=sizeof(prefItem.type)) 
+
+            ReadFile(_handle, &prefItem.type, sizeof(prefItem.type), &read, NULL);
+            if (read!=sizeof(prefItem.type)) 
                 return psErrDatabaseCorrupted;
-            if(prefItem.type != pitStr)
+
+            if (pitStr!=prefItem.type)
             {
-                ReadFile(_fHandle, &prefItem.value, size,&read, NULL);
-                if(read!=size) 
+                ReadFile(_handle, &prefItem.value, size, &read, NULL);
+                if (read!=size) 
                     return psErrDatabaseCorrupted;
             }
             else
             {
-                char_t *str = new char_t[size/2+1];
+                char_t *str = new char_t[size/sizeof(char_t)+1];
                 prefItem.value.strVal = str;
                 strPointers_.push_back(str);
-                ReadFile(_fHandle, (void*)prefItem.value.strVal, size,&read, NULL);
-                if(read!=size) 
+                ReadFile(_handle, (void*)prefItem.value.strVal, size, &read, NULL);
+                if (read!=size) 
                     return psErrDatabaseCorrupted;
             }
             items_.insert(std::pair<int, PrefItem>(prefItem.uniqueId,prefItem));
@@ -270,22 +274,25 @@ to ignore the case when a preference item is missing.
     status_t PrefsStoreReader::ErrGetPrefItemWithId(int uniqueId, PrefItem *prefItem)
     {
         status_t err = errNone;
-        if(items_.empty())        
+
+        if (items_.empty())        
         {
             err = ErrLoadPreferences();
-            if(err!=errNone)
+            if (err!=errNone)
                 return err;
         }
+
         std::map< int, PrefItem>::iterator it=items_.find(uniqueId);
-        if(it==items_.end())
+
+        if (it==items_.end())
             return psErrItemNotFound;
+
         *prefItem=it->second;
-        //Direct reading from file
         return errNone;
     }
     
     PrefsStoreWriter::PrefsStoreWriter(const char_t *dbName, ulong_t dbCreator, ulong_t dbType)
-        : _dbName(dbName), _dbCreator(dbCreator), _dbType(dbType), _itemsCount(0),_fHandle(INVALID_HANDLE_VALUE)
+        : _dbName(dbName), _dbCreator(dbCreator), _dbType(dbType), _itemsCount(0),_handle(INVALID_HANDLE_VALUE)
     {
         TCHAR szPath[MAX_PATH];
         BOOL f = SHGetSpecialFolderPath(iPediaApplication::instance().getMainWindow(), szPath, STORE_FOLDER, FALSE);
@@ -294,22 +301,24 @@ to ignore the case when a preference item is missing.
         String fullPath;
         fullPath.assign(szPath);
         fullPath.append(_T("\\"));
-        for(unsigned int i=0; i<tstrlen(myDBName);i++)
-            if(myDBName[i]==' ') 
+        for (unsigned int i=0; i<tstrlen(myDBName);i++)
+        {
+            if (myDBName[i]==' ') 
                 myDBName[i]='_';
+        }
         fullPath.append(myDBName);
         delete myDBName;
         //CreateDirectory (fullPath.c_str(), NULL);    
         //fullPath+=fileName;
-        _fHandle = CreateFile(fullPath.c_str(), 
+        _handle = CreateFile(fullPath.c_str(), 
             GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
             FILE_ATTRIBUTE_NORMAL, NULL); 
     }
     
     PrefsStoreWriter::~PrefsStoreWriter()
     {
-        if(_fHandle!=INVALID_HANDLE_VALUE)
-            CloseHandle(_fHandle);
+        if (_handle!=INVALID_HANDLE_VALUE)
+            CloseHandle(_handle);
     }
             
     status_t PrefsStoreWriter::ErrSetBool(int uniqueId, bool value)
@@ -391,7 +400,7 @@ to ignore the case when a preference item is missing.
     
     status_t PrefsStoreWriter::ErrSavePreferences()
     {
-        if(_fHandle==INVALID_HANDLE_VALUE)
+        if (_handle==INVALID_HANDLE_VALUE)
             return psErrNoPrefDatabase;
         DWORD written;
         for (std::map< int, PrefItem>::iterator it=items_.begin();
@@ -399,13 +408,13 @@ to ignore the case when a preference item is missing.
         {
             PrefItem prefItem=it->second;
             int size=getPrefItemSize(prefItem);
-            WriteFile(_fHandle, &prefItem.uniqueId, sizeof(prefItem.uniqueId),&written, NULL);
-            WriteFile(_fHandle, &size, sizeof(size),&written, NULL);
-            WriteFile(_fHandle, &prefItem.type, sizeof(int),&written, NULL);
+            WriteFile(_handle, &prefItem.uniqueId, sizeof(prefItem.uniqueId),&written, NULL);
+            WriteFile(_handle, &size, sizeof(size),&written, NULL);
+            WriteFile(_handle, &prefItem.type, sizeof(int),&written, NULL);
             if(prefItem.type != pitStr)
-                WriteFile(_fHandle, &prefItem.value, size,&written, NULL);
+                WriteFile(_handle, &prefItem.value, size,&written, NULL);
             else
-                WriteFile(_fHandle, prefItem.value.strVal, size,&written, NULL);
+                WriteFile(_handle, prefItem.value.strVal, size,&written, NULL);
         }
         return errNone;
     }

@@ -49,13 +49,15 @@ namespace ArsLexis
     {
     private:
         std::map< int, PrefItem> items_;
-        std::list<char_t*> strPointers_;
-        status_t ErrGetPrefItemWithId(int uniqueId, PrefItem *prefItem);
-        HANDLE _fHandle;
-        const char_t * _dbName;
-        ulong_t _dbCreator;
-        ulong_t _dbType;
-        status_t ErrLoadPreferences();
+        std::list<char_t*>       strPointers_;
+
+        HANDLE          _handle;
+        const char_t *  _dbName;
+        ulong_t         _dbCreator;
+        ulong_t         _dbType;
+
+        status_t  ErrLoadPreferences();
+        status_t  ErrGetPrefItemWithId(int uniqueId, PrefItem *prefItem);
     public:
         PrefsStoreReader(const char_t *dbName, ulong_t dbCreator, ulong_t dbType);
         status_t ErrGetBool(int uniqueId, bool *value);
@@ -77,8 +79,8 @@ namespace ArsLexis
         const char_t * _dbName;
         ulong_t _dbCreator;
         ulong_t _dbType;
-        int _itemsCount;
-        HANDLE _fHandle;
+        int     _itemsCount;
+        HANDLE  _handle;
     public:
         PrefsStoreWriter(const char_t *dbName, ulong_t dbCreator, ulong_t dbType);
         status_t ErrSetBool(int uniqueId, bool value);
