@@ -61,7 +61,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
-# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib winsock.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /out:"ARMRel/sm_ipedia_ppc.exe" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib winsock.lib cellcore.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /out:"ARMRel/sm_ipedia_arm.exe" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
 
@@ -407,6 +407,7 @@ DEP_CPP_DEFAU=\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
+	"..\ars_framework\Src\ParagraphElement.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
 	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
@@ -2855,6 +2856,9 @@ DEP_CPP_PREFS=\
 	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
+	{$(INCLUDE)}"vibrate.h"\
+	{$(INCLUDE)}"winuserm.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
@@ -2881,9 +2885,11 @@ DEP_CPP_PREFS=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
+	
+NODEP_CPP_PREFS=\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
@@ -2944,9 +2950,11 @@ DEP_CPP_PREFS=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\PrefsStore.hpp"\
 	".\RenderingPreferences.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
+	
+NODEP_CPP_PREFS=\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\ygshell.h"\
 	
 
 !ENDIF 
@@ -3507,6 +3515,7 @@ DEP_CPP_SM_IP=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\LastResults.h"\
 	".\PrefsStore.hpp"\
+	".\ProgressReporters.h"\
 	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
@@ -3514,7 +3523,9 @@ DEP_CPP_SM_IP=\
 	{$(INCLUDE)}"connmgr.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
 	{$(INCLUDE)}"uniqueid.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
@@ -3560,11 +3571,13 @@ DEP_CPP_SM_IP=\
 	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"connmgr.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_SM_IP=\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\niqueid.h"\
+	".\onnmgr.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
@@ -3663,11 +3676,13 @@ DEP_CPP_SM_IP=\
 	".\Registration.h"\
 	".\RenderingPreferences.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"connmgr.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_SM_IP=\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\niqueid.h"\
+	".\onnmgr.h"\
+	".\ygshell.h"\
 	
 
 !ENDIF 
@@ -3978,7 +3993,9 @@ DEP_CPP_WINDE=\
 	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	{$(INCLUDE)}"sms.h"\
+	{$(INCLUDE)}"tpcshell.h"\
 	{$(INCLUDE)}"uniqueid.h"\
+	{$(INCLUDE)}"vibrate.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
@@ -3992,10 +4009,12 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_WINDE=\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\niqueid.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
@@ -4029,10 +4048,12 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_WINDE=\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\niqueid.h"\
+	".\ygshell.h"\
 	
 
 !ENDIF 

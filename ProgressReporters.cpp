@@ -165,7 +165,7 @@ void RenderingProgressReporter::reportProgress(uint_t percent)
     support.setPercentProgress(percent);
     support.setStatusText(waitText_);
 
-    assert( hwndMain_ == g_hwndMain);
+    //assert( hwndMain_ == g_hwndMain);
     Graphics gr(GetDC(hwndMain_), hwndMain_);
     
     ArsLexis::Rectangle bounds(progressArea_);
