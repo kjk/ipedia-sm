@@ -141,9 +141,8 @@ static bool fInitConnection()
 #endif
     if (NULL!=g_hConnection)
         return true;
-    CONNMGR_CONNECTIONINFO ccInfo;
-    memset(&ccInfo, 0, sizeof(CONNMGR_CONNECTIONINFO));
-    ccInfo.cbSize      = sizeof(CONNMGR_CONNECTIONINFO);
+    CONNMGR_CONNECTIONINFO ccInfo = {0};
+    ccInfo.cbSize      = sizeof(ccInfo);
     ccInfo.dwParams    = CONNMGR_PARAM_GUIDDESTNET;
     ccInfo.dwFlags     = CONNMGR_FLAG_PROXY_HTTP;
     ccInfo.dwPriority  = CONNMGR_PRIORITY_USERINTERACTIVE;
@@ -1129,7 +1128,7 @@ static void OnSize(HWND hwnd, LPARAM lp)
 
     int dx = LOWORD(lp);
     int dy = HIWORD(lp);
-                
+
 #ifdef WIN32_PLATFORM_PSPC
     int searchButtonDX = 50;
     int searchButtonX = dx - searchButtonDX - 2;
@@ -1140,7 +1139,10 @@ static void OnSize(HWND hwnd, LPARAM lp)
     MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
 #endif
 
-    MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), 28, GetScrollBarDx(), dy-28-g_menuDy, FALSE);
+    int scrollStartY = 24;
+    int scrollDy = dy - g_menuDy - scrollStartY - 2;
+
+    MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
 
     g_progressRect.left = (dx - GetScrollBarDx() - 155)/2;
     g_progressRect.top  = (dy-45)/2;
@@ -1180,6 +1182,40 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return CallWindowProc(g_oldEditWndProc, hwnd, msg, wp, lp);
 }
 
+static void OnScroll(WPARAM wp)
+{
+    int code = LOWORD(wp);
+    switch (code)
+    {
+        case SB_TOP:
+            ScrollDefinition(0, scrollHome, false);
+            break;
+        case SB_BOTTOM:
+            ScrollDefinition(0, scrollEnd, false);
+            break;
+        case SB_LINEUP:
+            ScrollDefinition(-1, scrollLine, false);
+            break;
+        case SB_LINEDOWN:
+            ScrollDefinition(1, scrollLine, false);
+            break;
+        case SB_PAGEUP:
+            ScrollDefinition(-1, scrollPage, false);
+            break;
+        case SB_PAGEDOWN:
+            ScrollDefinition(1, scrollPage, false);
+            break;
+
+        case SB_THUMBPOSITION:
+        {
+            SCROLLINFO info = {0};
+            info.cbSize = sizeof(info);
+            info.fMask = SIF_TRACKPOS;
+            GetScrollInfo(g_hwndScroll, SB_CTL, &info);
+            ScrollDefinition(info.nTrackPos, scrollPosition, true);
+        }
+     }
+}
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -1272,41 +1308,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case WM_VSCROLL:
-        {
-            switch (LOWORD(wp))
-            {
-                case SB_TOP:
-                    ScrollDefinition(0, scrollHome, false);
-                    break;
-                case SB_BOTTOM:
-                    ScrollDefinition(0, scrollEnd, false);
-                    break;
-                case SB_LINEUP:
-                    ScrollDefinition(-1, scrollLine, false);
-                    break;
-                case SB_LINEDOWN:
-                    ScrollDefinition(1, scrollLine, false);
-                    break;
-                case SB_PAGEUP:
-                    ScrollDefinition(-1, scrollPage, false);
-                    break;
-                case SB_PAGEDOWN:
-                    ScrollDefinition(1, scrollPage, false);
-                    break;
-
-                case SB_THUMBPOSITION:
-                {
-                    SCROLLINFO info;
-                    ZeroMemory(&info, sizeof(info));
-                    info.cbSize = sizeof(info);
-                    info.fMask = SIF_TRACKPOS;
-                    GetScrollInfo(g_hwndScroll, SB_CTL, &info);
-                    ScrollDefinition(info.nTrackPos, scrollPosition, true);
-                    break;
-                }
-             }
+            OnScroll(wp);
             break;
-        }
 
         case WM_DESTROYCLIPBOARD:
             FreeClipboardData();

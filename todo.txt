@@ -19,6 +19,8 @@
 
         *  DONE   *
 
+## 18. small fixes to scrollbar position on sm (move it up by 2px) (2004-08-19)
+
 ## 17. make a separate pocket pc 2003 build (2004-08-18)
 
 ## 9. improve (de-couple) LastResults.cpp dialog (2004-08-18)

@@ -60,7 +60,7 @@ const iPediaApplication::ErrorInfo iPediaApplication::ErrorsTable[] =
 
     ErrorInfo(lookupLimitReachedAlert,
     _T("Trial expired"),
-    _T("Your unregistered version expired. Please register by purchasing registration code and entering it using menu '") REGISTER_MENU_ITEM _T("'. Do you want to enter it now ?")),
+    _T("Unregistered version expired. Please register by purchasing registration code.\nEnter registration code?")),
 
     ErrorInfo(forceUpgradeAlert,
     _T("Upgrade required"),
