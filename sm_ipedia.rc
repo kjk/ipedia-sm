@@ -1,0 +1,38 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAIN_MENUBAR RCDATA
+BEGIN
+	IDR_MENU_MAIN,
+	2,
+	I_IMAGENONE, ID_SEARCH, TBSTATE_ENABLED, 
+	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
+	IDS_SEARCH, 0, NOMENU,
+
+	I_IMAGENONE, ID_MENU_BTN, TBSTATE_ENABLED, 
+	TBSTYLE_DROPDOWN | TBSTYLE_AUTOSIZE,
+	IDS_MENU_BTN, 0, 0,
+END
+
+IDR_MENU_MAIN MENU DISCARDABLE 
+BEGIN
+    POPUP "&Dummy"
+    BEGIN
+        MENUITEM "Last results",            IDM_MENU_RESULTS
+        MENUITEM "Random article",          IDM_MENU_RANDOM
+        MENUITEM "Register",                IDM_MENU_REGISTER
+        MENUITEM "Quit",                    IDOK
+    END
+END
+
+STRINGTABLE DISCARDABLE
+BEGIN
+	IDS_SEARCH		    "Search"
+    IDS_MENU_BTN        "Menu"
+END
