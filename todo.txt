@@ -1,0 +1,10 @@
+1. shorter connection timeout so that when the server is down, doesn't wait so long?
+2. ability to cancel request e.g. during transfer we change to a form with only
+"Cancel" button and progress report.
+3. fix the icon
+4. registration bug
+Repro:
+* enter registration screen
+* while reg field is empty, press "Register" button
+Observed: nothing happens, menus are disabled - we can scroll and enter a word
+but not launch query
