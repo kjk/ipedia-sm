@@ -2,7 +2,7 @@
 //
 
 #include "sm_ipedia.h"
-
+#include <SysUtils.hpp>
 #include <iPediaApplication.hpp>
 #include <LookupManager.hpp>
 #include <LookupManagerBase.hpp>
@@ -31,6 +31,7 @@ RenderingPreferences* prefs= new RenderingPreferences();
 static bool g_forceLayoutRecalculation=false;
 bool rec=false;
 void setScrollBar(Definition* definition_);
+ArsLexis::String articleCountText;
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
 HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
@@ -60,12 +61,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     LRESULT		lResult = TRUE;
 	HDC			hdc;
 	PAINTSTRUCT	ps;
-	RECT		rect;
 
 	switch(msg)
 	{
 		case WM_CREATE:
-			// create the menu bar
+        {
+            // create the menu bar
 			SHMENUBARINFO mbi;
 			ZeroMemory(&mbi, sizeof(SHMENUBARINFO));
 			mbi.cbSize = sizeof(SHMENUBARINFO);
@@ -104,9 +105,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
                 );
 
+            iPediaApplication& app=iPediaApplication::instance();
+            LookupManager* lookupManager=app.getLookupManager(true);
+            if (lookupManager && !lookupManager->lookupInProgress())
+                lookupManager->checkArticleCount();
+            
 			break;
         
-
+        }
         case WM_SIZE:
             MoveWindow(hwndEdit,2,2,LOWORD(lp)-4,20,TRUE);
             MoveWindow(hwndScroll,LOWORD(lp)-5, 28 , 5, HIWORD(lp)-28, false);
@@ -117,23 +123,42 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         case WM_COMMAND:
-			switch (wp)
-			{
-			case IDOK:
-				SendMessage(hwnd,WM_CLOSE,0,0);
-				break;
-            case IDM_MENU_RANDOM:
+            switch (wp)
             {
-                iPediaApplication& app=iPediaApplication::instance();
-                LookupManager* lookupManager=app.getLookupManager(true);
-                if (lookupManager && !lookupManager->lookupInProgress())
-                    lookupManager->lookupRandomTerm();
-                break;
-            }
+                case IDOK:
+                {
+                    SendMessage(hwnd,WM_CLOSE,0,0);
+                    break;
+                }
+                
+                case ID_SEARCH:
+                {
+                    int len = SendMessage(hwndEdit, EM_LINELENGTH, 0,0);
+                    TCHAR *buf=new TCHAR[len+1];
+                    len = SendMessage(hwndEdit, WM_GETTEXT, len+1, (LPARAM)buf);
+                    SendMessage(hwndEdit, EM_SETSEL, 0,len);
+                    ArsLexis::String word(buf); 
+                    iPediaApplication& app=iPediaApplication::instance();
+                    LookupManager* lookupManager=app.getLookupManager(true);
+                    if (lookupManager && !lookupManager->lookupInProgress())
+                        lookupManager->lookupTerm(word);
+                    delete buf;
+                    InvalidateRect(hwnd,NULL,TRUE);
+                    break;            
+                }
+                
+                case IDM_MENU_RANDOM:
+                {
+                    iPediaApplication& app=iPediaApplication::instance();
+                    LookupManager* lookupManager=app.getLookupManager(true);
+                    if (lookupManager && !lookupManager->lookupInProgress())
+                        lookupManager->lookupRandomTerm();
+                    break;
+                }
             default:
-				return DefWindowProc(hwnd, msg, wp, lp);
-			}
-			break;
+                return DefWindowProc(hwnd, msg, wp, lp);
+            }
+            break;
 		case WM_PAINT:
 		{
 			hdc = BeginPaint (hwnd, &ps);
@@ -166,16 +191,23 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             }
             break;
         }    
-
         
+        case LookupManager::lookupProgressEvent:
+        {
+            //Still progress displaying doesn't work
+            //InvalidateRect(hwnd,NULL,TRUE);
+            break;
+        }
+
         case LookupManager::lookupFinishedEvent:
         {
             iPediaApplication& app=iPediaApplication::instance();
             LookupManager* lookupManager=app.getLookupManager(true);
-            //definition_->replaceElements(lookupManager->lastDefinitionElements());
-            //definition_->replaceElements();
-            //const LookupFinishedEventData& data=*((LookupFinishedEventData*)wp);
-            switch (HIWORD(wp))
+            LookupFinishedEventData data;
+            ArsLexis::EventData i;
+            i.wParam=wp; i.lParam=lp;
+            memcpy(&data, &i, sizeof(data));
+            switch (data.outcome)
             {
                 case LookupFinishedEventData::outcomeDefinition:
                 {   
@@ -188,7 +220,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     InvalidateRect(hwndMain, NULL, TRUE);
                     break;
                 }
-            }
+            }            
+            assert(0!=articleCountElement_);
+            articleCountText.assign(_T("Number of articles: "));
+            ArsLexis::char_t buffer[16];
+            int len= tprintf(buffer, _T("%ld"), app.preferences().articleCount);
+            articleCountText.append(buffer, len);
+            InvalidateRect(hwnd,NULL,TRUE);
         }
         break;
 		case WM_CLOSE:
@@ -343,7 +381,7 @@ void paint(HWND hwnd, HDC hdc)
     rect.left   +=2;
     rect.right  -=7;
     rect.bottom -=2;
-
+    ArsLexis::Graphics gr(hdc, hwnd);
     //iPediaApplication& app=iPediaApplication::instance();
     //LookupManager* lookupManager=app.getLookupManager(true);
     //Definition::Elements_t defels_=lookupManager->lastDefinitionElements();
@@ -369,12 +407,13 @@ void paint(HWND hwnd, HDC hdc)
         // tmpRect.top += fontDy+6;
         tmpRect.top += 18;
         DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+        tmpRect.top += 18;
+        DrawText(hdc, articleCountText.c_str(), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
         SelectObject(hdc,fnt);
         DeleteObject(fnt2);
     }
     else
     {
-        ArsLexis::Graphics gr(hdc, hwnd);
         RECT b;
         GetClientRect(hwnd, &b);
         ArsLexis::Rectangle bounds=b;
@@ -404,6 +443,17 @@ void paint(HWND hwnd, HDC hdc)
         if(g_forceLayoutRecalculation) 
             setScrollBar(definition_);
         g_forceLayoutRecalculation=false;
+    }
+    RECT a;
+    GetClientRect(hwnd, &a);
+
+    ArsLexis::Rectangle progressArea(a);
+    const iPediaApplication& app=iPediaApplication::instance();
+    const LookupManager* lookupManager=app.getLookupManager();
+    if (lookupManager && lookupManager->lookupInProgress())
+    {
+        gr.setColor(ArsLexis::Graphics::ColorChoice::colorText,RGB(0,0,0));
+        lookupManager->showProgress(gr, progressArea);
     }
     if(rec)
     {
@@ -466,8 +516,6 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     return 0;
                 }
             }
-            g_forceLayoutRecalculation=true;
-            InvalidateRect(hwndMain, NULL, true);
             break;
        }
     }
