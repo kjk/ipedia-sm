@@ -4,11 +4,13 @@
 #include "sm_ipedia.h"
 
 #include <iPediaApplication.hpp>
+#include <LookupManager.hpp>
 #include <Debug.hpp>
 #include <windows.h>
 #include <aygshell.h>
 
 iPediaApplication iPediaApplication::instance_;
+
 
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
@@ -79,6 +81,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
 			break;
         
+
         case WM_SIZE:
             MoveWindow(hwndEdit,2,2,LOWORD(lp)-4,20,TRUE);
             MoveWindow(hwndScroll,LOWORD(lp)-5, 28 , 5, HIWORD(lp)-28, false);
@@ -94,7 +97,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 			case IDOK:
 				SendMessage(hwnd,WM_CLOSE,0,0);
 				break;
-			default:
+            case IDM_MENU_RANDOM:
+            {
+                iPediaApplication& app=iPediaApplication::instance();
+                LookupManager* lookupManager=app.getLookupManager(true);
+                if (lookupManager && !lookupManager->lookupInProgress())
+                    lookupManager->lookupRandomTerm();
+                break;
+            }
+            default:
 				return DefWindowProc(hwnd, msg, wp, lp);
 			}
 			break;
@@ -218,13 +229,24 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	{
 		return (FALSE);
 	}
-	
-	while ( GetMessage( &msg, NULL, 0,0 ) == TRUE )
-	{
-		TranslateMessage (&msg);
-		DispatchMessage(&msg);
-	}
-	return (msg.wParam);
+    
+    /* hmm will be tough but let's try
+    ArsLexis::SocketConnectionManager* manager=0;
+    if (lookupManager_)
+        manager=&lookupManager_->connectionManager();
+    if (manager && manager->active())
+    {
+        setEventTimeout(0);
+        Application::waitForEvent(event);
+        if (nilEvent==event.eType)
+            manager->manageConnectionEvents(ticksPerSecond_/20);
+    }
+    else
+    {
+        setEventTimeout(evtWaitForever);
+        Application::waitForEvent(event);
+    } */
+    iPediaApplication::instance().waitForEvent();
 }
 
 void ArsLexis::handleBadAlloc()
@@ -232,7 +254,7 @@ void ArsLexis::handleBadAlloc()
     RaiseException(1,0,0,NULL);    
 }
 
-void ArsLexis::logAllocation(void* ptr, bool free, const char* file, int line)
+void ArsLexis::logAllocation(void* ptr, size_t size, bool free, const char* file, int line)
 {
 
 }

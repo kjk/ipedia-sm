@@ -13,7 +13,7 @@
 class LookupManager;
 class LookupHistory;
 
-#define serverLocalhost        _T("127.0.0.1:9000")
+#define serverLocalhost        _T("arslex.no-ip.info:9000")
 //#define serverLocalhost    _T"192.168.0.1:9000"
 #define serverDictPcArslexis   _T("dict-pc.arslexis.com:9000")
 
@@ -36,13 +36,14 @@ class iPediaApplication //: public ArsLexis::Application
 
     void savePreferences();
     
+    
 protected:
 
     //ArsLexis::status_t handleSystemNotify(SysNotifyParamType& notify);
     
     ArsLexis::status_t normalLaunch();
 
-    void waitForEvent(ArsLexis::EventType& event);
+    
     
     //ArsLexis::Form* createForm(ushort_t formId);
 
@@ -59,6 +60,8 @@ public:
     //{return diaSupport_;}
 
     iPediaApplication();
+
+    DWORD waitForEvent();
     
     ~iPediaApplication();
     

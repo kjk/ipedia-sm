@@ -17,7 +17,7 @@ iPediaApplication::iPediaApplication():
     history_(0),
     diaNotifyRegistered_(false),
     //ticksPerSecond_(SysTicksPerSecond()),
-    ticksPerSecond_(20),
+    ticksPerSecond_(1000),
     lookupManager_(0),
     server_(serverLocalhost),
     stressMode_(false),
@@ -114,8 +114,10 @@ LookupManager* iPediaApplication::getLookupManager(bool create)
     return lookupManager_;
 }
 
-void iPediaApplication::waitForEvent(EventType& event)
+DWORD iPediaApplication::waitForEvent()
 {
+    MSG msg;
+    /*
     ArsLexis::SocketConnectionManager* manager=0;
     if (lookupManager_)
         manager=&lookupManager_->connectionManager();
@@ -132,6 +134,31 @@ void iPediaApplication::waitForEvent(EventType& event)
         //setEventTimeout(evtWaitForever);
         iPediaApplication::waitForEvent(event);
     }
+    */
+    while(true)
+    {
+        ArsLexis::SocketConnectionManager* manager=0;
+        if (lookupManager_)
+            manager=&lookupManager_->connectionManager();
+        if (manager && manager->active())
+        {
+            if(!PeekMessage(&msg, NULL, 0, 0, FALSE))
+                manager->manageConnectionEvents(ticksPerSecond_/20);
+        }
+        if(!PeekMessage(&msg, NULL, 0, 0, TRUE))
+            Sleep(ticksPerSecond_/20);
+        else
+        {
+            if(msg.message!=WM_QUIT)
+            {
+                TranslateMessage (&msg);
+		        DispatchMessage(&msg);
+            }
+            else
+                return (msg.wParam);
+
+        }
+    };
 }
 
 /*Form* iPediaApplication::createForm(ushort_t formId)
@@ -270,4 +297,16 @@ void iPediaApplication::sendDisplayCustomAlertEvent(ushort_t alertId, const ArsL
 {
     customAlerts_.push_back(text1);
     sendEvent(appDisplayCustomAlertEvent, DisplayAlertEventData(alertId));
+}
+
+void* ArsLexis::allocate(size_t size)
+{
+    void* ptr=0;
+    if (size) 
+        ptr=malloc(size);
+    else
+        ptr=malloc(1);
+    if (!ptr)
+        handleBadAlloc();
+    return ptr;
 }
