@@ -265,7 +265,7 @@ to ignore the case when a preference item is missing.
                 if (read!=size) 
                     return psErrDatabaseCorrupted;
             }
-            items_.insert(std::pair<int, PrefItem>(prefItem.uniqueId,prefItem));
+            items_.insert(std::pair<int const, PrefItem>(prefItem.uniqueId,prefItem));
         }
         while (true);
         return errNone;
@@ -287,7 +287,7 @@ to ignore the case when a preference item is missing.
         if (it==items_.end())
             return psErrItemNotFound;
 
-        *prefItem=it->second;
+        *prefItem=(*it).second;
         return errNone;
     }
     
@@ -394,7 +394,7 @@ to ignore the case when a preference item is missing.
         if(items_.find(item->uniqueId)!=items_.end())
             return psErrDuplicateId;
         
-        items_.insert(std::pair<int, PrefItem>(item->uniqueId,*item));
+        items_.insert(std::pair<int const, PrefItem>(item->uniqueId,*item));
         return errNone;
     }
     
@@ -406,7 +406,7 @@ to ignore the case when a preference item is missing.
         for (std::map< int, PrefItem>::iterator it=items_.begin();
             it!=items_.end();it++)
         {
-            PrefItem prefItem=it->second;
+            PrefItem prefItem=(*it).second;
             int size=getPrefItemSize(prefItem);
             WriteFile(_handle, &prefItem.uniqueId, sizeof(prefItem.uniqueId),&written, NULL);
             WriteFile(_handle, &size, sizeof(size),&written, NULL);
