@@ -16,10 +16,12 @@ struct LookupFinishedEventData;
 
 #define serverMarek          _T("arslex.no-ip.info:9000")
 #define serverKjk            _T("dict-pc.arslexis.com:9000")
+#define serverKjkLaptop      _T("192.168.123.150:9000")
 #define serverLocalhost      _T("192.168.0.1:9000")
+#define serverLocalhost2     _T("127.0.0.1:9000")
 #define serverIpediaArslexis _T("ipedia.arslexis.com:9000")
 
-#define serverToUse serverLocalhost
+#define serverToUse serverKjkLaptop
 
 class iPediaApplication //: public ArsLexis::Application 
 {
@@ -38,11 +40,9 @@ class iPediaApplication //: public ArsLexis::Application
     HWND hwndMain_;    
     
 protected:
-    
-//    ArsLexis::status_t normalLaunch();
-    
+
     bool handleApplicationEvent(ArsLexis::EventType& event);
-    
+
 public:
 
     void savePreferences();
@@ -75,14 +75,10 @@ public:
                         
         enum {regCodeLength=32};
         ArsLexis::String regCode;
-
-        //enum {articleCountNotChecked=-1L};
         
         long articleCount;
         
         Preferences():
-            //serialNumberRegistered(false),
-            //checkArticleCountAtStartup(true),
             articleCount(-1)
         {}
             ArsLexis::String databaseTime;
@@ -107,12 +103,10 @@ public:
         appDisplayCustomAlertEvent,
         appLookupEventFirst,
         appLookupEventLast=appLookupEventFirst+reservedLookupEventsCount,
-        appGetArticlesCountEvent,
         appForceUpgrade,
         appFirstAvailableEvent
     };
 
-    
     struct DisplayAlertEventData
     {
         ushort_t alertId;
@@ -162,7 +156,6 @@ public:
     iPediaHyperlinkHandler& hyperlinkHandler()
     {return hyperlinkHandler_;}
 
-    bool fArticleCountChecked;
 private:
     
     Preferences preferences_;

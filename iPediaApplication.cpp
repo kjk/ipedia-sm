@@ -14,7 +14,6 @@ iPediaApplication::iPediaApplication():
     log_( _T("root") ),
     history_(new LookupHistory()),
     diaNotifyRegistered_(false),
-    //ticksPerSecond_(SysTicksPerSecond()),
     ticksPerSecond_(1000),
     lookupManager_(0),
     server_(serverToUse),
@@ -31,8 +30,7 @@ iPediaApplication::iPediaApplication():
 }
 
 iPediaApplication::~iPediaApplication()
-{
-    
+{   
     if (lookupManager_)
         delete lookupManager_;
 
@@ -41,17 +39,6 @@ iPediaApplication::~iPediaApplication()
 
     logAllocation_=false;
 }
-
-
-/*status_t iPediaApplication::normalLaunch()
-{
-    history_=new LookupHistory();
-    loadPreferences();
-    //gotoForm(mainForm);
-    //runEventLoop();
-    savePreferences();
-    return errNone;
-}*/
 
 LookupManager* iPediaApplication::getLookupManager(bool create)
 {
@@ -221,7 +208,6 @@ OnError:
 
 void iPediaApplication::savePreferences()
 {
-    
     status_t error;
     std::auto_ptr<PrefsStoreWriter> writer(new PrefsStoreWriter(appPrefDatabase, appFileCreator, 0));
 

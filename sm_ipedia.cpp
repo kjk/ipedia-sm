@@ -202,7 +202,10 @@ HANDLE    g_hConnection = NULL;
 // Can be called multiple times - will do nothing if connection is already established.
 static bool fInitConnection()
 {
-    //if (NULL!=g_hConnection)
+#ifdef PPC
+	return true; // not needed on Pocket PC
+#endif
+    if (NULL!=g_hConnection)
         return true;
 
     CONNMGR_CONNECTIONINFO ccInfo;
