@@ -37,4 +37,18 @@ class SmartPhoneProgressReported: public ArsLexis::DefaultLookupProgressReporter
     void showProgress(const ArsLexis::LookupProgressReportingSupport& support, ArsLexis::Graphics& gr, const ArsLexis::Rectangle& bounds, bool clearBkg=true);
 };
 
+struct ErrorsTableEntry
+{
+    int errorCode;
+    ArsLexis::String title;
+    ArsLexis::String message;
+
+    ErrorsTableEntry(int eCode, ArsLexis::String tit, ArsLexis::String msg):
+        errorCode(eCode),
+        title(tit),
+        message(msg)
+    {}
+
+};
+
 #endif // !defined(AFX_SM_IPEDIA_H__6B0A6D56_EEA8_48CF_B48B_C0C09E513635__INCLUDED_)

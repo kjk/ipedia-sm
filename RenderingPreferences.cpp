@@ -24,16 +24,16 @@ RenderingPreferences::RenderingPreferences():
     wfnt.setEffects(fx);   
     styles_[styleDefault].font = wfnt;
  
-    logfnt.lfUnderline = TRUE;
     
     fx.setUnderline(FontEffects::underlineDotted);
     for (uint_t i=0; i<hyperlinkTypesCount_; ++i) 
     {
-        hyperlinkDecorations_[i].font=WinFont(CreateFontIndirect(&logfnt));
+        //hyperlinkDecorations_[i].font=WinFont(CreateFontIndirect(&logfnt));
         hyperlinkDecorations_[i].font.setEffects(fx);
-        hyperlinkDecorations_[i].textColor=RGB(0,0,155+100/(hyperlinkTypesCount_-i));
     }
-    logfnt.lfUnderline = FALSE;
+    hyperlinkDecorations_[hyperlinkTerm].textColor=RGB(0,0,250);
+    hyperlinkDecorations_[hyperlinkExternal].textColor=RGB(200,20,20);     
+    
     logfnt.lfWeight=800;
     logfnt.lfHeight-=1;
     styles_[styleHeader].font=WinFont(CreateFontIndirect(&logfnt));

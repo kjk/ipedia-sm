@@ -14,8 +14,8 @@ class LookupManager;
 class LookupHistory;
 struct LookupFinishedEventData;
 
-//#define serverLocalhost        _T("arslex.no-ip.info:9000")
-#define serverLocalhost    _T("192.168.0.1:9000")
+#define serverLocalhost        _T("arslex.no-ip.info:9000")
+//#define serverLocalhost    _T("arslex.no-ip.info:9000")
 #define serverIpediaArslexis   _T("ipedia.arslexis.com:9000")
 
 #define serverToUse serverIpediaArslexis
@@ -135,10 +135,16 @@ public:
         
         DisplayAlertEventData(ushort_t aid):
             alertId(aid) {}
+        
+        DisplayAlertEventData():
+            alertId(0) {}
+
     };
     
     static void sendDisplayAlertEvent(ushort_t alertId)
     {ArsLexis::sendEvent(appDisplayAlertEvent, DisplayAlertEventData(alertId));}
+    
+    ArsLexis::String popCustomAlert();
     
     void sendDisplayCustomAlertEvent(ushort_t alertId, const ArsLexis::String& text1);
     

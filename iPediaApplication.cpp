@@ -294,6 +294,12 @@ OnError:*/
     return;
 }
 
+ArsLexis::String iPediaApplication::popCustomAlert()
+{
+    ArsLexis::String tmp = customAlerts_.front();
+    customAlerts_.pop_front();
+    return tmp;
+}
 
 void iPediaApplication::sendDisplayCustomAlertEvent(ushort_t alertId, const ArsLexis::String& text1)
 {
