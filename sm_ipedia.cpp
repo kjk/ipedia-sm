@@ -1,36 +1,38 @@
-#include "sm_ipedia.h"
-#include "ProgressReporters.h"
-#include "LastResults.h"
-#include "Registration.h"
-#include "Hyperlinks.h"
-#include "DefaultArticles.h"
+#include <windows.h>
+#include <aygshell.h>
+#include <wingdi.h>
+
+#include <objbase.h>
+#include <initguid.h>
+#include <connmgr.h>
+#include <sms.h>
+#include <uniqueid.h>
+
+#ifdef WIN32_PLATFORM_WFSP
+#include <tpcshell.h>
+#endif
 
 #include <SysUtils.hpp>
 #include <iPediaApplication.hpp>
 #include <LookupManager.hpp>
 #include <LookupManagerBase.hpp>
 #include <LookupHistory.hpp>
-#include <ipedia_rsc.h>
 #include <Definition.hpp>
 #include <DefinitionElement.hpp>
 #include <GenericTextElement.hpp>
 #include <Geometry.hpp>
 #include <Debug.hpp>
+#include <FontEffects.hpp>
 
-#include <objbase.h>
-#include <initguid.h>
-#include <connmgr.h>
-
-#include <windows.h>
-#include <aygshell.h>
-#ifdef WIN32_PLATFORM_WFSP
-#include <tpcshell.h>
-#endif
-#include <wingdi.h>
-#include <fonteffects.hpp>
-#include <sms.h>
-#include <uniqueid.h>
 #include <Text.hpp>
+
+#include "ProgressReporters.h"
+#include "LastResults.h"
+#include "Registration.h"
+#include "Hyperlinks.h"
+#include "DefaultArticles.h"
+#include "sm_ipedia.h"
+#include "ipedia_rsc.h"
 
 using ArsLexis::String;
 using ArsLexis::Graphics;
@@ -882,63 +884,63 @@ void setMenu(HWND hwnd)
 {
     Definition &def = currentDefinition();
     HWND hwndMB = SHFindMenuBar (hwnd);
-    if (hwndMB) 
-    {
-        bool isNextHistoryElement = false;
-        HMENU hMenu;
-        hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
-        iPediaApplication& app=iPediaApplication::instance();
-        LookupManager* lookupManager=app.getLookupManager(true);
-        
-        unsigned int lastSearchResultEnabled = MF_GRAYED;
-        if (!lookupManager->lastSearchResults().empty())
-            lastSearchResultEnabled = MF_ENABLED;
-        EnableMenuItem(hMenu, IDM_MENU_RESULTS, lastSearchResultEnabled);
-        
-        unsigned int nextHistoryTermEnabled = MF_GRAYED;
-        if (lookupManager->hasNextHistoryTerm())
-            nextHistoryTermEnabled = MF_ENABLED;
-        EnableMenuItem(hMenu, IDM_MENU_NEXT, nextHistoryTermEnabled);
+    if (!hwndMB) 
+        return;
 
-        unsigned int previousHistoryTermEnabled = MF_GRAYED;
-        if (lookupManager->hasPreviousHistoryTerm()||
-            ( (displayMode()!=showArticle)&&(!g_definition->empty()) )
-           )
-            previousHistoryTermEnabled = MF_ENABLED;
+    bool isNextHistoryElement = false;
+    HMENU hMenu;
+    hMenu = (HMENU)SendMessage (hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
+    iPediaApplication& app=iPediaApplication::instance();
+    LookupManager* lookupManager=app.getLookupManager(true);
+    
+    unsigned int lastSearchResultEnabled = MF_GRAYED;
+    if (!lookupManager->lastSearchResults().empty())
+        lastSearchResultEnabled = MF_ENABLED;
+    EnableMenuItem(hMenu, IDM_MENU_RESULTS, lastSearchResultEnabled);
+    
+    unsigned int nextHistoryTermEnabled = MF_GRAYED;
+    if (lookupManager->hasNextHistoryTerm())
+        nextHistoryTermEnabled = MF_ENABLED;
+    EnableMenuItem(hMenu, IDM_MENU_NEXT, nextHistoryTermEnabled);
 
-        EnableMenuItem(hMenu, IDM_MENU_PREV, previousHistoryTermEnabled);
-        
-        unsigned int clipboardEnabled = MF_GRAYED;
-        if (!def.empty())
-            clipboardEnabled = MF_ENABLED;
-        EnableMenuItem(hMenu, IDM_MENU_CLIPBOARD, clipboardEnabled);
+    unsigned int previousHistoryTermEnabled = MF_GRAYED;
+    if (lookupManager->hasPreviousHistoryTerm()||
+        ( (displayMode()!=showArticle)&&(!g_definition->empty()) )
+       )
+        previousHistoryTermEnabled = MF_ENABLED;
+
+    EnableMenuItem(hMenu, IDM_MENU_PREV, previousHistoryTermEnabled);
+    
+    unsigned int clipboardEnabled = MF_GRAYED;
+    if (!def.empty())
+        clipboardEnabled = MF_ENABLED;
+    EnableMenuItem(hMenu, IDM_MENU_CLIPBOARD, clipboardEnabled);
 
 #ifdef WIN32_PLATFORM_PSPC
-        //setMenuBarButtonState(ID_SEARCH_BTN2, g_uiEnabled);
-        if (g_uiEnabled)
-        {
-            setMenuBarButtonState(ID_NEXT_BTN, lookupManager->hasNextHistoryTerm());
-            setMenuBarButtonState(ID_PREV_BTN, 
-                lookupManager->hasPreviousHistoryTerm()||
-                ((displayMode()!=showArticle)&&(!g_definition->empty())));
-        }
+    //setMenuBarButtonState(ID_SEARCH_BTN2, g_uiEnabled);
+    if (g_uiEnabled)
+    {
+        setMenuBarButtonState(ID_NEXT_BTN, lookupManager->hasNextHistoryTerm());
+        setMenuBarButtonState(ID_PREV_BTN, 
+            lookupManager->hasPreviousHistoryTerm()||
+            ((displayMode()!=showArticle)&&(!g_definition->empty())));
+    }
 #endif
 
-        EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_GRAYED);
-        Definition::ElementPosition_t pos;
-        for(pos=def.firstElementPosition();
-            pos!=def.lastElementPosition();
-            pos++)
+    EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_GRAYED);
+    Definition::ElementPosition_t pos;
+    for(pos=def.firstElementPosition();
+        pos!=def.lastElementPosition();
+        pos++)
+    {
+        DefinitionElement *curr=*pos;
+        if (curr->isTextElement())
         {
-            DefinitionElement *curr=*pos;
-            if (curr->isTextElement())
+            GenericTextElement *txtEl=(GenericTextElement*)curr;
+            if ((txtEl->isHyperlink())&&(txtEl->hyperlinkProperties()->type==hyperlinkTerm))
             {
-                GenericTextElement *txtEl=(GenericTextElement*)curr;
-                if ((txtEl->isHyperlink())&&(txtEl->hyperlinkProperties()->type==hyperlinkTerm))
-                {
-                    EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_ENABLED);
-                    return;
-                }
+                EnableMenuItem(hMenu, IDM_MENU_HYPERS, MF_ENABLED);
+                return;
             }
         }
     }
@@ -954,20 +956,6 @@ void setupAboutWindow()
         prepareAbout();
         g_forceAboutRecalculation = true;
     }    
-}
-
-// Try to launch IE with a given url
-bool GotoURL(LPCTSTR lpszUrl)
-{
-    SHELLEXECUTEINFO sei;
-    memset(&sei, 0, sizeof(SHELLEXECUTEINFO));
-    sei.cbSize  = sizeof(SHELLEXECUTEINFO);
-    sei.fMask   = SEE_MASK_FLAG_NO_UI;
-    sei.lpVerb  = _T("open");
-    sei.lpFile  = lpszUrl;
-    sei.nShow   = SW_SHOWMAXIMIZED;
-
-    return ShellExecuteEx(&sei);
 }
 
 void setUIState(bool enabled)
@@ -1137,7 +1125,6 @@ static void handleMoveHistory(bool forward)
             InvalidateRect(app.getMainWindow(), NULL, false);
             return;
         }
-        
     }
     if (lookupManager && !lookupManager->lookupInProgress())
     {
@@ -1174,30 +1161,31 @@ void SimpleOrExtendedSearch(HWND hwnd, bool simple)
     delete buf;
     if (term.empty()) 
         return;
-    if (lookupManager && !lookupManager->lookupInProgress())
+
+    if ((NULL==lookupManager) || lookupManager->lookupInProgress())
+        return;
+
+    if (!simple)
     {
-        if (!simple)
+        lookupManager->search(term);
+        setUIState(false);
+        InvalidateRect(hwnd,NULL,FALSE);
+    }
+    else
+    {
+        if (lookupManager->lookupIfDifferent(term))
         {
-            lookupManager->search(term);
             setUIState(false);
             InvalidateRect(hwnd,NULL,FALSE);
         }
         else
         {
-            if (lookupManager->lookupIfDifferent(term))
+            if (displayMode()!=showArticle)
             {
-                setUIState(false);
-                InvalidateRect(hwnd,NULL,FALSE);
-            }
-            else
-            {
-                if (displayMode()!=showArticle)
-                {
-                    setDisplayMode(showArticle);
-                    setScrollBar(g_definition);
-                    setUIState(true);
-                    InvalidateRect(hwnd,NULL,FALSE);                            
-                }
+                setDisplayMode(showArticle);
+                setScrollBar(g_definition);
+                setUIState(true);
+                InvalidateRect(hwnd,NULL,FALSE);                            
             }
         }
     }

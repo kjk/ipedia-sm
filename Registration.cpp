@@ -92,13 +92,13 @@ bool InitRegistrationDlg(HWND hDlg)
         return false;
 
     // Set up the menu bar
-#ifndef WIN32_PLATFORM_PSPC
+#ifdef WIN32_PLATFORM_WFSP
     SHMENUBARINFO shmbi;
     ZeroMemory(&shmbi, sizeof(shmbi));
     shmbi.cbSize      = sizeof(shmbi);
     shmbi.hwndParent  = hDlg;
     shmbi.nToolBarId  = IDR_REGISTER_MENUBAR;
-    shmbi.hInstRes    = g_hInst;
+    shmbi.hInstRes    = GetModuleHandle(NULL);
     
     if (!SHCreateMenuBar(&shmbi))
         return false;

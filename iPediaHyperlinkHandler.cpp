@@ -1,8 +1,9 @@
 #include "sm_ipedia.h"
+#include <WinSysUtils.hpp>
+#include <LookupManager.hpp>
+#include <GenericTextElement.hpp>
 #include "iPediaHyperlinkHandler.hpp"
 #include "iPediaApplication.hpp"
-#include "LookupManager.hpp"
-#include "GenericTextElement.hpp"
 
 bool iPediaHyperlinkHandler::handleExternalHyperlink(const ArsLexis::String& url)
 {
@@ -57,15 +58,3 @@ void iPediaHyperlinkHandler::handleHyperlink(Definition& definition, DefinitionE
     }  
 }
 
-/*  if (makeClicked) 
-    {
-        iPediaApplication& app=iPediaApplication::instance();
-        props->type=hyperlinkClicked;
-        ArsLexis::Form* form=app.getOpenForm(mainForm);
-        if (form) 
-        {
-            ArsLexis::Graphics graphics(form->windowHandle());
-            definition.renderSingleElement(graphics, app.preferences().renderingPreferences, element);
-        }
-    }
-*/    
