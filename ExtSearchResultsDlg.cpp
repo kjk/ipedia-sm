@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <iPediaApplication.hpp>
 #include <LookupManager.hpp>
-#include "LastResults.h"
+#include "ExtSearchResultsDlg.hpp"
 #include "sm_ipedia.h"
 
 using namespace ArsLexis;

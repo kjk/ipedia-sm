@@ -30,8 +30,8 @@
 #include <StringListDialog.hpp>
 
 #include "ProgressReporters.h"
-#include "LastResults.h"
-#include "DefaultArticles.h"
+#include "ExtSearchResultsDlg.hpp"
+#include "DefaultArticles.hpp"
 #include "sm_ipedia.h"
 #include "ipedia_rsc.h"
 
