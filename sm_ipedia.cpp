@@ -5,6 +5,7 @@
 
 #include <iPediaApplication.hpp>
 #include <LookupManager.hpp>
+#include <Definition.hpp>
 #include <Debug.hpp>
 #include <windows.h>
 #include <aygshell.h>
@@ -12,6 +13,10 @@
 iPediaApplication iPediaApplication::instance_;
 
 
+Definition *definition_ = new Definition();
+RenderingPreferences* prefs= new RenderingPreferences();
+static bool g_forceLayoutRecalculation=false;
+bool rec=false;
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
 HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
@@ -103,6 +108,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 LookupManager* lookupManager=app.getLookupManager(true);
                 if (lookupManager && !lookupManager->lookupInProgress())
                     lookupManager->lookupRandomTerm();
+                break;
+            }
+            case LookupManager::lookupFinishedEvent:
+            {
+                iPediaApplication& app=iPediaApplication::instance();
+                LookupManager* lookupManager=app.getLookupManager(true);
+                definition_->replaceElements(lookupManager->lastDefinitionElements());
+                
                 break;
             }
             default:
@@ -206,7 +219,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
                    int        CmdShow)
 
 {
-	MSG msg;
 	HWND hHelloWnd = NULL;	
     
 	//Check if Hello.exe is running. If it's running then focus on the window
@@ -258,5 +270,78 @@ void ArsLexis::logAllocation(void* ptr, size_t size, bool free, const char* file
 {
 
 }
+
+void paint(HWND hwnd, HDC hdc)
+{
+    RECT rect;
+    GetClientRect (hwnd, &rect);
+    FillRect(hdc, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+    rect.top    +=22;
+    rect.left   +=2;
+    rect.right  -=7;
+    rect.bottom -=2;
+
+    iPediaApplication& app=iPediaApplication::instance();
+    LookupManager* lookupManager=app.getLookupManager(true);
+    Definition::Elements_t defels_=lookupManager->lastDefinitionElements();
+    if (!defels_.size())
+    {
+        LOGFONT logfnt;
+        HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
+        GetObject(fnt, sizeof(logfnt), &logfnt);
+        logfnt.lfHeight+=1;
+        int fontDy = logfnt.lfHeight;
+        HFONT fnt2=(HFONT)CreateFontIndirect(&logfnt);
+        SelectObject(hdc, fnt2);
+
+        RECT tmpRect=rect;
+        DrawText(hdc, TEXT("(enter word and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+        //tmpRect.top += (fontDy*3);
+        tmpRect.top += 46;
+        DrawText(hdc, TEXT("ArsLexis iPedia 1.0"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+        // tmpRect.top += fontDy+6;
+        tmpRect.top += 18;
+        DrawText(hdc, TEXT("http://www.arslexis.com"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+        SelectObject(hdc,fnt);
+        DeleteObject(fnt2);
+    }
+    else
+    {
+        ArsLexis::Graphics gr(hdc, hwnd);
+        RECT b;
+        GetClientRect(hwnd, &b);
+        ArsLexis::Rectangle bounds=b;
+        ArsLexis::Rectangle defRect=rect;
+        bool doubleBuffer=true;
+        HDC offscreenDc=::CreateCompatibleDC(hdc);
+        if (offscreenDc) {
+            HBITMAP bitmap=::CreateCompatibleBitmap(hdc, bounds.width(), bounds.height());
+            if (bitmap) {
+                HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+                {
+                    ArsLexis::Graphics offscreen(offscreenDc, NULL);
+                    definition_->render(offscreen, defRect, *prefs, g_forceLayoutRecalculation);
+                    offscreen.copyArea(defRect, gr, defRect.topLeft);
+                }
+                ::SelectObject(offscreenDc, oldBitmap);
+                ::DeleteObject(bitmap);
+            }
+            else
+                doubleBuffer=false;
+            ::DeleteDC(offscreenDc);
+        }
+        else
+            doubleBuffer=false;
+        if (!doubleBuffer)
+            definition_->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
+        g_forceLayoutRecalculation=false;
+    }
+    if(rec)
+    {
+        //setScrollBar(definition_);
+        rec=false;
+    }
+}
+
 
 // end sm_ipedia.cpp
