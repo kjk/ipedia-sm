@@ -12,9 +12,10 @@
 
 class LookupManager;
 class LookupHistory;
+struct LookupFinishedEventData;
 
-#define serverLocalhost        _T("arslex.no-ip.info:9000")
-//#define serverLocalhost    _T"192.168.0.1:9000"
+//#define serverLocalhost        _T("arslex.no-ip.info:9000")
+#define serverLocalhost    _T("192.168.0.1:9000")
 #define serverDictPcArslexis   _T("dict-pc.arslexis.com:9000")
 
 class iPediaApplication //: public ArsLexis::Application 
@@ -139,6 +140,8 @@ public:
     
     void sendDisplayCustomAlertEvent(ushort_t alertId, const ArsLexis::String& text1);
     
+    static void sendFinishedLookupEvent(uint_t event, LookupFinishedEventData& data);
+    
     ArsLexis::Logger& log() const
     {return log_;}
     
@@ -178,7 +181,5 @@ private:
     bool hasHighDensityFeatures_:1;
     bool logAllocation_;  
 };
-
-
 
 #endif

@@ -9,16 +9,28 @@
 
 #include <Definition.hpp>
 #include <Debug.hpp>
+
+#include <objbase.h>
+#include <initguid.h>
+#include <connmgr.h>
+
 #include <windows.h>
 #include <aygshell.h>
+#include <tpcshell.h>
+#include <wingdi.h>
+#include <fonteffects.hpp>
+#include <sms.h>
+#include <uniqueid.h>
 
 iPediaApplication iPediaApplication::instance_;
-
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+WNDPROC oldEditWndProc;
 
 Definition *definition_ = new Definition();
 RenderingPreferences* prefs= new RenderingPreferences();
 static bool g_forceLayoutRecalculation=false;
 bool rec=false;
+void setScrollBar(Definition* definition_);
 
 HINSTANCE g_hInst = NULL;  // Local copy of hInstance
 HWND hwndMain = NULL;    // Handle to Main window returned from CreateWindow
@@ -74,6 +86,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 (HMENU) ID_EDIT,
                 ((LPCREATESTRUCT)lp)->hInstance,
                 NULL);
+            oldEditWndProc=(WNDPROC)SetWindowLong(hwndEdit, GWL_WNDPROC, (LONG)EditWndProc);
 
             hwndScroll = CreateWindow(
                 TEXT("scrollbar"),
@@ -83,12 +96,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 (HMENU) ID_SCROLL,
                 ((LPCREATESTRUCT)lp)->hInstance,
                 NULL);
-
-            /*(void)SendMessage(
+            
+            setScrollBar(definition_);
+            (void)SendMessage(
                 mbi.hwndMB, SHCMBM_OVERRIDEKEY, VK_TBACK,
                 MAKELPARAM(SHMBOF_NODEFAULT | SHMBOF_NOTIFY,
                 SHMBOF_NODEFAULT | SHMBOF_NOTIFY)
-                );*/
+                );
 
 			break;
         
@@ -132,31 +146,44 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     		break;
 		}		
         
+        case WM_HOTKEY:
+        {
+            ArsLexis::Graphics gr(GetDC(hwndMain), hwndMain);
+            int page=0;
+            if (definition_)
+                page=definition_->shownLinesCount();
+            switch(HIWORD(lp))
+            {
+                case VK_TBACK:
+                    if ( 0 != (MOD_KEYUP & LOWORD(lp)))
+                        SHSendBackToFocusWindow( msg, wp, lp );
+                    break;
+                case VK_TDOWN:
+                    if(definition_)
+                        definition_->scroll(gr,*prefs,page);
+                    setScrollBar(definition_);
+                    break;
+            }
+            break;
+        }    
+
+        
         case LookupManager::lookupFinishedEvent:
         {
             iPediaApplication& app=iPediaApplication::instance();
             LookupManager* lookupManager=app.getLookupManager(true);
             //definition_->replaceElements(lookupManager->lastDefinitionElements());
             //definition_->replaceElements();
-            const LookupFinishedEventData& data=*((LookupFinishedEventData*)wp);
-            switch (data.outcome)
+            //const LookupFinishedEventData& data=*((LookupFinishedEventData*)wp);
+            switch (HIWORD(wp))
             {
-                case data.outcomeDefinition:
-                {    
+                case LookupFinishedEventData::outcomeDefinition:
+                {   
                     assert(lookupManager!=0);
                     if (lookupManager)
                     {
                         definition_->replaceElements(lookupManager->lastDefinitionElements());
-                        /*setDisplayMode(showDefinition);
-                        const LookupHistory& history=getHistory();
-                        if (history.hasCurrentTerm())
-                            setTitle(history.currentTerm());
-                        
-                        update();
-                        
-                        Field field(*this, termInputField);        
-                        field.replace(lookupManager->lastInputTerm());
-                        field.select();                    */
+                        g_forceLayoutRecalculation=true;
                     }
                     InvalidateRect(hwndMain, NULL, TRUE);
                     break;
@@ -276,14 +303,35 @@ int WINAPI WinMain(HINSTANCE hInstance,
     iPediaApplication::instance().waitForEvent();
 }
 
+void setScrollBar(Definition* definition_)
+{
+    int frst=0;
+    int total=0;
+    int shown=0;
+    if(definition_)
+    {
+        frst=definition_->firstShownLine();
+        total=definition_->totalLinesCount();
+        shown=definition_->shownLinesCount();
+    }
+    
+    SetScrollPos(
+        hwndScroll, 
+        SB_CTL,
+        frst,
+        TRUE);
+    
+    SetScrollRange(
+        hwndScroll,
+        SB_CTL,
+        0,
+        total-shown,
+        TRUE);
+}
+
 void ArsLexis::handleBadAlloc()
 {
     RaiseException(1,0,0,NULL);    
-}
-
-void ArsLexis::logAllocation(void* ptr, size_t size, bool free, const char* file, int line)
-{
-
 }
 
 void paint(HWND hwnd, HDC hdc)
@@ -299,7 +347,7 @@ void paint(HWND hwnd, HDC hdc)
     //iPediaApplication& app=iPediaApplication::instance();
     //LookupManager* lookupManager=app.getLookupManager(true);
     //Definition::Elements_t defels_=lookupManager->lastDefinitionElements();
-    if (definition_->totalLinesCount()==0)
+    if (definition_->empty())
     {
         LOGFONT logfnt;
         HFONT   fnt=(HFONT)GetStockObject(SYSTEM_FONT);
@@ -310,9 +358,13 @@ void paint(HWND hwnd, HDC hdc)
         SelectObject(hdc, fnt2);
 
         RECT tmpRect=rect;
-        DrawText(hdc, TEXT("(enter article name and press \"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+        DrawText(hdc, TEXT("(enter article name and press"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+        tmpRect.top += 16;
+        
+        DrawText(hdc, TEXT("\"Lookup\")"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
+
         //tmpRect.top += (fontDy*3);
-        tmpRect.top += 46;
+        tmpRect.top += 40;
         DrawText(hdc, TEXT("ArsLexis iPedia 1.0"), -1, &tmpRect, DT_SINGLELINE|DT_CENTER);
         // tmpRect.top += fontDy+6;
         tmpRect.top += 18;
@@ -349,13 +401,77 @@ void paint(HWND hwnd, HDC hdc)
             doubleBuffer=false;
         if (!doubleBuffer)
             definition_->render(gr, defRect, *prefs, g_forceLayoutRecalculation);
+        if(g_forceLayoutRecalculation) 
+            setScrollBar(definition_);
         g_forceLayoutRecalculation=false;
     }
     if(rec)
     {
-        //setScrollBar(definition_);
+        setScrollBar(definition_);
         rec=false;
     }
+}
+
+LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    switch(msg)
+    {
+        case WM_KEYDOWN:
+        {
+            if(definition_)
+            {
+                int page=0;
+                switch (wp) 
+                {
+                    case VK_DOWN:
+                        page=definition_->shownLinesCount();
+                        break;
+                    case VK_UP:
+                        page=-static_cast<int>(definition_->shownLinesCount());
+                        break;
+                }
+                if (page!=0)
+                {
+                    RECT b;
+                    GetClientRect (hwndMain, &b);
+                    ArsLexis::Rectangle bounds=b;
+                    ArsLexis::Rectangle defRect=bounds;
+                    defRect.explode(2, 22, -9, -24);
+                    ArsLexis::Graphics gr(GetDC(hwndMain), hwndMain);
+                    bool doubleBuffer=true;
+                    
+                    HDC offscreenDc=::CreateCompatibleDC(gr.handle());
+                    if (offscreenDc) {
+                        HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
+                        if (bitmap) {
+                            HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
+                            {
+                                ArsLexis::Graphics offscreen(offscreenDc, NULL);
+                                definition_->scroll(offscreen,*prefs, page);
+                                offscreen.copyArea(defRect, gr, defRect.topLeft);
+                            }
+                            ::SelectObject(offscreenDc, oldBitmap);
+                            ::DeleteObject(bitmap);
+                        }
+                        else
+                            doubleBuffer=false;
+                        ::DeleteDC(offscreenDc);
+                    }
+                    else
+                        doubleBuffer=false;
+                    if (!doubleBuffer)
+                        definition_->scroll(gr,*prefs, page);
+                    
+                    setScrollBar(definition_);
+                    return 0;
+                }
+            }
+            g_forceLayoutRecalculation=true;
+            InvalidateRect(hwndMain, NULL, true);
+            break;
+       }
+    }
+    return CallWindowProc(oldEditWndProc, hwnd, msg, wp, lp);
 }
 
 

@@ -299,6 +299,11 @@ void iPediaApplication::sendDisplayCustomAlertEvent(ushort_t alertId, const ArsL
     sendEvent(appDisplayCustomAlertEvent, DisplayAlertEventData(alertId));
 }
 
+void iPediaApplication::sendFinishedLookupEvent(uint_t event, LookupFinishedEventData& data)
+{
+    sendEvent(event, data.outcome, data.serverError, data.error);
+}
+
 void* ArsLexis::allocate(size_t size)
 {
     void* ptr=0;

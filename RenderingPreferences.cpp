@@ -10,26 +10,31 @@ using ArsLexis::Font;
 RenderingPreferences::RenderingPreferences():
     standardIndentation_(16),
     bulletIndentation_(2),
-    backgroundColor_(0)
+    backgroundColor_(RGB(255,255,255))
 {
     LOGFONT logfnt;
     HFONT fnt=(HFONT)GetStockObject(SYSTEM_FONT);
     GetObject(fnt, sizeof(logfnt), &logfnt);
-    logfnt.lfHeight++;
+    logfnt.lfHeight+=1;
+    logfnt.lfCharSet = EASTEUROPE_CHARSET;
     WinFont wfnt = WinFont(CreateFontIndirect(&logfnt));
-    for(int k=0;k<stylesCount_;k++)
-        styles_[k].font = wfnt;
-    logfnt.lfHeight++;
-    styles_[styleHeader].font=WinFont(CreateFontIndirect(&logfnt));;
-    
-    //TODO: Set appropriate colors for links
-    //for (uint_t i=0; i<stylesCount_; ++i)
-    //    styles_[i].textColor=UIColorGetTableEntryIndex(UIObjectForeground);        
+    styles_[0].font = wfnt;
 
+    logfnt.lfUnderline = TRUE;
     FontEffects fx;
     fx.setUnderline(FontEffects::underlineDotted);
     for (uint_t i=0; i<hyperlinkTypesCount_; ++i) 
+    {
+        hyperlinkDecorations_[i].font=WinFont(CreateFontIndirect(&logfnt));
         hyperlinkDecorations_[i].font.setEffects(fx);
+        hyperlinkDecorations_[i].textColor=RGB(0,0,155+100/(hyperlinkTypesCount_-i));
+    }
+    logfnt.lfUnderline = FALSE;
+    logfnt.lfWeight=800;
+    logfnt.lfHeight-=2;
+    styles_[styleHeader].font=WinFont(CreateFontIndirect(&logfnt));
+    
+
     calculateIndentation();
 }
 
