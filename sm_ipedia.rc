@@ -70,7 +70,7 @@ BEGIN
 
 	I_IMAGENONE, ID_CANCEL, TBSTATE_ENABLED,
 	TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE,
-	IDS_CANCEL, 0, NOMENU,
+	IDS_LATER, 0, NOMENU,
 END
 
 
@@ -81,6 +81,7 @@ BEGIN
     IDS_REGISTER        "Register"
     IDS_MENU_BTN        "Menu"
 	IDS_REFINE          "Refine"
+    IDS_LATER           "Later"
 	IDS_CANCEL          "Cancel"
 END
 

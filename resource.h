@@ -40,11 +40,12 @@
 #define IDC_EDIT_REGCODE                126
 #define IDM_REGISTER                    127
 #define IDR_REGISTER_MENUBAR            128
-#define IDS_REGISTER                    129
 
+#define IDS_REGISTER                    129
 #define IDM_MENU_HYPERS                 130
 #define IDM_MENU_PREV                   131
 #define IDM_MENU_NEXT                   132
+#define IDS_LATER                       133
 
 // Next default values for new objects
 // 

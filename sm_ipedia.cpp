@@ -278,14 +278,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
                 case IDM_MENU_REGISTER:
                 {
+                    iPediaApplication& app=iPediaApplication::instance();
+                    newRegCode_ = app.preferences().regCode;
                     if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), hwnd,RegistrationDlgProc))
                     {
-                        iPediaApplication& app=iPediaApplication::instance();
                         LookupManager* lookupManager=app.getLookupManager(true);
                         if (lookupManager && !lookupManager->lookupInProgress())
                             lookupManager->verifyRegistrationCode(newRegCode_);
                     }
-
+                    else
+                        newRegCode_ = _T("");
                     break;
                 }
 
@@ -431,9 +433,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         prefs.regCode=newRegCode_;
                         //app.savePreferences();
                     }   
-
-                    //FrmAlert(alertRegistrationOk);
-                    //closePopup();
+                    MessageBox(hwnd, 
+                        _T("Thank you for registering iPedia."), 
+                        _T("Registration successful"), 
+                        MB_OK|MB_ICONINFORMATION);
+                    break;
                 }
                 
                 case LookupFinishedEventData::outcomeRegCodeInvalid:
@@ -442,17 +446,30 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                     // TODO: should it be done as a message to ourselves?
                     //UInt16 buttonId;
                     //buttonId = FrmAlert(alertRegistrationFailed);
-            
-                    /*if (0==buttonId)
+                    if(MessageBox(hwnd, 
+                        _T("Incorrect registration code. Contact support@arslexis.com in case of problems. Do you want to re-enter the code ?"), 
+                        _T("Wrong registration code"), 
+                        MB_YESNO|MB_ICONERROR)==IDNO)
                     {
                         // this is "Ok" button. Clear-out registration code (since it was invalid)
-                        prefs.regCode = "";
-                        app.savePreferences();
-                        closePopup();
-                        return;
-                    } */  
-                    // this must be "Re-enter registration code" button
-                    //assert(1==buttonId);
+                        prefs.regCode = _T("");
+                        //app.savePreferences();
+                        //closePopup();
+                        newRegCode_ = _T("");
+                    }
+                    else
+                    {
+                        if(DialogBox(g_hInst, MAKEINTRESOURCE(IDD_REGISTER), hwnd,RegistrationDlgProc))
+                        {
+                            iPediaApplication& app=iPediaApplication::instance();
+                            LookupManager* lookupManager=app.getLookupManager(true);
+                            if (lookupManager && !lookupManager->lookupInProgress())
+                                lookupManager->verifyRegistrationCode(newRegCode_);
+                        }
+                        else
+                            newRegCode_ = _T("");
+                        break;
+                    }
                 }
             }   
             
