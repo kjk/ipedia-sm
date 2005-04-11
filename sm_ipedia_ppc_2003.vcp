@@ -317,6 +317,7 @@ DEP_CPP_COMMON=\
 	"..\ars_framework\Src\Graphics.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
@@ -421,7 +422,6 @@ DEP_CPP_DEFAU=\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\ParagraphElement.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
@@ -510,9 +510,11 @@ DEP_CPP_DEFIN=\
 	"..\ars_framework\Src\GenericTextElement.hpp"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\Graphics.hpp"\
+	"..\ars_framework\Src\LineBreakElement.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
+	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
@@ -697,7 +699,6 @@ DEP_CPP_DEFINIT=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\ParagraphElement.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
@@ -727,7 +728,7 @@ DEP_CPP_ENTER=\
 	{$(INCLUDE)}"winuserm.h"\
 	
 NODEP_CPP_ENTER=\
-	"..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
+	"..\..\WinCE\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
 	"..\ars_framework\Src\WindowsCE\resource.h"\
 	
 
@@ -742,7 +743,7 @@ DEP_CPP_ENTER=\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	
 NODEP_CPP_ENTER=\
-	"..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
+	"..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
 	".\inuserm.h"\
 	".\ipapi.h"\
 	".\ygshell.h"\
@@ -757,7 +758,7 @@ DEP_CPP_ENTER=\
 	{$(INCLUDE)}"winuserm.h"\
 	
 NODEP_CPP_ENTER=\
-	"..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\emulator\vibrate.h"\
+	"..\..\WinCE\wce420\POCKET PC 2003\Include\emulator\vibrate.h"\
 	"..\ars_framework\Src\WindowsCE\resource.h"\
 	
 
@@ -770,13 +771,7 @@ DEP_CPP_ENTER=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"winuserm.h"\
-	
-NODEP_CPP_ENTER=\
-	"..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\emulator\vibrate.h"\
 	
 
 !ENDIF 
@@ -860,7 +855,6 @@ DEP_CPP_EXTSE=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
@@ -923,7 +917,6 @@ DEP_CPP_FIELD=\
 	"..\ars_framework\Src\Logging.hpp"\
 	"..\ars_framework\Src\NativeSocks.hpp"\
 	"..\ars_framework\Src\NetLibrary.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
@@ -1282,7 +1275,6 @@ DEP_CPP_IPEDI=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
@@ -1406,7 +1398,6 @@ DEP_CPP_IPEDIA=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
@@ -1525,7 +1516,6 @@ DEP_CPP_IPEDIAH=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
@@ -1920,7 +1910,6 @@ DEP_CPP_LOOKUP=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
@@ -2002,7 +1991,6 @@ DEP_CPP_LOOKUPM=\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
@@ -2185,7 +2173,6 @@ DEP_CPP_PROGR=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
@@ -2335,7 +2322,6 @@ DEP_CPP_RENDER=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
@@ -2435,13 +2421,13 @@ NODEP_CPP_SIMPL=\
 DEP_CPP_SIMPL=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Library.hpp"\
 	"..\ars_framework\Src\Logging.hpp"\
 	"..\ars_framework\Src\NativeSocks.hpp"\
 	"..\ars_framework\Src\NetLibrary.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\SimpleSocketConnection.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
@@ -2555,7 +2541,6 @@ DEP_CPP_SM_IP=\
 	"..\ars_framework\Src\PalmOS\PalmGraphics.hpp"\
 	"..\ars_framework\Src\PalmOS\PalmSysUtils.hpp"\
 	"..\ars_framework\Src\Rendering.hpp"\
-	"..\ars_framework\Src\Resolver.hpp"\
 	"..\ars_framework\Src\Socket.hpp"\
 	"..\ars_framework\Src\SocketAddress.hpp"\
 	"..\ars_framework\Src\SocketConnection.hpp"\
@@ -2695,6 +2680,7 @@ DEP_CPP_SOCKETC=\
 	"..\ars_framework\Src\Application.hpp"\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Library.hpp"\
 	"..\ars_framework\Src\Logging.hpp"\
@@ -2720,7 +2706,7 @@ DEP_CPP_STRIN=\
 	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	
 NODEP_CPP_STRIN=\
-	"..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
+	"..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
 	"..\ars_framework\Src\WindowsCE\resource.h"\
 	".\inuserm.h"\
 	".\ipapi.h"\
@@ -2738,7 +2724,7 @@ DEP_CPP_STRIN=\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	
 NODEP_CPP_STRIN=\
-	"..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
+	"..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
 	".\inuserm.h"\
 	".\ipapi.h"\
 	".\ygshell.h"\
@@ -2750,7 +2736,7 @@ DEP_CPP_STRIN=\
 	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	
 NODEP_CPP_STRIN=\
-	"..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\emulator\vibrate.h"\
+	"..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\emulator\vibrate.h"\
 	"..\ars_framework\Src\WindowsCE\resource.h"\
 	".\inuserm.h"\
 	".\ipapi.h"\
@@ -2766,12 +2752,7 @@ DEP_CPP_STRIN=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"winuserm.h"\
-	
-NODEP_CPP_STRIN=\
-	"..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\emulator\vibrate.h"\
 	
 
 !ENDIF 
@@ -2875,8 +2856,6 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"uniqueid.h"\
 	
 
 !ENDIF 
@@ -3115,7 +3094,7 @@ DEP_CPP_WINSY=\
 	{$(INCLUDE)}"winuserm.h"\
 	
 NODEP_CPP_WINSY=\
-	"..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
+	"..\..\WinCE\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
 	"..\ars_framework\Src\WindowsCE\SysUtils.hpp"\
 	
 
@@ -3131,7 +3110,7 @@ DEP_CPP_WINSY=\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	
 NODEP_CPP_WINSY=\
-	"..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
+	"..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\ARMV4\vibrate.h"\
 	".\inuserm.h"\
 	".\ipapi.h"\
 	".\onnmgr.h"\
@@ -3149,7 +3128,7 @@ DEP_CPP_WINSY=\
 	{$(INCLUDE)}"winuserm.h"\
 	
 NODEP_CPP_WINSY=\
-	"..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\emulator\vibrate.h"\
+	"..\..\WinCE\wce420\POCKET PC 2003\Include\emulator\vibrate.h"\
 	"..\ars_framework\Src\WindowsCE\SysUtils.hpp"\
 	
 
@@ -3163,14 +3142,7 @@ DEP_CPP_WINSY=\
 	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"connmgr.h"\
 	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"winuserm.h"\
-	
-NODEP_CPP_WINSY=\
-	"..\..\..\..\Program Files\Windows CE Tools\wce420\POCKET PC 2003\Include\emulator\vibrate.h"\
 	
 
 !ENDIF 

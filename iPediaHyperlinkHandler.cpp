@@ -1,7 +1,7 @@
 #include "sm_ipedia.h"
 #include <WinSysUtils.hpp>
 #include <LookupManager.hpp>
-#include <GenericTextElement.hpp>
+#include <TextElement.hpp>
 #include "iPediaHyperlinkHandler.hpp"
 #include "iPediaApplication.hpp"
 
@@ -30,16 +30,16 @@ iPediaHyperlinkHandler::iPediaHyperlinkHandler()
 void iPediaHyperlinkHandler::handleHyperlink(Definition& definition, DefinitionElement& element)
 {
     assert(element.isTextElement());
-    GenericTextElement& textElement=static_cast<GenericTextElement&>(element);
+    TextElement& textElement=static_cast<TextElement&>(element);
     assert(textElement.isHyperlink());
-    const GenericTextElement::HyperlinkProperties* props=textElement.hyperlinkProperties();
+    const TextElement::HyperlinkProperties* props=textElement.hyperlinkProperties();
     assert(props!=0);
     bool makeClicked=false;
     switch (props->type) 
     {
-        case hyperlinkBookmark:
-            definition.goToBookmark(props->resource);
-            break;
+        //case hyperlinkBookmark:
+        //    definition.goToBookmark(props->resource);
+        //    break;
     
         case hyperlinkExternal:
             makeClicked=handleExternalHyperlink(props->resource);

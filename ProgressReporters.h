@@ -4,20 +4,18 @@
 #include <LookupManagerBase.hpp>
 #include <Definition.hpp>
 
-using ArsLexis::char_t;
-
-class CommonProgressReporter : public ArsLexis::DefaultLookupProgressReporter
+class CommonProgressReporter : public DefaultLookupProgressReporter
 {
 protected:    
     CommonProgressReporter();
-    void refreshProgress(const ArsLexis::LookupProgressReportingSupport &support, ArsLexis::Graphics &gr, const ArsLexis::Rectangle& bounds);
+    void refreshProgress(const LookupProgressReportingSupport& support, Graphics &gr, const ArsRectangle& bounds);
 
 protected:
     DWORD ticksAtUpdate_;
     DWORD ticksAtStart_;
     uint_t lastPercent_;
-    bool showProgress_:1;
-    bool afterTrigger_:1;
+    bool showProgress_;
+    bool afterTrigger_;
     static const uint_t refreshDelay; 
 
     void update(uint_t percent);
@@ -25,9 +23,9 @@ protected:
     {ticksAtUpdate_ = ticks;}
     bool shallShow()
     {return showProgress_;}
-    void DrawProgressInfo(const ArsLexis::LookupProgressReportingSupport &support, ArsLexis::Graphics &offscreen, const ArsLexis::Rectangle &bounds, bool percentProgEnabled);
-    void DrawProgressBar(ArsLexis::Graphics& gr, uint_t percent, const ArsLexis::Rectangle& bounds);
-    void DrawProgressRect(HDC hdc, const ArsLexis::Rectangle& bounds);
+    void DrawProgressInfo(const LookupProgressReportingSupport &support, Graphics &offscreen, const ArsRectangle &bounds, bool percentProgEnabled);
+    void DrawProgressBar(Graphics& gr, uint_t percent, const ArsRectangle& bounds);
+    void DrawProgressRect(HDC hdc, const ArsRectangle& bounds);
 };
 
 class RenderingProgressReporter: public Definition::RenderingProgressReporter, CommonProgressReporter
@@ -44,7 +42,7 @@ public:
 
 class DownloadingProgressReporter: public CommonProgressReporter
 {
-    void showProgress(const ArsLexis::LookupProgressReportingSupport& support, ArsLexis::Graphics& gr, const ArsLexis::Rectangle& bounds, bool clearBkg=true);
+    void showProgress(const LookupProgressReportingSupport& support, Graphics& gr, const ArsRectangle& bounds, bool clearBkg=true);
 };
 
 #endif

@@ -2,8 +2,6 @@
 #include "iPediaApplication.hpp"
 #include <Graphics.hpp>
 
-using ArsLexis::Graphics;
-
 const uint_t CommonProgressReporter::refreshDelay = 100; 
 
 CommonProgressReporter::CommonProgressReporter():
@@ -55,7 +53,7 @@ void CommonProgressReporter::update(u_int percent)
         showProgress_ = true;
 }
 
-void CommonProgressReporter::DrawProgressRect(HDC hdc, const ArsLexis::Rectangle& bounds)
+void CommonProgressReporter::DrawProgressRect(HDC hdc, const ArsRectangle& bounds)
 {
     HBRUSH hbr = CreateSolidBrush(RGB(255,255,255));
     HBRUSH oldbr = (HBRUSH)SelectObject(hdc, hbr);
@@ -76,7 +74,7 @@ void CommonProgressReporter::DrawProgressRect(HDC hdc, const ArsLexis::Rectangle
     DeleteObject(hbr);
 }
 
-void CommonProgressReporter::DrawProgressBar(Graphics& gr, uint_t percent, const ArsLexis::Rectangle& bounds)
+void CommonProgressReporter::DrawProgressBar(Graphics& gr, uint_t percent, const ArsRectangle& bounds)
 {
     RECT nativeRec;
     bounds.toNative(nativeRec);
@@ -96,7 +94,7 @@ void CommonProgressReporter::DrawProgressBar(Graphics& gr, uint_t percent, const
     DeleteObject(hbr);
 }
 
-void CommonProgressReporter::DrawProgressInfo(const ArsLexis::LookupProgressReportingSupport &support, ArsLexis::Graphics &offscreen, const ArsLexis::Rectangle &bounds, bool percentProgEnabled)
+void CommonProgressReporter::DrawProgressInfo(const LookupProgressReportingSupport &support, Graphics &offscreen, const ArsRectangle &bounds, bool percentProgEnabled)
 {
     DrawProgressRect(offscreen.handle(),bounds);
     
@@ -108,14 +106,14 @@ void CommonProgressReporter::DrawProgressInfo(const ArsLexis::LookupProgressRepo
     offscreen.setTextColor(RGB(0,0,0));
     offscreen.setBackgroundColor(RGB(255,255,255));
 
-    ArsLexis::Rectangle progressArea(bounds);    
+    ArsRectangle progressArea(bounds);    
     int h = progressArea.height();
     progressArea.explode(6, h - 20, -12, -h + 15);
     
     DefaultLookupProgressReporter::showProgress(support, offscreen, progressArea, false);    
 }
 
-void CommonProgressReporter::refreshProgress(const ArsLexis::LookupProgressReportingSupport &support, ArsLexis::Graphics &gr, const ArsLexis::Rectangle& bounds)
+void CommonProgressReporter::refreshProgress(const LookupProgressReportingSupport &support, Graphics &gr, const ArsRectangle& bounds)
 {
     update(support.percentProgress());
 
@@ -124,7 +122,7 @@ void CommonProgressReporter::refreshProgress(const ArsLexis::LookupProgressRepor
 
     setTicksAtUpdate(GetTickCount());
 
-    ArsLexis::Rectangle zeroBasedBounds = bounds;
+    ArsRectangle zeroBasedBounds = bounds;
     zeroBasedBounds.x() = 0;
     zeroBasedBounds.y() = 0;
 
@@ -159,17 +157,17 @@ RenderingProgressReporter::RenderingProgressReporter(HWND hwnd, RECT progressAre
 
 void RenderingProgressReporter::reportProgress(uint_t percent) 
 {
-    ArsLexis::LookupProgressReportingSupport support;
+    LookupProgressReportingSupport support;
     support.setPercentProgress(percent);
     support.setStatusText(waitText_);
 
     Graphics gr(GetDC(hwndMain_), hwndMain_);
     
-    ArsLexis::Rectangle bounds(progressArea_);
+    ArsRectangle bounds(progressArea_);
     refreshProgress(support, gr, bounds);
 }
 
-void DownloadingProgressReporter::showProgress(const ArsLexis::LookupProgressReportingSupport& support, Graphics& gr, const ArsLexis::Rectangle& bounds, bool clearBkg)
+void DownloadingProgressReporter::showProgress(const LookupProgressReportingSupport& support, Graphics& gr, const ArsRectangle& bounds, bool clearBkg)
 {
     refreshProgress(support, gr, bounds);
 }

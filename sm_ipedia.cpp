@@ -13,8 +13,7 @@
 #include <LookupManagerBase.hpp>
 #include <LookupHistory.hpp>
 #include <Definition.hpp>
-#include <DefinitionElement.hpp>
-#include <GenericTextElement.hpp>
+#include <TextElement.hpp>
 #include <Geometry.hpp>
 #include <Debug.hpp>
 #include <FontEffects.hpp>
@@ -126,7 +125,7 @@ Definition& currentDefinition()
     return (*g_about);
 }
 
-static void DrawTextInRect(Graphics& gr, ArsLexis::Rectangle& rect, const char_t *text)
+static void DrawTextInRect(Graphics& gr, ArsRectangle& rect, const char_t *text)
 {
     HDC hdc = gr.handle();
     HBRUSH hbr = CreateSolidBrush(RGB(255,255,255));
@@ -170,7 +169,7 @@ static void ShowEstablishingConnection()
     iPediaApplication& app=GetApp();
     Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
 
-    ArsLexis::Rectangle ar = g_progressRect;
+    ArsRectangle ar = g_progressRect;
     Graphics::FontSetter setFont(gr, Font(11));
     Graphics::ColorSetter setBg(gr, Graphics::colorBackground, RGB(255,255,255));
     Graphics::ColorSetter setFg(gr, Graphics::colorText, RGB(0,0,0));
@@ -226,7 +225,7 @@ static void OnLinkedArticles(HWND hwnd)
         currEl = *posCur;
         if (currEl->isTextElement())
         {
-            GenericTextElement *txtEl=(GenericTextElement*)currEl;
+            TextElement *txtEl=(TextElement*)currEl;
             /*if ((txtEl->isHyperlink()) &&
                 ((txtEl->hyperlinkProperties()->type==hyperlinkTerm) ||
                  (txtEl->hyperlinkProperties()->type==hyperlinkExternal)))*/
@@ -249,13 +248,13 @@ static void OnLinkedArticles(HWND hwnd)
 
     assert (!selectedString.empty());
 
-    GenericTextElement *txtElMatching = NULL;
+    TextElement *txtElMatching = NULL;
     for (posCur=posStart; posCur!=posEnd; posCur++)
     {
         currEl = *posCur;
         if (currEl->isTextElement())
         {
-            GenericTextElement *txtEl=(GenericTextElement*)currEl;
+            TextElement *txtEl=(TextElement*)currEl;
             if ((txtEl->isHyperlink()) &&
                 ((txtEl->hyperlinkProperties()->type==hyperlinkTerm) ||
                  (txtEl->hyperlinkProperties()->type==hyperlinkExternal)))
@@ -315,7 +314,7 @@ static bool FDefinitionHasLinks(Definition& def)
         currEl = *posCur;
         if (currEl->isTextElement())
         {
-            GenericTextElement *txtEl = (GenericTextElement*)currEl;
+            TextElement *txtEl = (TextElement*)currEl;
             if ((txtEl->isHyperlink()) && (txtEl->hyperlinkProperties()->type==hyperlinkTerm))
             {
                 return true;
@@ -444,20 +443,19 @@ static void HandleExtendSelection(HWND hwnd, int x, int y, bool finish)
     Definition &def = currentDefinition();
     if (def.empty())
         return;
-    ArsLexis::Point point(x,y);
+    Point point(x,y);
     Graphics graphics(GetDC(hwnd), hwnd);
-    def.extendSelection(graphics, app.preferences().renderingPreferences, point, finish);         
+    def.extendSelection(graphics, point, finish);         
 }
 
-static void RepaintDefiniton(int scrollDelta)
+static void RepaintDefiniton(int scrollDelta, bool updateScrollbar = true)
 {
     iPediaApplication& app = GetApp();
-    const RenderingPreferences& prefs = app.preferences().renderingPreferences;
     Definition &def = currentDefinition();
 
     RECT clientRect;
     GetClientRect(app.getMainWindow(), &clientRect);
-    ArsLexis::Rectangle bounds = clientRect;
+    ArsRectangle bounds = clientRect;
 
     RECT defRectTmp = clientRect;
     defRectTmp.top    += 24;
@@ -465,7 +463,7 @@ static void RepaintDefiniton(int scrollDelta)
     defRectTmp.right  -= 2 + GetScrollBarDx();
     defRectTmp.bottom -= 2;
 
-    ArsLexis::Rectangle defRect = defRectTmp;
+    ArsRectangle defRect = defRectTmp;
 
     Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
     if ( (true == g_forceAboutRecalculation) && (displayMode() == showAbout) )
@@ -485,9 +483,9 @@ static void RepaintDefiniton(int scrollDelta)
             Graphics offscreen(offscreenDc, NULL);
             gr.copyArea(defRect, offscreen, defRect.topLeft);
             if (0 != scrollDelta)
-                def.scroll(offscreen, prefs, scrollDelta);
+                def.scroll(offscreen, scrollDelta);
             else
-                def.render(offscreen, defRect, prefs, g_forceLayoutRecalculation);
+                def.render(offscreen, defRect, g_forceLayoutRecalculation);
             offscreen.copyArea(defRect, gr, defRect.topLeft);
             ::SelectObject(offscreenDc, oldBitmap);
             ::DeleteObject(bitmap);
@@ -499,12 +497,14 @@ static void RepaintDefiniton(int scrollDelta)
     if (!fDidDoubleBuffer)
     {
         if (0 != scrollDelta)
-            def.scroll(gr, prefs, scrollDelta);
+            def.scroll(gr, scrollDelta);
         else
-            def.render(gr, defRect, prefs, g_forceLayoutRecalculation);
+            def.render(gr, defRect, g_forceLayoutRecalculation);
     }
 
-    SetScrollBar(&def);
+	if (updateScrollbar)
+		SetScrollBar(&def);
+
     if (g_forceLayoutRecalculation)
         PostMessage(app.getMainWindow(),WM_COMMAND, IDM_ENABLE_UI, 0);
     g_forceLayoutRecalculation = false;
@@ -538,7 +538,7 @@ void ScrollDefinition(int units, ScrollUnit unit, bool updateScrollbar)
             units = units - def.firstShownLine();
             break;
     }
-    RepaintDefiniton(units);
+    RepaintDefiniton(units, updateScrollbar);
 }
 
 void *g_ClipboardText = NULL;
@@ -809,7 +809,7 @@ static void DoChangeDatabase(HWND hwnd)
 
     for (int i=0; i<strListSize; i++)
     {
-        langName = (char_t*)GetLangNameByLangCode(strListChar[i]);
+        langName = (char_t*)GetLangNameByLangCode(strListChar[i], tstrlen(strListChar[i]));
         if (NULL != langName)
             nameToDisplay.assign(langName);
         else
@@ -891,8 +891,8 @@ static void OnPaint(HWND hwnd)
 
     RECT rect;
     GetClientRect (hwnd, &rect);
-    ArsLexis::Rectangle rin(rcpaint);
-    ArsLexis::Rectangle rout(g_progressRect);
+    ArsRectangle rin(rcpaint);
+    ArsRectangle rout(g_progressRect);
     
     iPediaApplication& app=GetApp();
     bool fLookupInProgress = app.fLookupInProgress();
@@ -945,7 +945,7 @@ static void OnPaint(HWND hwnd)
         else
         {
             Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());    
-            ArsLexis::Rectangle progressArea(g_progressRect);
+            ArsRectangle progressArea(g_progressRect);
             app.getLookupManager()->showProgress(gr, progressArea);
         }
     }
@@ -1254,7 +1254,7 @@ static void DoHandleArticleBody()
     assert(lookupManager!=0);
     if (lookupManager)
     {
-        g_definition->replaceElements(lookupManager->lastDefinitionElements());
+//        g_definition->replaceElements(lookupManager->lastDefinitionElements());
         g_forceLayoutRecalculation=true;
         SetEditWinText(g_hwndEdit,lookupManager->lastSearchTerm());
         SendMessage(g_hwndEdit, EM_SETSEL, 0, -1);
@@ -1264,8 +1264,6 @@ static void DoHandleArticleBody()
     SetFocus(g_hwndEdit);
     InvalidateRect(app.getMainWindow(), NULL, FALSE);
 }
-
-using ArsLexis::EventData;
 
 static EventData ExtractEventData(WPARAM wp, LPARAM lp)
 {
@@ -1440,31 +1438,33 @@ static void OnScroll(WPARAM wp)
     switch (code)
     {
         case SB_TOP:
-            ScrollDefinition(0, scrollHome, false);
+            ScrollDefinition(0, scrollHome, true);
             break;
         case SB_BOTTOM:
-            ScrollDefinition(0, scrollEnd, false);
+            ScrollDefinition(0, scrollEnd, true);
             break;
         case SB_LINEUP:
-            ScrollDefinition(-1, scrollLine, false);
+            ScrollDefinition(-1, scrollLine, true);
             break;
         case SB_LINEDOWN:
-            ScrollDefinition(1, scrollLine, false);
+            ScrollDefinition(1, scrollLine, true);
             break;
         case SB_PAGEUP:
-            ScrollDefinition(-1, scrollPage, false);
+            ScrollDefinition(-1, scrollPage, true);
             break;
         case SB_PAGEDOWN:
             ScrollDefinition(1, scrollPage, false);
             break;
 
+		case SB_THUMBTRACK:
+		// intentional fallthrough
         case SB_THUMBPOSITION:
         {
             SCROLLINFO info = {0};
             info.cbSize = sizeof(info);
             info.fMask = SIF_TRACKPOS;
             GetScrollInfo(g_hwndScroll, SB_CTL, &info);
-            ScrollDefinition(info.nTrackPos, scrollPosition, true);
+            ScrollDefinition(info.nTrackPos, scrollPosition, SB_THUMBPOSITION == code);
         }
      }
 }
@@ -1620,7 +1620,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     return retVal;
 }
 
-void ArsLexis::handleBadAlloc()
+void handleBadAlloc()
 {
     RaiseException(1,0,0,NULL);    
 }

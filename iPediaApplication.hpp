@@ -5,7 +5,6 @@
 
 #include "iPediaHyperlinkHandler.hpp"
 #include <Logging.hpp>
-#include <RenderingPreferences.hpp>
 #include <SysUtils.hpp>
 #include <BaseTypes.hpp>
 
@@ -41,7 +40,6 @@ const char_t *getErrorMessage(int alertId);
 
 class iPediaApplication
 {
-    mutable ArsLexis::RootLogger log_;
     ushort_t                ticksPerSecond_;
     iPediaHyperlinkHandler  hyperlinkHandler_;
     LookupHistory*          history_;
@@ -58,9 +56,9 @@ protected:
     bool handleApplicationEvent(ArsLexis::EventType& event);
 
 public:
-    bool fArticleCountChecked;
 
-    char_t *                serverAddress;
+    const char_t* serverAddress;
+    bool fArticleCountChecked;
 
 #ifndef _PALM_OS
     // wince only
@@ -92,8 +90,6 @@ public:
     
     struct Preferences
     {
-        RenderingPreferences renderingPreferences;
-        
         enum {cookieLength=32};
         ArsLexis::String cookie;
                         
@@ -109,7 +105,8 @@ public:
         Preferences():
             articleCount(-1)
         {}
-            ArsLexis::String databaseTime;
+
+        ArsLexis::String databaseTime;
     };
     
     Preferences& preferences() 
@@ -118,9 +115,6 @@ public:
     const Preferences& preferences() const
     {return preferences_;}
     
-    const RenderingPreferences& renderingPreferences() const
-    {return preferences().renderingPreferences;}
-        
     enum {
         reservedLookupEventsCount=3
     };
@@ -137,14 +131,11 @@ public:
     };
     
     static void sendDisplayAlertEvent(ushort_t alertId)
-    {ArsLexis::sendEvent(appDisplayAlertEvent, DisplayAlertEventData(alertId));}
+    {sendEvent(appDisplayAlertEvent, DisplayAlertEventData(alertId));}
     
     ArsLexis::String popCustomAlert();
     
     void sendDisplayCustomAlertEvent(ushort_t alertId, const ArsLexis::String& text1);
-    
-    ArsLexis::Logger& log() const
-    {return log_;}
     
     static iPediaApplication& instance()
     {return instance_;}
@@ -166,6 +157,7 @@ public:
                          ArsLexis::String cmdLine, int cmdShow);
     HINSTANCE getApplicationHandle()
     {return hInst_;}
+
 private:
     
     Preferences preferences_;

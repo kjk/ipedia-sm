@@ -156,13 +156,13 @@ const char_t *getErrorMessage(int alertId)
 }
 
 iPediaApplication::iPediaApplication():
-    log_( _T("root") ),
     history_(new LookupHistory()),
     ticksPerSecond_(1000),
     lookupManager_(0),
     serverAddress(SERVER_TO_USE),
     fArticleCountChecked(false)
 {
+/*
 #ifdef INTERNAL_BUILD
     log_.addSink(new MemoLogSink(), log_.logError);
 #ifndef NDEBUG    
@@ -170,6 +170,7 @@ iPediaApplication::iPediaApplication():
     log_.addSink(new DebuggerLogSink(), log_.logWarning);
 #endif    
 #endif
+ */
 #ifndef _PALM_OS
     // wince only
     GetSystemTime(&lastArticleCountCheckTime);
@@ -265,9 +266,7 @@ namespace {
         lastArticleCountPrefId,
         databaseTimePrefId,
         lookupHistoryFirstPrefId,
-        renderingPrefsFirstPrefId=lookupHistoryFirstPrefId+LookupHistory::reservedPrefIdCount,
-        
-        next=renderingPrefsFirstPrefId+RenderingPreferences::reservedPrefIdCount
+        next=lookupHistoryFirstPrefId + LookupHistory::reservedPrefIdCount,
     };
 }
 
@@ -294,9 +293,6 @@ void iPediaApplication::loadPreferences()
         goto OnError;
     prefs.databaseTime = text;
 
-    if (errNone!=(error=prefs.renderingPreferences.serializeIn(*reader, renderingPrefsFirstPrefId)))
-        goto OnError;
-
     preferences_ = prefs;    
 
     assert(0!=history_);
@@ -320,8 +316,6 @@ void iPediaApplication::savePreferences()
     if (errNone!=(error=writer->ErrSetLong(lastArticleCountPrefId, preferences_.articleCount))) 
         goto OnError;
     if (errNone!=(error=writer->ErrSetStr(databaseTimePrefId, preferences_.databaseTime.c_str())))
-        goto OnError;
-    if (errNone!=(error=preferences_.renderingPreferences.serializeOut(*writer, renderingPrefsFirstPrefId)))
         goto OnError;
     assert(0!=history_);
     if (errNone!=(error=history_->serializeOut(*writer, lookupHistoryFirstPrefId)))
