@@ -225,7 +225,8 @@ void prepareAbout(Definition *def)
 // TODO: make those on-demand only to save memory
 void prepareTutorial(Definition *def)
 {
-    Definition::Elements_t elems;
+	DefinitionModel* model = new DefinitionModel();
+    Definition::Elements_t& elems = model->elements;
     TextElement* text;
 
     assert( def->empty() );
@@ -352,7 +353,7 @@ void prepareTutorial(Definition *def)
     text->setHyperlink(_T("Main screen"), hyperlinkTerm);
     text->setActionCallback( aboutActionCallback, NULL );
 
-//    def->replaceElements(elems);
+    def->setModel(model, Definition::ownModel);
 }
 
 static void registerActionCallback(void *data)
@@ -364,7 +365,8 @@ static void registerActionCallback(void *data)
 // TODO: make those on-demand only, to save memory
 void prepareHowToRegister(Definition *def)
 {
-    Definition::Elements_t elems;
+	DefinitionModel* model = new DefinitionModel();
+    Definition::Elements_t& elems = model->elements;
     TextElement* text;
 
     assert( def->empty() );
@@ -423,12 +425,13 @@ void prepareHowToRegister(Definition *def)
     text->setHyperlink(_T("Main screen"), hyperlinkTerm);
     text->setActionCallback( aboutActionCallback, NULL );
 
-//    def->replaceElements(elems);
+    def->setModel(model, Definition::ownModel);
 }
 
 void prepareWikipedia(Definition *def)
 {
-    Definition::Elements_t elems;
+	DefinitionModel* model = new DefinitionModel();
+    Definition::Elements_t& elems = model->elements;
     TextElement* text;
 
     assert( def->empty() );
@@ -460,5 +463,5 @@ void prepareWikipedia(Definition *def)
     text->setHyperlink(_T("Main screen"), hyperlinkTerm);
     text->setActionCallback( aboutActionCallback, NULL );
 
-//    def->replaceElements(elems);
+    def->setModel(model, Definition::ownModel);
 }    
