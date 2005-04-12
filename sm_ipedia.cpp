@@ -169,7 +169,10 @@ static void ShowEstablishingConnection()
     iPediaApplication& app=GetApp();
     Graphics gr(app.getMainWindow());
 
+#ifndef _WIN32
     Graphics::FontSetter setFont(gr, Font(11));
+#endif
+
     Graphics::ColorSetter setBg(gr, Graphics::colorBackground, RGB(255,255,255));
     Graphics::ColorSetter setFg(gr, Graphics::colorText, RGB(0,0,0));
     DrawTextInRect(gr, g_progressRect, _T("Establishing connection..."));
