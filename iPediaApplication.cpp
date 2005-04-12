@@ -341,18 +341,6 @@ void iPediaApplication::sendDisplayCustomAlertEvent(ushort_t alertId, const Stri
     sendEvent(appDisplayCustomAlertEvent, DisplayAlertEventData(alertId));
 }
 
-void* ArsLexis::allocate(size_t size)
-{
-    void* ptr=0;
-    if (size) 
-        ptr=malloc(size);
-    else
-        ptr=malloc(1);
-    if (!ptr)
-        handleBadAlloc();
-    return ptr;
-}
-
 void iPediaApplication::getErrorMessage(int alertId, bool customAlert, String &out)
 {
     out.assign(::getErrorMessage(alertId));
@@ -405,7 +393,7 @@ BOOL iPediaApplication::InitApplication ( HINSTANCE hInstance )
     return f;
 }
 
-bool iPediaApplication::initApplication(HINSTANCE hInstance, HINSTANCE hPrevInstance, String cmdLine, int cmdShow)
+bool iPediaApplication::initApplication(HINSTANCE hInstance, HINSTANCE hPrevInstance, const String& cmdLine, int cmdShow)
 {
     if (!hPrevInstance)
     {

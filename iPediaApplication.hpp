@@ -135,7 +135,7 @@ public:
     
     ArsLexis::String popCustomAlert();
     
-    void sendDisplayCustomAlertEvent(ushort_t alertId, const ArsLexis::String& text1);
+    void sendDisplayCustomAlertEvent(ushort_t alertId, const String& text1);
     
     static iPediaApplication& instance()
     {return instance_;}
@@ -149,14 +149,15 @@ public:
     iPediaHyperlinkHandler& hyperlinkHandler()
     {return hyperlinkHandler_;}
 
-    void getErrorMessage(int alertId, bool customAlert, ArsLexis::String &out);
+    void getErrorMessage(int alertId, bool customAlert, String& out);
 
     bool InitInstance (HINSTANCE hInstance, int CmdShow );
-    BOOL InitApplication ( HINSTANCE hInstance );    
-    bool initApplication(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-                         ArsLexis::String cmdLine, int cmdShow);
-    HINSTANCE getApplicationHandle()
-    {return hInst_;}
+    
+	BOOL InitApplication ( HINSTANCE hInstance );    
+    
+	bool initApplication(HINSTANCE hInstance, HINSTANCE hPrevInstance, const String& cmdLine, int cmdShow);
+
+    HINSTANCE getApplicationHandle() {return hInst_;}
 
 private:
     

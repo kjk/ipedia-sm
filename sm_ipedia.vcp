@@ -391,6 +391,45 @@ DEP_CPP_COMMON=\
 # End Source File
 # Begin Source File
 
+SOURCE=..\ars_framework\Src\Debug.cpp
+
+!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+
+DEP_CPP_DEBUG=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+
+DEP_CPP_DEBUG=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+
+DEP_CPP_DEBUG=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+
+DEP_CPP_DEBUG=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\DefaultArticles.cpp
 
 !IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
@@ -953,6 +992,49 @@ DEP_CPP_DEFINIT=\
 	
 NODEP_CPP_DEFINIT=\
 	"..\ipedia\Src\HyperlinkHandler.hpp"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\DynStr.cpp
+
+!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+
+DEP_CPP_DYNST=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DynStr.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+
+DEP_CPP_DYNST=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DynStr.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+
+DEP_CPP_DYNST=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DynStr.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+
+DEP_CPP_DYNST=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DynStr.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
 	
 
 !ENDIF 
@@ -2900,6 +2982,53 @@ DEP_CPP_PROGR=\
 # End Source File
 # Begin Source File
 
+SOURCE=..\ars_framework\Src\Reader.cpp
+
+!IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
+
+DEP_CPP_READE=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Reader.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
+
+DEP_CPP_READE=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Reader.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
+
+DEP_CPP_READE=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Reader.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
+
+DEP_CPP_READE=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\Reader.hpp"\
+	"..\ars_framework\Src\Utility.hpp"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\ars_framework\Src\Rendering.cpp
 
 !IF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Release"
@@ -4354,6 +4483,10 @@ SOURCE=..\ars_framework\Src\DeviceInfo.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\ars_framework\Src\DynStr.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp
 # End Source File
 # Begin Source File
@@ -4442,6 +4575,10 @@ SOURCE=..\ars_framework\Src\ParagraphElement.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\ars_framework\Src\Reader.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\ars_framework\Src\Rendering.hpp
 # End Source File
 # Begin Source File
@@ -4491,6 +4628,10 @@ SOURCE=..\ars_framework\Src\TextElement.hpp
 # Begin Source File
 
 SOURCE=..\ars_framework\Src\Utility.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\ars_framework\Src\WindowsCE\WinDefinitionStyle.hpp
 # End Source File
 # Begin Source File
 

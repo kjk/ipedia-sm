@@ -134,14 +134,13 @@ void CommonProgressReporter::refreshProgress(const LookupProgressReportingSuppor
         if (bitmap) 
         {
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-            Graphics offscreen(offscreenDc, NULL);
+            Graphics offscreen(offscreenDc);
             DrawProgressInfo(support, offscreen, zeroBasedBounds, true);
             offscreen.copyArea(zeroBasedBounds, gr, bounds.topLeft );
             ::SelectObject(offscreenDc, oldBitmap);
             ::DeleteObject(bitmap);
             fDidDoubleBuffer = true;
         }
-        ::DeleteDC(offscreenDc);
     }
     if (!fDidDoubleBuffer)
         DrawProgressInfo(support, gr, bounds, true);
@@ -161,7 +160,7 @@ void RenderingProgressReporter::reportProgress(uint_t percent)
     support.setPercentProgress(percent);
     support.setStatusText(waitText_);
 
-    Graphics gr(GetDC(hwndMain_), hwndMain_);
+    Graphics gr(hwndMain_);
     
     ArsRectangle bounds(progressArea_);
     refreshProgress(support, gr, bounds);

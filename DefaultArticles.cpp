@@ -102,11 +102,13 @@ static void prepareArticleCountEl(TextElement *articleCountElement, long article
 
 void prepareAbout(Definition *def)
 {
+	DefinitionModel* model = new DefinitionModel();
+
     int divider = 2;
 #ifdef WIN32_PLATFORM_PSPC
     divider = 1;
 #endif
-    Definition::Elements_t elems;
+    Definition::Elements_t& elems = model->elements;
     TextElement* text;
     FontEffects fxBold;
     fxBold.setWeight(FontEffects::weightBold);
@@ -217,7 +219,7 @@ void prepareAbout(Definition *def)
     text->setEffects(fxSmall); */
 #endif
 
-//    def->replaceElements(elems);
+    def->setModel(model, Definition::ownModel);
 }
 
 // TODO: make those on-demand only to save memory

@@ -125,7 +125,7 @@ Definition& currentDefinition()
     return (*g_about);
 }
 
-static void DrawTextInRect(Graphics& gr, ArsRectangle& rect, const char_t *text)
+static void DrawTextInRect(Graphics& gr, const ArsRectangle& rect, const char_t *text)
 {
     HDC hdc = gr.handle();
     HBRUSH hbr = CreateSolidBrush(RGB(255,255,255));
@@ -167,13 +167,12 @@ static void DrawTextInRect(Graphics& gr, ArsRectangle& rect, const char_t *text)
 static void ShowEstablishingConnection()
 {
     iPediaApplication& app=GetApp();
-    Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
+    Graphics gr(app.getMainWindow());
 
-    ArsRectangle ar = g_progressRect;
     Graphics::FontSetter setFont(gr, Font(11));
     Graphics::ColorSetter setBg(gr, Graphics::colorBackground, RGB(255,255,255));
     Graphics::ColorSetter setFg(gr, Graphics::colorText, RGB(0,0,0));
-    DrawTextInRect(gr, ar, _T("Establishing connection..."));
+    DrawTextInRect(gr, g_progressRect, _T("Establishing connection..."));
 }
 
 // try to establish internet connection.
@@ -200,10 +199,9 @@ static bool fInitConnection()
     // reliably across both Pocket PC and Pocket PC Phone Edition
     return true;
 #else
-    String errorMsg = _T("Unable to connect");
-    errorMsg.append(_T(". Verify your dialup or proxy settings are correct, and try again."));
+    const char_t* msg = _T("Unable to connect. Verify your dialup or proxy settings are correct, and try again."));
     iPediaApplication& app = GetApp();
-    MessageBox(app.getMainWindow(), errorMsg.c_str(), _T("Error"), MB_OK | MB_ICONERROR | MB_APPLMODAL | MB_SETFOREGROUND );
+    MessageBox(app.getMainWindow(), msg, _T("Error"), MB_OK | MB_ICONERROR | MB_APPLMODAL | MB_SETFOREGROUND );
     return false;
 #endif
 }
@@ -218,23 +216,17 @@ static void OnLinkedArticles(HWND hwnd)
     Definition::ElementPosition_t posCur;
     Definition::ElementPosition_t posStart = currentDefinition().firstElementPosition();
     Definition::ElementPosition_t posEnd   = currentDefinition().lastElementPosition();
-    DefinitionElement *currEl;
-    const char_t *articleTitle;
-    for (posCur=posStart; posCur!=posEnd; posCur++)
+    DefinitionElement* currEl; 
+	TextElement* txtEl;
+    const char_t* articleTitle = NULL;
+    for (posCur=posStart; posCur!=posEnd; ++posCur)
     {
         currEl = *posCur;
-        if (currEl->isTextElement())
+        if (currEl->isTextElement() && currEl->isHyperlink() && hyperlinkTerm == currEl->hyperlinkProperties()->type)
         {
-            TextElement *txtEl=(TextElement*)currEl;
-            /*if ((txtEl->isHyperlink()) &&
-                ((txtEl->hyperlinkProperties()->type==hyperlinkTerm) ||
-                 (txtEl->hyperlinkProperties()->type==hyperlinkExternal)))*/
-            if ((txtEl->isHyperlink()) &&
-                (txtEl->hyperlinkProperties()->type==hyperlinkTerm))
-            {
-                articleTitle = txtEl->hyperlinkProperties()->resource.c_str();
-                strList.push_back(articleTitle);
-            }
+            txtEl = (TextElement*)currEl;
+            articleTitle = txtEl->hyperlinkProperties()->resource.c_str();
+            strList.push_back(articleTitle);
         }
     }
 
@@ -248,31 +240,27 @@ static void OnLinkedArticles(HWND hwnd)
 
     assert (!selectedString.empty());
 
-    TextElement *txtElMatching = NULL;
-    for (posCur=posStart; posCur!=posEnd; posCur++)
+	TextElement* txtElMatching = NULL;
+    for (posCur = posStart; posCur != posEnd; ++posCur)
     {
         currEl = *posCur;
-        if (currEl->isTextElement())
+        if (currEl->isTextElement() && currEl->isHyperlink() && (hyperlinkTerm == currEl->hyperlinkProperties()->type || hyperlinkExternal == currEl->hyperlinkProperties()->type))
         {
-            TextElement *txtEl=(TextElement*)currEl;
-            if ((txtEl->isHyperlink()) &&
-                ((txtEl->hyperlinkProperties()->type==hyperlinkTerm) ||
-                 (txtEl->hyperlinkProperties()->type==hyperlinkExternal)))
+            txtEl = (TextElement*)currEl;
+            if (txtEl->hyperlinkProperties()->resource == selectedString)
             {
-                if (txtEl->hyperlinkProperties()->resource == selectedString)
-                {
-                    txtElMatching = txtEl;
-                    break;
-                }
+                txtElMatching = txtEl;
+                break;
             }
         }
     }
 
-    assert(NULL!=txtElMatching);
+    assert(NULL != txtElMatching);
 
     if (NULL!=txtElMatching)
     {
-        txtElMatching->performAction(currentDefinition());
+		// TODO: query pen position
+        txtElMatching->performAction(currentDefinition(), NULL);
     }
 }
 
@@ -396,7 +384,7 @@ static void SetMenu(HWND hwnd)
 static void SetupAboutWindow()
 {
     iPediaApplication &app = GetApp();
-    if (-1!=app.preferences().articleCount)
+    if (-1 != app.preferences().articleCount)
     {
         g_articleCountSet = app.preferences().articleCount;
         updateArticleCountEl(app.preferences().articleCount, app.preferences().databaseTime);
@@ -444,7 +432,7 @@ static void HandleExtendSelection(HWND hwnd, int x, int y, bool finish)
     if (def.empty())
         return;
     Point point(x,y);
-    Graphics graphics(GetDC(hwnd), hwnd);
+    Graphics graphics(hwnd);
     def.extendSelection(graphics, point, finish);         
 }
 
@@ -465,7 +453,7 @@ static void RepaintDefiniton(int scrollDelta, bool updateScrollbar = true)
 
     ArsRectangle defRect = defRectTmp;
 
-    Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());
+    Graphics gr(app.getMainWindow());
     if ( (true == g_forceAboutRecalculation) && (displayMode() == showAbout) )
     {
         g_forceLayoutRecalculation = true;
@@ -480,7 +468,7 @@ static void RepaintDefiniton(int scrollDelta, bool updateScrollbar = true)
         if (bitmap) 
         {
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-            Graphics offscreen(offscreenDc, NULL);
+            Graphics offscreen(offscreenDc);
             gr.copyArea(defRect, offscreen, defRect.topLeft);
             if (0 != scrollDelta)
                 def.scroll(offscreen, scrollDelta);
@@ -491,7 +479,6 @@ static void RepaintDefiniton(int scrollDelta, bool updateScrollbar = true)
             ::DeleteObject(bitmap);
             fDidDoubleBuffer = true;
         }
-        ::DeleteDC(offscreenDc);
     }
 
     if (!fDidDoubleBuffer)
@@ -944,9 +931,8 @@ static void OnPaint(HWND hwnd)
         }
         else
         {
-            Graphics gr(GetDC(app.getMainWindow()), app.getMainWindow());    
-            ArsRectangle progressArea(g_progressRect);
-            app.getLookupManager()->showProgress(gr, progressArea);
+            Graphics gr(app.getMainWindow());    
+            app.getLookupManager()->showProgress(gr, g_progressRect);
         }
     }
 
@@ -1481,105 +1467,113 @@ static void DoForceUpgrade(HWND hwnd)
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    LRESULT     lResult = TRUE;
-    iPediaApplication& app = GetApp();
+	__try {
+		LRESULT     lResult = TRUE;
+		iPediaApplication& app = GetApp();
+		// I don't know why on PPC in first WM_SIZE mesaage hieght of menu
+		// bar is not taken into account, in next WM_SIZE messages (e.g. 
+		// after SIP usage) the height of menu is taken into account
+		switch (msg)
+		{
+			case WM_CREATE:
+				OnCreate(hwnd);
+				break;
 
-    // I don't know why on PPC in first WM_SIZE mesaage hieght of menu
-    // bar is not taken into account, in next WM_SIZE messages (e.g. 
-    // after SIP usage) the height of menu is taken into account
-    switch (msg)
-    {
-        case WM_CREATE:
-            OnCreate(hwnd);
-            break;
+			case WM_SETTINGCHANGE:
+				OnSettingChange(hwnd, wp, lp);
+				break;
 
-        case WM_SETTINGCHANGE:
-            OnSettingChange(hwnd, wp, lp);
-            break;
+			case WM_ACTIVATE:
+				OnActivateMain(hwnd, wp, lp);
+				break;
 
-        case WM_ACTIVATE:
-            OnActivateMain(hwnd, wp, lp);
-            break;
+			case WM_SIZE:
+				OnSize(hwnd, lp);
+				break;
 
-        case WM_SIZE:
-            OnSize(hwnd, lp);
-            break;
+			case WM_SETFOCUS:
+				SetFocus(g_hwndEdit);
+				break;
 
-        case WM_SETFOCUS:
-            SetFocus(g_hwndEdit);
-            break;
+			case WM_COMMAND:
+				OnCommand(hwnd, msg, wp, lp);
+				break;
 
-        case WM_COMMAND:
-            OnCommand(hwnd, msg, wp, lp);
-            break;
+			case WM_PAINT:
+				OnPaint(hwnd);
+				break;
 
-        case WM_PAINT:
-            OnPaint(hwnd);
-            break;
-
-#ifdef WIN32_PLATFORM_WFSP
-        case WM_HOTKEY:
-            SHSendBackToFocusWindow(msg, wp, lp);
-            break;
-#endif
+	#ifdef WIN32_PLATFORM_WFSP
+			case WM_HOTKEY:
+				SHSendBackToFocusWindow(msg, wp, lp);
+				break;
+	#endif
         
-        case WM_LBUTTONDOWN:
-            g_lbuttondown = true;
-            HandleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), false);
-            break;
+			case WM_LBUTTONDOWN:
+				g_lbuttondown = true;
+				HandleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), false);
+				break;
         
-        case WM_MOUSEMOVE:
-            if (g_lbuttondown)
-                HandleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), false);
-            break;
+			case WM_MOUSEMOVE:
+				if (g_lbuttondown)
+					HandleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), false);
+				break;
         
-        case WM_LBUTTONUP:
-            g_lbuttondown = false;
-            HandleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), true);
-            break;
+			case WM_LBUTTONUP:
+				g_lbuttondown = false;
+				HandleExtendSelection(hwnd,LOWORD(lp), HIWORD(lp), true);
+				break;
 
-        case WM_VSCROLL:
-            OnScroll(wp);
-            break;
+			case WM_VSCROLL:
+				OnScroll(wp);
+				break;
 
-        case WM_DESTROYCLIPBOARD:
-            FreeClipboardData();
-            break;
+			case WM_DESTROYCLIPBOARD:
+				FreeClipboardData();
+				break;
 
-        case iPediaApplication::appForceUpgrade:
-            DoForceUpgrade(hwnd);
-            break;
+			case iPediaApplication::appForceUpgrade:
+				DoForceUpgrade(hwnd);
+				break;
 
-        case iPediaApplication::appDisplayCustomAlertEvent:
-            DoDisplayAlert(hwnd, wp, lp, true);
-            break;
+			case iPediaApplication::appDisplayCustomAlertEvent:
+				DoDisplayAlert(hwnd, wp, lp, true);
+				break;
         
-        case iPediaApplication::appDisplayAlertEvent:
-            DoDisplayAlert(hwnd, wp,lp, false);
-            break;
+			case iPediaApplication::appDisplayAlertEvent:
+				DoDisplayAlert(hwnd, wp,lp, false);
+				break;
 
-        case LookupManager::lookupStartedEvent:
-        case LookupManager::lookupProgressEvent:
-            InvalidateRect(app.getMainWindow(), &g_progressRect, FALSE);
-            break;
+			case LookupManager::lookupStartedEvent:
+			case LookupManager::lookupProgressEvent:
+				InvalidateRect(app.getMainWindow(), &g_progressRect, FALSE);
+				break;
 
-        case LookupManager::lookupFinishedEvent:
-            DoHandleLookupFinished(hwnd, wp, lp);
-            break;            
+			case LookupManager::lookupFinishedEvent:
+				DoHandleLookupFinished(hwnd, wp, lp);
+				break;            
 
-        case WM_CLOSE:
-            DestroyWindow(hwnd);
-            break;
+			case WM_CLOSE:
+				DestroyWindow(hwnd);
+				break;
 
-        case WM_DESTROY:
-            PostQuitMessage(0);
-            break;
+			case WM_DESTROY:
+				PostQuitMessage(0);
+				break;
 
-        default:
-            lResult = DefWindowProc(hwnd, msg, wp, lp);
-            break;
-    }
-    return lResult;
+			default:
+				lResult = DefWindowProc(hwnd, msg, wp, lp);
+				break;
+		}
+		return lResult;
+	}
+	__except (memErrNotEnoughSpace == ::GetExceptionCode()) { // handleBadAlloc() raises exception with code memErrNotEnoughSpace
+		// TODO: show message box
+		if (WM_CREATE == msg)
+			return -1;
+		else
+			return DefWindowProc(hwnd, msg, wp, lp);
+	} 
 }
 
 int WINAPI WinMain(HINSTANCE hInstance,
@@ -1620,8 +1614,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
     return retVal;
 }
 
-void handleBadAlloc()
+void ArsLexis::handleBadAlloc()
 {
-    RaiseException(1,0,0,NULL);    
+    RaiseException(memErrNotEnoughSpace, 0, 0, NULL);    
 }
 
