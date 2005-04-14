@@ -17,7 +17,7 @@ bool iPediaHyperlinkHandler::handleTermHyperlink(const ArsLexis::String& term)
     if (app.fLookupInProgress())
         return false;
 
-    LookupManager* lookupManager=app.getLookupManager();  
+    LookupManager* lookupManager=app.lookupManager;  
     lookupManager->lookupIfDifferent(term);
     SetUIState(false);
     return true;

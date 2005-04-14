@@ -325,7 +325,7 @@ static void SetMenu(HWND hwnd)
     HMENU hMenu;
     hMenu = (HMENU)SendMessage(hwndMB, SHCMBM_GETSUBMENU, 0, ID_MENU_BTN);
     iPediaApplication& app=iPediaApplication::instance();
-    LookupManager* lookupManager=app.getLookupManager(true);
+    LookupManager* lookupManager=app.lookupManager;
 
     unsigned int menuState = MF_ENABLED;
     if (lookupManager->lastExtendedSearchResults().empty())
@@ -402,7 +402,7 @@ void SetUIState(bool enabled)
     enabled = true;
 
     iPediaApplication& app=iPediaApplication::instance();
-    LookupManager* lookupManager=app.getLookupManager(true);
+    LookupManager* lookupManager=app.lookupManager;
 
 #ifdef WIN32_PLATFORM_PSPC
     SetMenuBarButtonState(ID_MENU_BTN, enabled);
@@ -599,7 +599,7 @@ static void MoveHistoryForwardOrBack(bool forward)
         }
     }
 
-    LookupManager* lookupManager=app.getLookupManager(true);
+    LookupManager* lookupManager=app.lookupManager;
     if (app.fLookupInProgress())
         return;
 
@@ -628,7 +628,7 @@ static void SimpleOrExtendedSearch(HWND hwnd, String& term, bool simple)
     if (app.fLookupInProgress())
         return;
 
-    LookupManager* lookupManager = app.getLookupManager(true);
+    LookupManager* lookupManager = app.lookupManager;
     if (NULL==lookupManager)
         return;
 
@@ -678,7 +678,7 @@ static void DoExtSearchResults(HWND hwnd)
     if (app.fLookupInProgress())
         return;
 
-    LookupManager* lookupManager = app.getLookupManager(true);
+    LookupManager* lookupManager = app.lookupManager;
     String lastSearchResults = lookupManager->lastExtendedSearchResults();
 
     CharPtrList_t strList;
@@ -711,13 +711,12 @@ static void OnReverseLinks(HWND hwnd)
       return;
 
     iPediaApplication& app=GetApp();
-    LookupManager *lookupManager = app.getLookupManager();
+    LookupManager *lookupManager = app.lookupManager;
     if (NULL==lookupManager)
         return;
-    String& reverseLinks = lookupManager->lastReverseLinks();
 
-    char_t *str = (char_t*)reverseLinks.c_str();
-    replaceCharInString(str, _T('_'), _T(' '));
+    String& reverseLinks = lookupManager->lastReverseLinks();
+	std::replace(reverseLinks.begin(), reverseLinks.end(), _T('_'), _T(' '));
 
     CharPtrList_t strList;
 
@@ -746,7 +745,7 @@ static void DoRandom()
         return;
     if (!fInitConnection())
         return;
-    LookupManager* lookupManager=app.getLookupManager(true);
+    LookupManager* lookupManager=app.lookupManager;
     lookupManager->lookupRandomTerm();
     SetUIState(false);
 }
@@ -776,13 +775,13 @@ static void DoChangeDatabase(HWND hwnd)
         return;
     if (!fInitConnection())
         return;
-    LookupManager* lookupManager=app.getLookupManager(true);
+    LookupManager* lookupManager=app.lookupManager;
 
     String availableLangs = app.preferences().availableLangs;
     if (availableLangs.empty())
     {
         // if we don't have available langs, issue a request asking for it
-        LookupManager* lookupManager=app.getLookupManager(true);
+        LookupManager* lookupManager=app.lookupManager;
         if (lookupManager && !lookupManager->lookupInProgress())
             lookupManager->getAvailableLangs();
         return;
@@ -831,7 +830,7 @@ static void DoChangeDatabase(HWND hwnd)
     langName = langName+1;
     langName[2] = _T('\0');
 
-    lookupManager = app.getLookupManager(true);
+    lookupManager = app.lookupManager;
     assert(NULL != lookupManager);
 
     if (lookupManager && !lookupManager->lookupInProgress())
@@ -859,7 +858,7 @@ static void DoRegister(HWND hwnd, const String& oldRegCode)
         return;
 
     g_newRegCode = newRegCode;
-    LookupManager* lookupManager = app.getLookupManager(true);
+    LookupManager* lookupManager = app.lookupManager;
     lookupManager->verifyRegistrationCode(g_newRegCode);
     g_fRegistration = true;
     SetUIState(false);
@@ -935,7 +934,7 @@ static void OnPaint(HWND hwnd)
         else
         {
             Graphics gr(app.getMainWindow());    
-            app.getLookupManager()->showProgress(gr, g_progressRect);
+            app.lookupManager->showProgress(gr, g_progressRect);
         }
     }
 
@@ -953,7 +952,7 @@ static void DoTutorial(HWND hwnd)
 static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     iPediaApplication& app = GetApp();
-    LookupManager* lookupManager=app.getLookupManager(true);
+    LookupManager* lookupManager=app.lookupManager;
     iPediaApplication::Preferences& prefs = GetPrefs();
 
     // ignore them while we're doing network transfer
@@ -1092,7 +1091,7 @@ static void OnCreate(HWND hwnd)
 
     app.setMainWindow(hwnd);
 
-    LookupManager* lookupManager=app.getLookupManager(true);
+    LookupManager* lookupManager=app.lookupManager;
     lookupManager->setProgressReporter(new DownloadingProgressReporter());
     g_RenderingProgressReporter = new RenderingProgressReporter(hwnd, g_progressRect, _T("Formatting article..."));
     g_definition->setRenderingProgressReporter(g_RenderingProgressReporter);
@@ -1236,14 +1235,18 @@ static void DoHandleValidRegCode(HWND hwnd)
         MB_OK | MB_ICONINFORMATION | MB_APPLMODAL | MB_SETFOREGROUND );
 }
 
+static DefinitionModel* g_articleModel = NULL;
+
 static void DoHandleArticleBody()
 {   
     iPediaApplication &app = GetApp();
-    LookupManager *lookupManager = app.getLookupManager();
+    LookupManager *lookupManager = app.lookupManager;
     assert(lookupManager!=0);
     if (lookupManager)
     {
-//        g_definition->replaceElements(lookupManager->lastDefinitionElements());
+		g_definition->setModel(NULL, Definition::ownModelNot);
+		PassOwnership(lookupManager->lastDefinitionModel, g_articleModel);
+		g_definition->setModel(g_articleModel, Definition::ownModelNot);
         g_forceLayoutRecalculation=true;
         SetEditWinText(g_hwndEdit,lookupManager->lastSearchTerm());
         SendMessage(g_hwndEdit, EM_SETSEL, 0, -1);
@@ -1281,7 +1284,7 @@ static DisplayAlertEventData ExtractDisplayAlertEventData(WPARAM wp, LPARAM lp)
 static void DoHandleLookupFinished(HWND hwnd, WPARAM wp, LPARAM lp)
 {
     iPediaApplication& app = GetApp();
-    LookupManager* lookupManager = app.getLookupManager(true);
+    LookupManager* lookupManager = app.lookupManager;
 
     LookupFinishedEventData data = ExtractLookupFinishedEventData(wp,lp);
     switch (data.outcome)
@@ -1613,6 +1616,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     delete g_register;
     delete g_tutorial;
     delete g_wikipedia;
+	delete g_articleModel;
 
     return retVal;
 }

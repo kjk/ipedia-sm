@@ -43,7 +43,6 @@ class iPediaApplication
     ushort_t                ticksPerSecond_;
     iPediaHyperlinkHandler  hyperlinkHandler_;
     LookupHistory*          history_;
-    LookupManager*          lookupManager_;
     HINSTANCE               hInst_;
     
     typedef std::list<ArsLexis::String> CustomAlerts_t;
@@ -56,6 +55,8 @@ protected:
     bool handleApplicationEvent(ArsLexis::EventType& event);
 
 public:
+
+    LookupManager*          lookupManager;
 
     const char_t* serverAddress;
     bool fArticleCountChecked;
@@ -80,9 +81,6 @@ public:
 
     ~iPediaApplication();
     
-    LookupManager* getLookupManager(bool create=false);
-    const LookupManager* getLookupManager() const
-    {return lookupManager_;}
     bool fLookupInProgress() const;
 
     ushort_t ticksPerSecond() const

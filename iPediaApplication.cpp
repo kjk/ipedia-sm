@@ -158,7 +158,7 @@ const char_t *getErrorMessage(int alertId)
 iPediaApplication::iPediaApplication():
     history_(new LookupHistory()),
     ticksPerSecond_(1000),
-    lookupManager_(0),
+    lookupManager(NULL),
     serverAddress(SERVER_TO_USE),
     fArticleCountChecked(false)
 {
@@ -179,30 +179,18 @@ iPediaApplication::iPediaApplication():
 
 iPediaApplication::~iPediaApplication()
 {   
-    if (lookupManager_)
-        delete lookupManager_;
+    delete lookupManager;
 
-    if (history_)
-        delete history_;
+    delete history_;
 
     logAllocation_ = false;
 }
 
 bool iPediaApplication::fLookupInProgress() const
 {
-    if (NULL==lookupManager_)
+    if (NULL==lookupManager)
         return false;
-    return lookupManager_->lookupInProgress();
-}
-
-LookupManager* iPediaApplication::getLookupManager(bool create)
-{
-    if (!lookupManager_ && create)
-    {
-        assert(0!=history_);
-        lookupManager_=new LookupManager(*history_);
-    }
-    return lookupManager_;
+    return lookupManager->lookupInProgress();
 }
 
 DWORD iPediaApplication::runEventLoop()
@@ -214,8 +202,8 @@ DWORD iPediaApplication::runEventLoop()
     {
         SocketConnectionManager* manager=0;
 
-        if (lookupManager_)
-            manager = &lookupManager_->connectionManager();
+        if (lookupManager)
+            manager = &lookupManager->connectionManager();
 
         if (manager && manager->active())
         {
@@ -227,7 +215,7 @@ DWORD iPediaApplication::runEventLoop()
             Sleep(ticksPerSecond_/20);
         else
         {
-            if (lookupManager_ && 
+            if (lookupManager && 
                 (LookupManager::lookupStartedEvent<=msg.message)
                 && (LookupManager::lookupFinishedEvent>=msg.message) &&
                 g_hwndForEvents==msg.hwnd)
@@ -238,7 +226,7 @@ DWORD iPediaApplication::runEventLoop()
                 EventData i;
                 i.wParam=msg.wParam; i.lParam=msg.lParam;
                 memcpy(event.data, &i,sizeof(data));
-                lookupManager_->handleLookupEvent(event);
+                lookupManager->handleLookupEvent(event);
             }
     
             if (msg.message!=WM_QUIT)
@@ -353,6 +341,8 @@ void iPediaApplication::getErrorMessage(int alertId, bool customAlert, String &o
 
 bool iPediaApplication::InitInstance(HINSTANCE hInstance, int CmdShow )
 {
+	assert(NULL == lookupManager);
+	lookupManager = new LookupManager(*history_);
     
     hInst_ = hInstance;
     hwndMain_ = CreateWindow(APP_NAME,
