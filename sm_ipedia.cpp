@@ -31,6 +31,8 @@
 #include "sm_ipedia.h"
 #include "ipedia_rsc.h"
 
+#include <WinDefinitionStyle.hpp>
+
 using namespace ArsLexis;
 
 // holds new registration code being checked while we send the request to
@@ -1604,6 +1606,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     if (!app.initApplication(hInstance, hPrevInstance, cmdLine, CmdShow))
         return FALSE;
 
+	PrepareStaticStyles();
     SetupAboutWindow();
     SetMenu(app.getMainWindow());
 
@@ -1617,7 +1620,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
     delete g_tutorial;
     delete g_wikipedia;
 	delete g_articleModel;
-
+	
+	DisposeStaticStyles();
     return retVal;
 }
 
