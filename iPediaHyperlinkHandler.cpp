@@ -5,6 +5,7 @@
 #include "iPediaHyperlinkHandler.hpp"
 #include "iPediaApplication.hpp"
 
+/*
 bool iPediaHyperlinkHandler::handleExternalHyperlink(const ArsLexis::String& url)
 {
     return GotoURL(url.c_str());
@@ -22,11 +23,13 @@ bool iPediaHyperlinkHandler::handleTermHyperlink(const ArsLexis::String& term)
     SetUIState(false);
     return true;
 }
+*/
 
 iPediaHyperlinkHandler::iPediaHyperlinkHandler()
 {
 }
 
+/*
 void iPediaHyperlinkHandler::handleHyperlink(Definition& definition, DefinitionElement& element)
 {
     assert(element.isTextElement());
@@ -54,4 +57,27 @@ void iPediaHyperlinkHandler::handleHyperlink(Definition& definition, DefinitionE
        
     }  
 }
+*/
 
+bool iPediaHyperlinkHandler::handleTermHyperlink(const char_t* term, ulong_t len, const Point*)
+{
+    iPediaApplication& app=GetApp();
+    if (app.fLookupInProgress())
+        return false;
+
+    LookupManager* lookupManager=app.lookupManager;  
+    lookupManager->lookupIfDifferent(term);
+    SetUIState(false);
+    return true;
+}
+
+
+void iPediaHyperlinkHandler::handleHyperlink(const char_t* link, ulong_t len, const Point* p)
+{
+	if (StrStartsWith(link, len, _T("http://"), -1))
+	{
+		GotoURL(link);
+	}
+	else
+		handleTermHyperlink(link, len, p);
+}

@@ -6,15 +6,14 @@
 class iPediaHyperlinkHandler: public Definition::HyperlinkHandler
 {
     
-    bool handleExternalHyperlink(const ArsLexis::String& url);
-    bool handleTermHyperlink(const ArsLexis::String& term);
+//    bool handleExternalHyperlink(const char_t* link, ulong_t len, const Point*);
+    bool handleTermHyperlink(const char_t* link, ulong_t len, const Point*);
     
 public:
 
     iPediaHyperlinkHandler();
     
-    void handleHyperlink(Definition& definition, DefinitionElement& hyperlinkElement);
-    
+	void handleHyperlink(const char_t* link, ulong_t len, const Point*);
 };
 
 #endif
