@@ -121,8 +121,7 @@ void prepareAbout(Definition *def)
 
     elems.push_back(text=new TextElement(_T("ArsLexis iPedia")));
     text->setJustification(DefinitionElement::justifyCenter);
-//    text->setStyle(styleHeader);
-//    text->setEffects(fxBold);
+    text->setStyle(getStaticStyle(styleNameHeader));
 
     elems.push_back(new LineBreakElement(1,3*divider*divider));
 
@@ -209,14 +208,13 @@ void prepareAbout(Definition *def)
     text->setHyperlink(_T("Tutorial"), hyperlinkTerm);
     text->setActionCallback( tutorialActionCallback, NULL);
 #else
-    /*
-    FontEffects fxSmall;
-    fxSmall.setSmall(true);
-
     elems.push_back(new LineBreakElement(1,2));
     elems.push_back(text=new TextElement(_T("Downloading uses data connection")));
     text->setJustification(DefinitionElement::justifyCenter);
-    text->setEffects(fxSmall); */
+	DefinitionStyle* style = new DefinitionStyle();
+	style->small = style->yes;
+	text->setStyle(style, DefinitionElement::ownStyle);
+
 #endif
 
     def->setModel(model, Definition::ownModel);
@@ -254,7 +252,7 @@ void prepareTutorial(Definition *def)
     elems.push_back(parent=new ParagraphElement());    
     elems.push_back(text=new TextElement(_T("Finding an encyclopedia article.")));
     text->setJustification(DefinitionElement::justifyLeft);
-//    text->setEffects(fxBold);
+	text->setStyle(getStaticStyle(styleNameBold));
     text->setParent(parent);    
 #ifdef WIN32_PLATFORM_PSPC
     text = new TextElement(_T(" Let's assume you want to read an encyclopedia article on Seattle. Enter 'Seattle' in the text field at the top of the screen and press 'Search'"));
@@ -269,7 +267,7 @@ void prepareTutorial(Definition *def)
 
     elems.push_back(parent=new ParagraphElement());    
     elems.push_back(text=new TextElement(_T("Finding all articles with a given word.")));
-//    text->setEffects(fxBold);
+	text->setStyle(getStaticStyle(styleNameBold));
     text->setParent(parent);    
 
     elems.push_back(text=new TextElement(_T(" Let's assume you want to find all articles that mention Seattle. Enter 'Seattle' in the text field and use '")  MAIN_MENU_BUTTON _T("/Extended search' menu item. In response you'll receive a list of articles that contain word 'Seattle'.")));
@@ -279,7 +277,7 @@ void prepareTutorial(Definition *def)
     
     elems.push_back(parent=new ParagraphElement());    
     elems.push_back(text=new TextElement(_T("Refining the search.")));
-//    text->setEffects(fxBold);
+	text->setStyle(getStaticStyle(styleNameBold));
     text->setParent(parent);    
     elems.push_back(text=new TextElement(_T(" If there are too many results, you can refine (narrow) the search results by adding additional terms e.g. type 'museum' and press 'Refine' button. You'll get a smaller list of articles that contain both 'Seattle' and 'museum'.")));
     text->setJustification(DefinitionElement::justifyLeft);
@@ -288,7 +286,7 @@ void prepareTutorial(Definition *def)
 
     elems.push_back(parent=new ParagraphElement());    
     elems.push_back(text=new TextElement(_T("Results of last extended search.")));
-//    text->setEffects(fxBold);
+	text->setStyle(getStaticStyle(styleNameBold));
     text->setParent(parent);    
     elems.push_back(text=new TextElement(_T(" At any time you can get a list of results from last extended search by using menu item '") MAIN_MENU_BUTTON _T("/Extended search results'.")));
     text->setJustification(DefinitionElement::justifyLeft);
@@ -298,7 +296,7 @@ void prepareTutorial(Definition *def)
     elems.push_back(parent=new ParagraphElement());    
     elems.push_back(text=new TextElement(_T("Random article.")));
     text->setParent(parent);    
-//    text->setEffects(fxBold);
+	text->setStyle(getStaticStyle(styleNameBold));
 #ifdef WIN32_PLATFORM_PSPC
     elems.push_back(text=new TextElement(_T(" You can use menu 'Main/Random article' (or ")));
     text->setJustification(DefinitionElement::justifyLeft);
@@ -324,7 +322,7 @@ void prepareTutorial(Definition *def)
 
     elems.push_back(parent=new ParagraphElement());    
     elems.push_back(text=new TextElement(_T("More information.")));
-//    text->setEffects(fxBold);
+	text->setStyle(getStaticStyle(styleNameBold));
     text->setParent(parent);    
     elems.push_back(text=new TextElement(_T(" Please visit our website ")));
     text->setJustification(DefinitionElement::justifyLeft);

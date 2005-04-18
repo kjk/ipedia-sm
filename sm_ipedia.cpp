@@ -1600,13 +1600,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
         SetForegroundWindow ((HWND)(((DWORD)hwndExisting) | 0x01));    
         return 0;
     }
+	PrepareStaticStyles();
 
     String cmdLine(lpCmdLine);
     iPediaApplication& app = GetApp();
     if (!app.initApplication(hInstance, hPrevInstance, cmdLine, CmdShow))
         return FALSE;
 
-	PrepareStaticStyles();
     SetupAboutWindow();
     SetMenu(app.getMainWindow());
 
