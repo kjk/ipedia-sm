@@ -274,14 +274,35 @@ static void SetScrollBar(Definition* definition)
     int first = 0;
     int total = 0;
     int shown = 0;
-    if ((NULL!=definition) && (!definition->empty()))
+    if (NULL != definition && !definition->empty())
     {
-        first=definition->firstShownLine();
-        total=definition->totalLinesCount();
-        shown=definition->shownLinesCount();
+        first = definition->firstShownLine();
+        total = definition->totalLinesCount();
+        shown = definition->shownLinesCount();
     }
+	SCROLLINFO si;
+	ZeroMemory(&si, sizeof(si));
+	si.cbSize = sizeof(si);
+	si.fMask = SIF_ALL;
+	si.nMin = 0;
+	if (shown == total)
+	{
+		si.nMax = 0;
+		si.nPage = 0;
+	}
+	else
+	{
+		si.nMax = total - 1;
+		si.nPage = shown;
+	}
+	si.nPos = first;
+
+	SetScrollInfo(g_hwndScroll, SB_CTL, &si, TRUE);
+
+/*
     SetScrollPos(g_hwndScroll, SB_CTL, first, TRUE);
     SetScrollRange(g_hwndScroll, SB_CTL, 0, total-shown, TRUE);
+ */
 }
 
 static void SetMenuBarButtonState(int buttonID, bool fEnabled)
@@ -1429,6 +1450,7 @@ LRESULT CALLBACK EditWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 static void OnScroll(WPARAM wp)
 {
     int code = LOWORD(wp);
+	bool track = false;
     switch (code)
     {
         case SB_TOP:
@@ -1447,18 +1469,22 @@ static void OnScroll(WPARAM wp)
             ScrollDefinition(-1, scrollPage, true);
             break;
         case SB_PAGEDOWN:
-            ScrollDefinition(1, scrollPage, false);
+            ScrollDefinition(1, scrollPage, true);
             break;
 
 		case SB_THUMBTRACK:
+			track = true;
 		// intentional fallthrough
         case SB_THUMBPOSITION:
-        {
+        {	
+			int pos = HIWORD(wp);
+/*
             SCROLLINFO info = {0};
             info.cbSize = sizeof(info);
             info.fMask = SIF_TRACKPOS;
             GetScrollInfo(g_hwndScroll, SB_CTL, &info);
-            ScrollDefinition(info.nTrackPos, scrollPosition, SB_THUMBPOSITION == code);
+ */
+            ScrollDefinition(pos, scrollPosition, !track/* SB_THUMBPOSITION == code */);
         }
      }
 }
