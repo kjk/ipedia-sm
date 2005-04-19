@@ -3349,11 +3349,14 @@ NODEP_CPP_WINGR=\
 DEP_CPP_WINGR=\
 	"..\ars_framework\Src\BaseTypes.hpp"\
 	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DefinitionStyle.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Geometry.hpp"\
 	"..\ars_framework\Src\NativeGeometry.hpp"\
+	"..\ars_framework\Src\PalmOS\PalmDefinitionStyle.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinDefinitionStyle.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	
@@ -3656,10 +3659,6 @@ SOURCE=..\ars_framework\Src\LookupManagerBase.hpp
 # Begin Source File
 
 SOURCE=..\ars_framework\Src\NativeGeometry.hpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\ars_framework\Src\NativeGraphics.hpp
 # End Source File
 # Begin Source File
 

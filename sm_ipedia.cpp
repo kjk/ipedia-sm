@@ -469,11 +469,11 @@ static void RepaintDefiniton(int scrollDelta, bool updateScrollbar = true)
     HDC offscreenDc=::CreateCompatibleDC(gr.handle());
     if (offscreenDc) 
     {
+        Graphics offscreen(offscreenDc);
         HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
         if (bitmap) 
         {
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-            Graphics offscreen(offscreenDc);
             gr.copyArea(defRect, offscreen, defRect.topLeft);
             if (0 != scrollDelta)
                 def.scroll(offscreen, scrollDelta);

@@ -23,6 +23,9 @@ using namespace ArsLexis;
 
 #define serverIpediaArslexis _T("ipedia.arslexis.com:9000")
 
+#define serverAndrzejLaptop _T("gizmo:9000")
+#define serverAndrzejDVD		_T("rabban:9000")
+
 #define SERVER_TO_USE serverIpediaArslexis
 //#define SERVER_TO_USE serverKjkLaptop3
 
