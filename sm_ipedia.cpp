@@ -211,6 +211,32 @@ static bool fInitConnection()
 #endif
 }
 
+static void TermLabelsFromTerms(const CharPtrList_t& terms, CharPtrList_t& labels)
+{
+	CharPtrList_t::const_iterator it = terms.begin();
+	CharPtrList_t::const_iterator end = terms.end();
+	while (it != end)
+	{
+		const char_t* str = *it;
+		++it;
+		long pos = StrFind(str, -1, _T(':'));
+		if (-1 == pos)
+		{
+			labels.push_back(StringCopy(str));
+			continue;
+		}
+		const char_t* langName = GetLangNameByLangCode(str, pos);
+		if (NULL == langName)
+		{
+			labels.push_back(StringCopy(str));
+			continue;
+		}
+		String label(str + (pos + 1));
+		label.append(_T(" (")).append(langName).append(_T(")"));
+		labels.push_back(StringCopy(label.c_str()));
+	}
+}
+
 static void OnLinkedArticles(HWND hwnd)
 {
      if (currentDefinition().empty())
@@ -224,7 +250,7 @@ static void OnLinkedArticles(HWND hwnd)
     DefinitionElement* currEl; 
 	TextElement* txtEl;
     const char_t* articleTitle = NULL;
-    for (posCur=posStart; posCur!=posEnd; ++posCur)
+    for (posCur = posStart; posCur != posEnd; ++posCur)
     {
         currEl = *posCur;
         if (currEl->isTextElement() && currEl->isHyperlink() && hyperlinkTerm == currEl->hyperlinkProperties()->type)
@@ -238,8 +264,14 @@ static void OnLinkedArticles(HWND hwnd)
     if (strList.empty())
         return;
 
+	CharPtrList_t labels;
+	TermLabelsFromTerms(strList, labels);
+
     String selectedString;
-    bool fSelected = FGetStringFromListRemoveDups(hwnd, strList, selectedString);
+    bool fSelected = FGetStringFromListRemoveDups(hwnd, strList, &labels, selectedString);
+	
+	FreeStringsFromCharPtrList(labels);
+	
     if (!fSelected)
         return;
 
@@ -655,7 +687,19 @@ static void SimpleOrExtendedSearch(HWND hwnd, String& term, bool simple)
     if (NULL==lookupManager)
         return;
 
-    if (simple && !lookupManager->lastSearchTermDifferent(term))
+	String lang;
+	String::size_type pos = term.find(_T(':'));
+	if (String::npos != pos)
+	{
+		const char_t* langName = GetLangNameByLangCode(term.data(), pos);
+		if (NULL != langName)
+		{
+			lang.assign(term, 0, pos);
+			term.erase(0, pos + 1);
+		}
+	}
+
+    if (simple && !lookupManager->lastSearchTermDifferent(term, lang))
     {
         if (displayMode()!=showArticle)
         {
@@ -672,7 +716,7 @@ static void SimpleOrExtendedSearch(HWND hwnd, String& term, bool simple)
 
     if (simple)
     {
-        bool fDifferent = lookupManager->lookupIfDifferent(term);
+        bool fDifferent = lookupManager->lookupIfDifferent(term, lang);
         assert(fDifferent); // we checked for that above so it must be true
         SetUIState(false);
         InvalidateRect(hwnd,NULL,FALSE);
@@ -748,10 +792,14 @@ static void OnReverseLinks(HWND hwnd)
     if (strList.empty())
         return;
 
+	CharPtrList_t labels;
+	TermLabelsFromTerms(strList, labels);
+
     String selectedString;
-    bool fSelected = FGetStringFromListRemoveDups(hwnd, strList, selectedString);
+    bool fSelected = FGetStringFromListRemoveDups(hwnd, strList, &labels, selectedString);
 
     FreeStringsFromCharPtrList(strList);
+	FreeStringsFromCharPtrList(labels);
 
     if (!fSelected)
         return;
@@ -837,8 +885,7 @@ static void DoChangeDatabase(HWND hwnd)
     FreeStringList(strListChar, strListSize);
 
     String  selectedString;
-    bool    fSelected;
-    fSelected = FGetStringFromListRemoveDups(hwnd, strList, selectedString);
+    bool    fSelected = FGetStringFromListRemoveDups(hwnd, strList, NULL, selectedString);
 
     FreeStringsFromCharPtrList(strList);
 

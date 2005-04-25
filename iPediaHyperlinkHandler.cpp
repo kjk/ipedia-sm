@@ -4,6 +4,7 @@
 #include <TextElement.hpp>
 #include "iPediaHyperlinkHandler.hpp"
 #include "iPediaApplication.hpp"
+#include <LangNames.hpp>
 
 /*
 bool iPediaHyperlinkHandler::handleExternalHyperlink(const ArsLexis::String& url)
@@ -66,7 +67,19 @@ bool iPediaHyperlinkHandler::handleTermHyperlink(const char_t* term, ulong_t len
         return false;
 
     LookupManager* lookupManager=app.lookupManager;  
-    lookupManager->lookupIfDifferent(term);
+	String lang;
+	long pos = StrFind(term, len, _T(':'));
+	if (-1 != pos)
+	{
+		const char_t* langName = GetLangNameByLangCode(term, pos);
+		if (NULL != langName)
+		{
+			lang.assign(term, pos);
+			term += (pos + 1);
+			len -= (pos + 1);
+		}
+	}
+    lookupManager->lookupIfDifferent(term, lang);
     SetUIState(false);
     return true;
 }
