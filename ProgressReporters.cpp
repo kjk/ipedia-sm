@@ -1,6 +1,7 @@
 #include "ProgressReporters.h"
 #include "iPediaApplication.hpp"
 #include <Graphics.hpp>
+#include <UIHelper.h>
 
 const uint_t CommonProgressReporter::refreshDelay = 100; 
 
@@ -34,7 +35,7 @@ void CommonProgressReporter::update(u_int percent)
         // Timespans < 300ms are typically perceived "instant"
         // so we shouldn't distract user if the time is short enough.
         static const uint_t delay=100; 
-        int ticksDiff=GetTickCount()-ticksAtStart_;
+        int ticksDiff=GetTickCount() - ticksAtStart_;
         ticksDiff = ticksDiff * 1000;
         ticksDiff = ticksDiff / app.ticksPerSecond();
         if (ticksDiff>=delay)
@@ -64,11 +65,11 @@ void CommonProgressReporter::DrawProgressRect(HDC hdc, const ArsRectangle& bound
     Rectangle(hdc, x, y, x + width, y+height);
     
     POINT points[4];
-    points[0].x = points[3].x = x +2;
-    points[0].y = points[1].y = y +2;
-    points[2].y = points[3].y = y + height - 3;
-    points[1].x = points[2].x = x + width - 3;   
-    Polygon(hdc, points,4);
+    points[0].x = points[3].x = x + SCALEX(2);
+    points[0].y = points[1].y = y + SCALEY(2);
+    points[2].y = points[3].y = y + height - SCALEY(3);
+    points[1].x = points[2].x = x + width - SCALEX(3);   
+    Polygon(hdc, points, 4);
 
     SelectObject(hdc, oldbr);
     DeleteObject(hbr);
@@ -78,10 +79,10 @@ void CommonProgressReporter::DrawProgressBar(Graphics& gr, uint_t percent, const
 {
     RECT nativeRec;
     bounds.toNative(nativeRec);
-    nativeRec.top += 6;
-    nativeRec.bottom = nativeRec.top + 17;
-    nativeRec.left += 6;
-    nativeRec.right -= 6;
+    nativeRec.top += SCALEY(6);
+    nativeRec.bottom = nativeRec.top + SCALEY(17);
+    nativeRec.left += SCALEX(6);
+    nativeRec.right -= SCALEX(6);
 
     HBRUSH hbr = CreateSolidBrush(RGB(180,180,180));
     FillRect(gr.handle(), &nativeRec, hbr);
@@ -96,7 +97,7 @@ void CommonProgressReporter::DrawProgressBar(Graphics& gr, uint_t percent, const
 
 void CommonProgressReporter::DrawProgressInfo(const LookupProgressReportingSupport &support, Graphics &offscreen, const ArsRectangle &bounds, bool percentProgEnabled)
 {
-    DrawProgressRect(offscreen.handle(),bounds);
+    DrawProgressRect(offscreen.handle(), bounds);
     
     if (support.percentProgress()!=support.percentProgressDisabled)
         DrawProgressBar(offscreen, support.percentProgress(), bounds);
@@ -108,7 +109,7 @@ void CommonProgressReporter::DrawProgressInfo(const LookupProgressReportingSuppo
 
     ArsRectangle progressArea(bounds);    
     int h = progressArea.height();
-    progressArea.explode(6, h - 20, -12, -h + 15);
+    progressArea.explode(SCALEX(6), h - SCALEY(20), SCALEX(-12), - h + SCALEY(15));
     
     DefaultLookupProgressReporter::showProgress(support, offscreen, progressArea, false);    
 }

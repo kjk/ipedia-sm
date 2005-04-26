@@ -32,6 +32,7 @@
 #include "ipedia_rsc.h"
 
 #include <WinDefinitionStyle.hpp>
+#include <UIHelper.h>
 
 using namespace ArsLexis;
 
@@ -127,7 +128,7 @@ Definition& currentDefinition()
     return (*g_about);
 }
 
-static void DrawTextInRect(Graphics& gr, const ArsRectangle& rect, const char_t *text)
+static void DrawTextInRect(Graphics& gr, const ArsRectangle& rect, const char_t* text)
 {
     HDC hdc = gr.handle();
     HBRUSH hbr = CreateSolidBrush(RGB(255,255,255));
@@ -139,11 +140,11 @@ static void DrawTextInRect(Graphics& gr, const ArsRectangle& rect, const char_t 
     ::Rectangle(hdc, x, y, x + width, y+height);
     
     POINT points[4];
-    points[0].x = points[3].x = x +2;
-    points[0].y = points[1].y = y +2;
-    points[2].y = points[3].y = y + height - 3;
-    points[1].x = points[2].x = x + width - 3;   
-    Polygon(hdc, points,4);
+    points[0].x = points[3].x = x + SCALEX(2);
+    points[0].y = points[1].y = y + SCALEY(2);
+    points[2].y = points[3].y = y + height - SCALEX(3);
+    points[1].x = points[2].x = x + width - SCALEY(3);   
+    Polygon(hdc, points, 4);
 
     SelectObject(hdc, oldbr);
     DeleteObject(hbr);
@@ -154,15 +155,15 @@ static void DrawTextInRect(Graphics& gr, const ArsRectangle& rect, const char_t 
     gr.charsInWidth(text, length, txtDx);
     uint_t txtXOffsetCentered = 0;
     if (rectDx>txtDx)
-        txtXOffsetCentered = (rectDx-txtDx)/2;
+        txtXOffsetCentered = (rectDx - txtDx) / 2;
 
     uint_t dy = gr.fontHeight();
     uint_t rectDy = (uint_t)rect.dy();
     uint_t txtYOffsetCentered = 0;
     if (rectDy>dy)
-        txtYOffsetCentered = (rectDy-dy)/2;
+        txtYOffsetCentered = (rectDy - dy) / 2;
     
-    Point p(rect.x()+txtXOffsetCentered, rect.y()+txtYOffsetCentered);
+    Point p(rect.x() + txtXOffsetCentered, rect.y() + txtYOffsetCentered);
     gr.drawText(text, length, p);
 }
 
@@ -204,7 +205,7 @@ static bool fInitConnection()
     // reliably across both Pocket PC and Pocket PC Phone Edition
     return true;
 #else
-    const char_t* msg = _T("Unable to connect. Verify your dialup or proxy settings are correct, and try again."));
+    const char_t* msg = _T("Unable to connect. Verify your dialup or proxy settings are correct, and try again.");
     iPediaApplication& app = GetApp();
     MessageBox(app.getMainWindow(), msg, _T("Error"), MB_OK | MB_ICONERROR | MB_APPLMODAL | MB_SETFOREGROUND );
     return false;
@@ -504,10 +505,10 @@ static void RepaintDefiniton(int scrollDelta, bool updateScrollbar = true)
     ArsRectangle bounds = clientRect;
 
     RECT defRectTmp = clientRect;
-    defRectTmp.top    += 24;
-    defRectTmp.left   += 2;
-    defRectTmp.right  -= 2 + GetScrollBarDx();
-    defRectTmp.bottom -= 2;
+    defRectTmp.top    += SCALEY(24);
+    defRectTmp.left   += SCALEX(2);
+    defRectTmp.right  -= SCALEX(2) + GetScrollBarDx();
+    defRectTmp.bottom -= SCALEY(2);
 
     ArsRectangle defRect = defRectTmp;
 
@@ -965,10 +966,17 @@ static void OnPaint(HWND hwnd)
             onlyProgress = true;
     }
 
-    rect.top    += 22;
+    rect.top    += SCALEY(22);
+    rect.left   += SCALEX(2);
+    rect.right  -= (SCALEX(2) + GetScrollBarDx());
+    rect.bottom -= SCALEY(2);
+
+ /*
+	rect.top    += 22;
     rect.left   += 2;
-    rect.right  -= (2+GetScrollBarDx());
+    rect.right  -= (2 + GetScrollBarDx());
     rect.bottom -= 2;
+*/
 
     if ( !onlyProgress && !g_recalculationInProgress)
     {
@@ -1444,26 +1452,26 @@ static void OnSize(HWND hwnd, LPARAM lp)
     int dy = HIWORD(lp);
 
 #ifdef WIN32_PLATFORM_PSPC
-    int searchButtonDX = 50;
-    int searchButtonX = dx - searchButtonDX - 2;
+    int searchButtonDX = SCALEX(50);
+    int searchButtonX = dx - searchButtonDX - SCALEX(2);
 
-    MoveWindow(g_hwndSearchButton, searchButtonX, 2, searchButtonDX, 20, TRUE);
-    MoveWindow(g_hwndEdit, 2, 2, searchButtonX - 6, 20, TRUE);
+    MoveWindow(g_hwndSearchButton, searchButtonX, SCALEY(2), searchButtonDX, SCALEY(20), TRUE);
+    MoveWindow(g_hwndEdit, SCALEX(2), SCALEY(2), searchButtonX - SCALEX(6), SCALEY(20), TRUE);
 #else
-    MoveWindow(g_hwndEdit, 2, 2, dx-4, 20, TRUE);
+    MoveWindow(g_hwndEdit, SCALEX(2), SCALEY(2), dx - SCALEX(4), SCALEY(20), TRUE);
 #endif
 
-    int scrollStartY = 24;
-    int scrollDy = dy - scrollStartY - 2;
-    MoveWindow(g_hwndScroll, dx-GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
+    int scrollStartY = SCALEY(24);
+    int scrollDy = dy - scrollStartY - SCALEY(2);
+    MoveWindow(g_hwndScroll, dx - GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
 
-    g_progressRect.left = (dx - GetScrollBarDx() - 155)/2;
-    g_progressRect.top  = (dy-45)/2;
-    g_progressRect.right = g_progressRect.left + 155;
+    g_progressRect.left = (dx - GetScrollBarDx() - SCALEX(155)) / 2;
+    g_progressRect.top  = (dy - SCALEY(45)) / 2;
+    g_progressRect.right = g_progressRect.left + SCALEX(155);
 #ifdef WIN32_PLATFORM_PSPC
-    g_progressRect.bottom = g_progressRect.top + 50;
+    g_progressRect.bottom = g_progressRect.top + SCALEY(50);
 #else
-    g_progressRect.bottom = g_progressRect.top + 45;
+    g_progressRect.bottom = g_progressRect.top + SCALEY(45);
 #endif
     g_RenderingProgressReporter->setProgressArea(g_progressRect);
     g_RegistrationProgressReporter->setProgressArea(g_progressRect);
@@ -1673,6 +1681,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
         SetForegroundWindow ((HWND)(((DWORD)hwndExisting) | 0x01));    
         return 0;
     }
+	HIDPI_InitScaling();
 	PrepareStaticStyles();
 
     String cmdLine(lpCmdLine);

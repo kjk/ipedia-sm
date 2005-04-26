@@ -165,6 +165,7 @@ iPediaApplication::iPediaApplication():
     serverAddress(SERVER_TO_USE),
     fArticleCountChecked(false)
 {
+	preferences_.currentLang = _T("en");
 /*
 #ifdef INTERNAL_BUILD
     log_.addSink(new MemoLogSink(), log_.logError);

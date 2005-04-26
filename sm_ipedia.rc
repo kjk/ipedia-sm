@@ -1,6 +1,11 @@
 //  Microsoft Developer Studio generated resource script.
 #include "resource.h"
 
+#if _WIN32_WCE >= 420
+HI_RES_AWARE   CEUX   {1}
+#endif
+
+
 ID_ICON             ICON                "ipedia.ico"
 IDB_TOOLBAR         BITMAP  DISCARDABLE "toolbar.bmp"
 /*IDB_SEARCH_BTN_UP   BITMAP  DISCARDABLE "searchBtnUp.bmp"
@@ -8,6 +13,7 @@ IDB_SEARCH_BTN_DOWN BITMAP  DISCARDABLE "searchBtnDown.bmp"
 IDB_SEARCH_BTN_DISABLED BITMAP  DISCARDABLE "searchBtnDis.bmp"*/
 
 #ifdef WIN32_PLATFORM_PSPC
+
 IDR_MAIN_MENUBAR RCDATA
 BEGIN
     IDR_MENU_MAIN,
