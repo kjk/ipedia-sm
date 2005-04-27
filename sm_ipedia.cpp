@@ -302,7 +302,7 @@ static void OnLinkedArticles(HWND hwnd)
     }
 }
 
-static void SetScrollBar(Definition* definition)
+static void SetScrollBar(const Definition* definition)
 {
     int first = 0;
     int total = 0;
@@ -1682,7 +1682,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
         return 0;
     }
 	HIDPI_InitScaling();
-	PrepareStaticStyles();
+	StylePrepareStaticStyles();
 
     String cmdLine(lpCmdLine);
     iPediaApplication& app = GetApp();
@@ -1703,7 +1703,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     delete g_wikipedia;
 	delete g_articleModel;
 	
-	DisposeStaticStyles();
+	StyleDisposeStaticStyles();
     return retVal;
 }
 

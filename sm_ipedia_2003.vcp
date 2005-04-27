@@ -462,7 +462,9 @@ DEP_CPP_DEFAU=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_DEFAU=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -504,6 +506,7 @@ DEP_CPP_DEFAU=\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	"..\ipedia\Rsc\ipedia_Rsc.h"\
 	"..\ipedia\Src\ipedia.h"\
+	"..\ipedia\Src\iPediaStyles.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
@@ -552,7 +555,9 @@ DEP_CPP_DEFAU=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_DEFAU=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -597,7 +602,9 @@ DEP_CPP_DEFAU=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_DEFAU=\
+	".\ipapi.h"\
 	
 
 !ENDIF 
@@ -1095,11 +1102,13 @@ DEP_CPP_ENTER=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_ENTER=\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\pcshell.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -1127,11 +1136,13 @@ DEP_CPP_ENTER=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_ENTER=\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\pcshell.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -1143,11 +1154,13 @@ DEP_CPP_ENTER=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\EnterRegCodeDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_ENTER=\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\pcshell.h"\
+	".\ygshell.h"\
 	
 
 !ENDIF 
@@ -1193,8 +1206,10 @@ DEP_CPP_EXTSE=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"tpcshell.h"\
+	
+NODEP_CPP_EXTSE=\
+	".\ipapi.h"\
+	".\pcshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -1273,8 +1288,10 @@ DEP_CPP_EXTSE=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"tpcshell.h"\
+	
+NODEP_CPP_EXTSE=\
+	".\ipapi.h"\
+	".\pcshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -1313,8 +1330,10 @@ DEP_CPP_EXTSE=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"tpcshell.h"\
+	
+NODEP_CPP_EXTSE=\
+	".\ipapi.h"\
+	".\pcshell.h"\
 	
 
 !ENDIF 
@@ -1550,7 +1569,9 @@ DEP_CPP_IPEDI=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_IPEDI=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -1636,7 +1657,9 @@ DEP_CPP_IPEDI=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_IPEDI=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -1679,7 +1702,9 @@ DEP_CPP_IPEDI=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_IPEDI=\
+	".\ipapi.h"\
 	
 
 !ENDIF 
@@ -1731,7 +1756,9 @@ DEP_CPP_IPEDIA=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_IPEDIA=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -1821,7 +1848,9 @@ DEP_CPP_IPEDIA=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_IPEDIA=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -1866,7 +1895,9 @@ DEP_CPP_IPEDIA=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_IPEDIA=\
+	".\ipapi.h"\
 	
 
 !ENDIF 
@@ -1914,7 +1945,9 @@ DEP_CPP_IPEDIAH=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_IPEDIAH=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -1996,7 +2029,9 @@ DEP_CPP_IPEDIAH=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_IPEDIAH=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -2037,7 +2072,68 @@ DEP_CPP_IPEDIAH=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_IPEDIAH=\
+	".\ipapi.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\iPediaStyles.cpp
+
+!IF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Release"
+
+DEP_CPP_IPEDIAS=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DefinitionStyle.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\PalmOS\PalmDefinitionStyle.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinDefinitionStyle.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	"..\ipedia\Src\iPediaStyles.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
+
+DEP_CPP_IPEDIAS=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DefinitionStyle.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\PalmOS\PalmDefinitionStyle.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinDefinitionStyle.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	"..\ipedia\Src\iPediaStyles.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Release"
+
+DEP_CPP_IPEDIAS=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DefinitionStyle.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\PalmOS\PalmDefinitionStyle.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinDefinitionStyle.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	"..\ipedia\Src\iPediaStyles.hpp"\
+	
+
+!ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
+
+DEP_CPP_IPEDIAS=\
+	"..\ars_framework\Src\BaseTypes.hpp"\
+	"..\ars_framework\Src\Debug.hpp"\
+	"..\ars_framework\Src\DefinitionStyle.hpp"\
+	"..\ars_framework\Src\ErrBase.h"\
+	"..\ars_framework\Src\PalmOS\PalmDefinitionStyle.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinDefinitionStyle.hpp"\
+	"..\ars_framework\Src\WindowsCE\WinFont.h"\
+	"..\ipedia\Src\iPediaStyles.hpp"\
 	
 
 !ENDIF 
@@ -2455,7 +2551,9 @@ DEP_CPP_LOOKUP=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_LOOKUP=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -2543,7 +2641,9 @@ DEP_CPP_LOOKUP=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_LOOKUP=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -2587,7 +2687,9 @@ DEP_CPP_LOOKUP=\
 	"..\ipedia\Src\LookupManager.hpp"\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_LOOKUP=\
+	".\ipapi.h"\
 	
 
 !ENDIF 
@@ -2623,7 +2725,9 @@ DEP_CPP_LOOKUPM=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_LOOKUPM=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -2681,7 +2785,9 @@ DEP_CPP_LOOKUPM=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_LOOKUPM=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -2710,7 +2816,9 @@ DEP_CPP_LOOKUPM=\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_LOOKUPM=\
+	".\ipapi.h"\
 	
 
 !ENDIF 
@@ -2771,7 +2879,9 @@ DEP_CPP_PROGR=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\ProgressReporters.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_PROGR=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -2849,7 +2959,9 @@ DEP_CPP_PROGR=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\ProgressReporters.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_PROGR=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -2888,7 +3000,9 @@ DEP_CPP_PROGR=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\ProgressReporters.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_PROGR=\
+	".\ipapi.h"\
 	
 
 !ENDIF 
@@ -3104,7 +3218,9 @@ DEP_CPP_SIMPL=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_SIMPL=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -3152,7 +3268,9 @@ DEP_CPP_SIMPL=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_SIMPL=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -3176,7 +3294,9 @@ DEP_CPP_SIMPL=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_SIMPL=\
+	".\ipapi.h"\
 	
 
 !ENDIF 
@@ -3234,10 +3354,12 @@ DEP_CPP_SM_IP=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\ProgressReporters.h"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_SM_IP=\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\niqueid.h"\
+	".\pcshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -3342,10 +3464,12 @@ DEP_CPP_SM_IP=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\ProgressReporters.h"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_SM_IP=\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\niqueid.h"\
+	".\pcshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -3396,10 +3520,12 @@ DEP_CPP_SM_IP=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\ProgressReporters.h"\
 	".\sm_ipedia.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_SM_IP=\
+	".\ipapi.h"\
+	".\ms.h"\
+	".\niqueid.h"\
+	".\pcshell.h"\
 	
 
 !ENDIF 
@@ -3556,7 +3682,9 @@ DEP_CPP_SOCKETC=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_SOCKETC=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -3604,7 +3732,9 @@ DEP_CPP_SOCKETC=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_SOCKETC=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -3628,7 +3758,9 @@ DEP_CPP_SOCKETC=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_SOCKETC=\
+	".\ipapi.h"\
 	
 
 !ENDIF 
@@ -3647,10 +3779,12 @@ DEP_CPP_STRIN=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_STRIN=\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -3677,10 +3811,12 @@ DEP_CPP_STRIN=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_STRIN=\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -3692,10 +3828,12 @@ DEP_CPP_STRIN=\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_STRIN=\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
 	
 
 !ENDIF 
@@ -4020,8 +4158,10 @@ DEP_CPP_WINDEV=\
 	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_WINDEV=\
+	".\ms.h"\
+	".\niqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -4044,8 +4184,10 @@ DEP_CPP_WINDEV=\
 	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_WINDEV=\
+	".\ms.h"\
+	".\niqueid.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -4056,8 +4198,10 @@ DEP_CPP_WINDEV=\
 	"..\ars_framework\Src\DeviceInfo.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
-	{$(INCLUDE)}"sms.h"\
-	{$(INCLUDE)}"uniqueid.h"\
+	
+NODEP_CPP_WINDEV=\
+	".\ms.h"\
+	".\niqueid.h"\
 	
 
 !ENDIF 
@@ -4289,7 +4433,9 @@ DEP_CPP_WINPR=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_WINPR=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -4315,7 +4461,9 @@ DEP_CPP_WINPR=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_WINPR=\
+	".\ipapi.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -4328,7 +4476,9 @@ DEP_CPP_WINPR=\
 	"..\ars_framework\Src\Utility.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinPrefsStore.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_WINPR=\
+	".\ipapi.h"\
 	
 
 !ENDIF 
@@ -4348,12 +4498,14 @@ DEP_CPP_WINSY=\
 	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"connmgr.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_WINSY=\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\onnmgr.h"\
+	".\pcshell.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE emulator) Debug"
@@ -4384,12 +4536,14 @@ DEP_CPP_WINSY=\
 	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"connmgr.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_WINSY=\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\onnmgr.h"\
+	".\pcshell.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "sm_ipedia_2003 - Win32 (WCE ARMV4) Debug"
@@ -4402,12 +4556,14 @@ DEP_CPP_WINSY=\
 	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"connmgr.h"\
-	{$(INCLUDE)}"sipapi.h"\
-	{$(INCLUDE)}"tpcshell.h"\
-	{$(INCLUDE)}"vibrate.h"\
-	{$(INCLUDE)}"winuserm.h"\
+	
+NODEP_CPP_WINSY=\
+	".\ibrate.h"\
+	".\inuserm.h"\
+	".\ipapi.h"\
+	".\onnmgr.h"\
+	".\pcshell.h"\
+	".\ygshell.h"\
 	
 
 !ENDIF 

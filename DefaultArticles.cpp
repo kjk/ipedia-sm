@@ -8,8 +8,7 @@
 
 #include "iPediaApplication.hpp"
 #include "sm_ipedia.h"
-
-using namespace ArsLexis;
+#include "iPediaStyles.hpp"
 
 TextElement* g_articleCountElement = NULL;
 
@@ -121,7 +120,7 @@ void prepareAbout(Definition *def)
 
     elems.push_back(text=new TextElement(_T("ArsLexis iPedia")));
     text->setJustification(DefinitionElement::justifyCenter);
-    text->setStyle(getStaticStyle(styleNameHeader));
+    text->setStyle(StyleGetStaticStyle(styleNameHeader));
 
     elems.push_back(new LineBreakElement(1,3*divider*divider));
 
@@ -252,7 +251,7 @@ void prepareTutorial(Definition *def)
     elems.push_back(parent=new ParagraphElement());    
     elems.push_back(text=new TextElement(_T("Finding an encyclopedia article.")));
     text->setJustification(DefinitionElement::justifyLeft);
-	text->setStyle(getStaticStyle(styleNameBold));
+	text->setStyle(StyleGetStaticStyle(styleNameBold));
     text->setParent(parent);    
 #ifdef WIN32_PLATFORM_PSPC
     text = new TextElement(_T(" Let's assume you want to read an encyclopedia article on Seattle. Enter 'Seattle' in the text field at the top of the screen and press 'Search'"));
@@ -267,7 +266,7 @@ void prepareTutorial(Definition *def)
 
     elems.push_back(parent=new ParagraphElement());    
     elems.push_back(text=new TextElement(_T("Finding all articles with a given word.")));
-	text->setStyle(getStaticStyle(styleNameBold));
+	text->setStyle(StyleGetStaticStyle(styleNameBold));
     text->setParent(parent);    
 
     elems.push_back(text=new TextElement(_T(" Let's assume you want to find all articles that mention Seattle. Enter 'Seattle' in the text field and use '")  MAIN_MENU_BUTTON _T("/Extended search' menu item. In response you'll receive a list of articles that contain word 'Seattle'.")));
@@ -277,7 +276,7 @@ void prepareTutorial(Definition *def)
     
     elems.push_back(parent=new ParagraphElement());    
     elems.push_back(text=new TextElement(_T("Refining the search.")));
-	text->setStyle(getStaticStyle(styleNameBold));
+	text->setStyle(StyleGetStaticStyle(styleNameBold));
     text->setParent(parent);    
     elems.push_back(text=new TextElement(_T(" If there are too many results, you can refine (narrow) the search results by adding additional terms e.g. type 'museum' and press 'Refine' button. You'll get a smaller list of articles that contain both 'Seattle' and 'museum'.")));
     text->setJustification(DefinitionElement::justifyLeft);
@@ -286,7 +285,7 @@ void prepareTutorial(Definition *def)
 
     elems.push_back(parent=new ParagraphElement());    
     elems.push_back(text=new TextElement(_T("Results of last extended search.")));
-	text->setStyle(getStaticStyle(styleNameBold));
+	text->setStyle(StyleGetStaticStyle(styleNameBold));
     text->setParent(parent);    
     elems.push_back(text=new TextElement(_T(" At any time you can get a list of results from last extended search by using menu item '") MAIN_MENU_BUTTON _T("/Extended search results'.")));
     text->setJustification(DefinitionElement::justifyLeft);
@@ -296,7 +295,7 @@ void prepareTutorial(Definition *def)
     elems.push_back(parent=new ParagraphElement());    
     elems.push_back(text=new TextElement(_T("Random article.")));
     text->setParent(parent);    
-	text->setStyle(getStaticStyle(styleNameBold));
+	text->setStyle(StyleGetStaticStyle(styleNameBold));
 #ifdef WIN32_PLATFORM_PSPC
     elems.push_back(text=new TextElement(_T(" You can use menu 'Main/Random article' (or ")));
     text->setJustification(DefinitionElement::justifyLeft);
@@ -322,7 +321,7 @@ void prepareTutorial(Definition *def)
 
     elems.push_back(parent=new ParagraphElement());    
     elems.push_back(text=new TextElement(_T("More information.")));
-	text->setStyle(getStaticStyle(styleNameBold));
+	text->setStyle(StyleGetStaticStyle(styleNameBold));
     text->setParent(parent);    
     elems.push_back(text=new TextElement(_T(" Please visit our website ")));
     text->setJustification(DefinitionElement::justifyLeft);
