@@ -131,11 +131,12 @@ void CommonProgressReporter::refreshProgress(const LookupProgressReportingSuppor
     HDC offscreenDc=::CreateCompatibleDC(gr.handle());
     if (offscreenDc)
     {
+        Graphics offscreen(offscreenDc);
+		offscreen.setFont(gr.font());
         HBITMAP bitmap=::CreateCompatibleBitmap(gr.handle(), bounds.width(), bounds.height());
         if (bitmap) 
         {
             HBITMAP oldBitmap=(HBITMAP)::SelectObject(offscreenDc, bitmap);
-            Graphics offscreen(offscreenDc);
             DrawProgressInfo(support, offscreen, zeroBasedBounds, true);
             offscreen.copyArea(zeroBasedBounds, gr, bounds.topLeft );
             ::SelectObject(offscreenDc, oldBitmap);
@@ -163,6 +164,10 @@ void RenderingProgressReporter::reportProgress(uint_t percent)
 
     Graphics gr(hwndMain_);
     
+	WinFont font;
+	font.getSystemFont();
+	gr.setFont(font);
+
     ArsRectangle bounds(progressArea_);
     refreshProgress(support, gr, bounds);
 }
