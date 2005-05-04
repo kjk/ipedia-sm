@@ -61,7 +61,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
-# ADD LINK32 commctrl.lib coredll.lib aygshell.lib winsock.lib wininet.lib cellcore.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /out:"ARMRel/ipedia_ppc_arm_rel.exe" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 $(CEx86Corelibc) commctrl.lib coredll.lib aygshell.lib sms.lib winsock.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /out:"ARMRel/ipedia_ppc_arm_rel.exe" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE ARM) Debug"
 
@@ -94,7 +94,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
-# ADD LINK32 commctrl.lib coredll.lib aygshell.lib winsock.lib wininet.lib cellcore.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"$(CENoDefaultLib)" /out:"ARMDbg/pedia_ppc_arm_dbg.exe" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 $(CEx86Corelibc) commctrl.lib coredll.lib aygshell.lib sms.lib winsock.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"$(CENoDefaultLib)" /out:"ARMDbg/pedia_ppc_arm_dbg.exe" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Release"
 
@@ -127,7 +127,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
-# ADD LINK32 $(CEx86Corelibc) commctrl.lib coredll.lib aygshell.lib winsock.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 $(CEx86Corelibc) commctrl.lib coredll.lib aygshell.lib sms.lib winsock.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
 
 !ELSEIF  "$(CFG)" == "sm_ipedia - Win32 (WCE x86) Debug"
 
@@ -151,7 +151,8 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
 CPP=cl.exe
 # ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /YX /Gs8192 /GF /c
-# ADD CPP /nologo /W3 /Zi /Od /I "../STLPORT\STLPORT" /I "./" /I "..\ars_framework\Src" /I "..\ars_framework\Src\WindowsCE" /I "..\ipedia\Src" /I "..\ipedia\Rsc" /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "PPC" /FR /YX /Gs8192 /I /GF /c
+# ADD CPP /nologo /W3 /Zi /Od /I "../STLPORT\STLPORT" /I "./" /I "..\ars_framework\Src" /I "..\ars_framework\Src\WindowsCE" /I "..\ipedia\Src" /I "..\ipedia\Rsc" /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "PPC" /YX /Gs8192 /I /GF /c
+# SUBTRACT CPP /Fr
 MTL=midl.exe
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
@@ -160,7 +161,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
-# ADD LINK32 $(CEx86Corelibc) commctrl.lib coredll.lib aygshell.lib winsock.lib sms.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 $(CEx86Corelibc) commctrl.lib coredll.lib aygshell.lib sms.lib winsock.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
 
 !ENDIF 
 
@@ -1309,6 +1310,8 @@ DEP_CPP_EXTSE=\
 	"..\ars_framework\Src\SysUtils.hpp"\
 	"..\ars_framework\Src\Text.hpp"\
 	"..\ars_framework\Src\Utility.hpp"\
+	"..\ars_framework\Src\WindowsCE\shguim.h"\
+	"..\ars_framework\Src\WindowsCE\UIHelper.h"\
 	"..\ars_framework\Src\WindowsCE\WinDefinitionStyle.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
@@ -1318,6 +1321,7 @@ DEP_CPP_EXTSE=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\sm_ipedia.h"\
+	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	
 
@@ -3034,6 +3038,7 @@ DEP_CPP_PROGR=\
 	".\iPediaApplication.hpp"\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\ProgressReporters.h"\
+	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	
 
@@ -3551,6 +3556,7 @@ DEP_CPP_SM_IP=\
 	".\iPediaHyperlinkHandler.hpp"\
 	".\ProgressReporters.h"\
 	".\sm_ipedia.h"\
+	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	{$(INCLUDE)}"sms.h"\
 	{$(INCLUDE)}"uniqueid.h"\
@@ -3850,7 +3856,9 @@ DEP_CPP_STRIN=\
 	"..\ars_framework\Src\Debug.hpp"\
 	"..\ars_framework\Src\ErrBase.h"\
 	"..\ars_framework\Src\Text.hpp"\
+	"..\ars_framework\Src\WindowsCE\shguim.h"\
 	"..\ars_framework\Src\WindowsCE\StringListDialog.hpp"\
+	"..\ars_framework\Src\WindowsCE\UIHelper.h"\
 	"..\ars_framework\Src\WindowsCE\WinSysUtils.hpp"\
 	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
@@ -4031,6 +4039,8 @@ DEP_CPP_UIHEL=\
 DEP_CPP_UIHEL=\
 	"..\ars_framework\Src\WindowsCE\shguim.h"\
 	"..\ars_framework\Src\WindowsCE\UIHelper.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 
 !ENDIF 
@@ -4161,6 +4171,8 @@ DEP_CPP_WINDE=\
 	"..\ars_framework\Src\WindowsCE\WinDefinitionStyle.hpp"\
 	"..\ars_framework\Src\WindowsCE\WinFont.h"\
 	"..\ars_framework\Src\WindowsCE\WinGraphics.hpp"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 
 !ENDIF 
