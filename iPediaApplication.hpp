@@ -1,7 +1,7 @@
 #ifndef __WIN_IPEDIA_APPLICATION_HPP__
 #define __WIN_IPEDIA_APPLICATION_HPP__
 
-#include <Windows.h>
+#include <windows.h>
 
 #include "iPediaHyperlinkHandler.hpp"
 #include <Logging.hpp>

@@ -504,10 +504,12 @@ static void RepaintDefiniton(int scrollDelta, bool updateScrollbar = true)
     GetClientRect(app.getMainWindow(), &clientRect);
     ArsRectangle bounds = clientRect;
 
+	int fntHeight = GetSystemMetrics(SM_CYCAPTION) - SCALEY(2);
+
     RECT defRectTmp = clientRect;
-    defRectTmp.top    += SCALEY(24);
+    defRectTmp.top    += SCALEY(4) + fntHeight;
     defRectTmp.left   += SCALEX(2);
-    defRectTmp.right  -= SCALEX(2) + GetScrollBarDx();
+    defRectTmp.right  -= SCALEX(4) + GetScrollBarDx();
     defRectTmp.bottom -= SCALEY(2);
 
     ArsRectangle defRect = defRectTmp;
@@ -966,9 +968,11 @@ static void OnPaint(HWND hwnd)
             onlyProgress = true;
     }
 
-    rect.top    += SCALEY(22);
+	int fntHeight = GetSystemMetrics(SM_CYCAPTION) - SCALEY(2);
+
+    rect.top    += (SCALEY(4) + fntHeight);
     rect.left   += SCALEX(2);
-    rect.right  -= (SCALEX(2) + GetScrollBarDx());
+    rect.right  -= (SCALEX(4) + GetScrollBarDx());
     rect.bottom -= SCALEY(2);
 
  /*
@@ -1024,7 +1028,7 @@ static void DoTutorial(HWND hwnd)
     SetDisplayMode(showTutorial);
     SetMenu(hwnd);
     SetScrollBar(g_about);
-    InvalidateRect(hwnd,NULL,FALSE);
+    InvalidateRect(hwnd, NULL, FALSE);
 }
 
 static LRESULT OnCommand(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -1451,19 +1455,21 @@ static void OnSize(HWND hwnd, LPARAM lp)
     int dx = LOWORD(lp);
     int dy = HIWORD(lp);
 
+	int fntHeight = GetSystemMetrics(SM_CYCAPTION) - SCALEY(2);
+
 #ifdef WIN32_PLATFORM_PSPC
     int searchButtonDX = SCALEX(50);
     int searchButtonX = dx - searchButtonDX - SCALEX(2);
 
-    MoveWindow(g_hwndSearchButton, searchButtonX, SCALEY(2), searchButtonDX, SCALEY(20), TRUE);
-    MoveWindow(g_hwndEdit, SCALEX(2), SCALEY(2), searchButtonX - SCALEX(6), SCALEY(20), TRUE);
+    MoveWindow(g_hwndSearchButton, searchButtonX, SCALEY(2), searchButtonDX, fntHeight, TRUE);
+    MoveWindow(g_hwndEdit, SCALEX(2), SCALEY(2), searchButtonX - SCALEX(6), fntHeight, TRUE);
 #else
-    MoveWindow(g_hwndEdit, SCALEX(2), SCALEY(2), dx - SCALEX(4), SCALEY(20), TRUE);
+    MoveWindow(g_hwndEdit, SCALEX(2), SCALEY(2), dx - SCALEX(4), fntHeight, TRUE);
 #endif
 
-    int scrollStartY = SCALEY(24);
+    int scrollStartY = SCALEY(4) + fntHeight;
     int scrollDy = dy - scrollStartY - SCALEY(2);
-    MoveWindow(g_hwndScroll, dx - GetScrollBarDx(), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
+    MoveWindow(g_hwndScroll, dx - (GetScrollBarDx() + SCALEX(2)), scrollStartY, GetScrollBarDx(), scrollDy, FALSE);
 
     g_progressRect.left = (dx - GetScrollBarDx() - SCALEX(155)) / 2;
     g_progressRect.top  = (dy - SCALEY(45)) / 2;

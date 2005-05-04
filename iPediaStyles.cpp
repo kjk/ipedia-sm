@@ -1,6 +1,7 @@
 #include <DefinitionStyle.hpp>
 #include "iPediaStyles.hpp"
 
+
 static const StaticStyleDescriptor staticStyleDescriptors[] = {
 	{styleNameDefault, "color: rgb(0, 0, 0); background-color: rgb(100%, 255, 255);"},
 	{styleNameHyperlink, "text-decoration: underline; color: rgb(0, 0, 100%);"},

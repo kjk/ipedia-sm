@@ -14,7 +14,7 @@ TextElement* g_articleCountElement = NULL;
 
 void updateArticleCountEl(long articleCount, ArsLexis::String& dbTime)
 {
-    assert(NULL!=g_articleCountElement);
+    assert(NULL != g_articleCountElement);
     assert(-1!=articleCount);
     assert(8==dbTime.length());
     char_t buffer[32];

@@ -1,9 +1,9 @@
 //  Microsoft Developer Studio generated resource script.
 #include "resource.h"
 
-#if _WIN32_WCE >= 420
+// #if _WIN32_WCE >= 420
 HI_RES_AWARE   CEUX   {1}
-#endif
+// #endif
 
 
 ID_ICON             ICON                "ipedia.ico"

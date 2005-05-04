@@ -7,6 +7,8 @@
 #include "ExtSearchResultsDlg.hpp"
 #include "sm_ipedia.h"
 
+#include <UIHelper.h>
+
 using namespace ArsLexis;
 
 static WNDPROC oldResultsListWndProc = NULL;
@@ -131,9 +133,9 @@ static void OnSize(HWND hDlg, WPARAM wp, LPARAM lp)
     int height = HIWORD(lp);
     HWND ctrlRefineEdit = GetDlgItem(hDlg, IDC_REFINE_EDIT);
     HWND ctrlResultsList = GetDlgItem(hDlg, IDC_LAST_RESULTS_LIST);
-    int fntHeight = GetSystemMetrics(SM_CYCAPTION);
-    MoveWindow(ctrlRefineEdit, 2, 1, width-4, fntHeight, TRUE);
-    MoveWindow(ctrlResultsList,0, fntHeight + 2, width, height - fntHeight, TRUE);
+	int fntHeight = GetSystemMetrics(SM_CYCAPTION) - SCALEY(2);
+    MoveWindow(ctrlRefineEdit, SCALEX(2), SCALEY(2), width - SCALEX(4), fntHeight, TRUE);
+    MoveWindow(ctrlResultsList, SCALEX(2), fntHeight + SCALEY(4), width - SCALEY(4), height - fntHeight - SCALEY(4), TRUE);
 }
 
 static void DoRefine(HWND hDlg)
