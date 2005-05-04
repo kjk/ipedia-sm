@@ -74,7 +74,7 @@ BEGIN
         MENUITEM "Copy to clipboard",       IDM_MENU_CLIPBOARD
         MENUITEM SEPARATOR 
         MENUITEM "Change language",         IDM_MENU_CHANGE_DATABASE
-#ifdef DEBUG
+#ifndef NDEBUG
         MENUITEM SEPARATOR
         MENUITEM "Quit",                    IDOK
         MENUITEM "Stress mode",             IDM_MENU_STRESS_MODE
@@ -113,7 +113,7 @@ BEGIN
             MENUITEM "Check updates",       IDM_MENU_UPDATES
             MENUITEM "About",               IDM_MENU_ABOUT
         END
-#ifdef DEBUG
+#ifndef NDEBUG
         MENUITEM "Stress mode",             IDM_MENU_STRESS_MODE
         MENUITEM "Quit",                    IDOK
 #endif
