@@ -6,6 +6,7 @@
 	ProjectGUID="{CE7B4BBB-FACC-4A9E-B748-6E3501FC70D3}"
 	RootNamespace="sm_iPedia"
 	Keyword="Win32Proj"
+	SignManifests="true"
 	>
 	<Platforms>
 		<Platform
